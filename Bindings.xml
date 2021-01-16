@@ -1,0 +1,5 @@
+<Bindings>
+	<Binding name="TOGGLE_HONORINFOPANEL" header="HONORINFOPANEL" category="ADDONS">
+        	HonorInfoPanel:ToggleDisplay()
+	</Binding>
+</Bindings>

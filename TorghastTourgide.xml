@@ -1,0 +1,100 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+	<Script file="TorghastTourgide.lua"/>
+
+	
+
+	<Frame name="TourGideFrameTemplate" toplevel="true" movable="true" enableMouse="true" hidden="false" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM" virtual = "true">
+		<Size>
+			<AbsDimension x="550" y="525"/>
+		</Size>
+		<Layers>
+			<Layer level="OVERLAY">
+
+				<Texture name="$parentSpellBookPage1" file="Interface\Spellbook\Spellbook-Page-1">
+					<Anchors>
+						<Anchor point="TOPLEFT" x="7" y="-25"/>
+					</Anchors>
+				</Texture>
+				<Texture name="$parentSpellBookPage2" file="Interface\Spellbook\Spellbook-Page-2">
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeTo="$parentSpellBookPage1" relativePoint="TOPRIGHT" />
+					</Anchors>
+				</Texture>
+
+			</Layer>
+		</Layers>
+		<Frames>
+			<Frame name="$parentNavigationFrame" setAllPoints="true">
+				<Layers>
+					<Layer level="OVERLAY">
+						<Texture name="$parentSpellBookPage3" file="Interface\Spellbook\Spellbook-Icon">
+							<Size>
+								<AbsDimension x="55" y="55"/>
+							</Size>
+							<Anchors>
+								<Anchor point="TOPLEFT" x="-5" y="5"/>
+							</Anchors>
+						</Texture>
+						<FontString name="SpellBookPageText" inherits="GameFontBlack" justifyH="RIGHT">
+							<Size>
+								<AbsDimension x="102" y="0"/>
+							</Size>
+							<Anchors>
+								<Anchor point="BOTTOMRIGHT">
+									<Offset>
+										<AbsDimension x="-110" y="38"/>
+									</Offset>
+								</Anchor>
+							</Anchors>
+							<Color r="0.25" g="0.12" b="0"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Frames>
+					<Button name="SpellBookPrevPageButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame">
+								<Offset>
+									<AbsDimension x="-66" y="26"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="SpellBookPrevPageButton_OnClick"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+					<Button name="SpellBookNextPageButton">
+						<Size>
+							<AbsDimension x="32" y="32"/>
+						</Size>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT">
+								<Offset>
+									<AbsDimension x="-31" y="26"/>
+								</Offset>
+							</Anchor>
+						</Anchors>
+						<Scripts>
+							<OnClick function="SpellBookNextPageButton_OnClick"/>
+						</Scripts>
+						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
+						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
+						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
+						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
+					</Button>
+				</Frames>
+			</Frame>
+
+		</Frames>
+		<Scripts>
+		</Scripts>
+	</Frame>
+</Ui>
