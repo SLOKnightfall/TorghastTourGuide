@@ -267,20 +267,19 @@ local function CreateUpgradeListFrame(parent)
 end
 
 EncounterJournalScrollBarMixin = {}
-local venari = {"venari", 95004, 65}
+
 function addon.initTourGuide()
-	local f = CreateFrame("Frame", "TorghastTourGuide", UIParent, "TourGuideTemplate2")
+	local f = CreateFrame("Frame", "TorghastTourGuide", UIParent, "TorghastTourGuideTemplate")
 	frames.tg = f
-	--f:SetSize(50, 100)
-	f:SetPoint("TOP")
+	tinsert(UISpecialFrames,"TorghastTourGuide")
 	--f:SetFrameLevel(100)
 	f:Show()
---f:Hide()
+	--f:Hide()
 	CreateUpgradeListFrame(f)
 		local f2 = CreateFrame("Frame", nil, f)
 	frames.text = f2
 
-	addon.DisplayCreature(venari)
+	addon.DisplayCreature()
 	addon.CreateBossButtons()
 end
 	
@@ -351,11 +350,9 @@ end
 
 
 local TTG_Tabs = {}
-
---frames.tg.info.bossesScroll.child
 TTG_Tabs[1] = {frame = "upgrades", button="overviewTab"};
 TTG_Tabs[2] = {frame = "bossesScroll", button="bossTab"};
---TTG_Tabs[3] = {frame="detailsScroll", button="bossTab"};
+TTG_Tabs[3] = {frame="detailsScroll", button="bossDetailsTab"};
 --TTG_Tabs[4] = {frame="model", button="modelTab"};
 
 function TorghastTourGuide_TabClicked(self, button)
@@ -364,15 +361,16 @@ function TorghastTourGuide_TabClicked(self, button)
 	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
 end
 
-local creatureDisplayID = 156239
 
+local creatureDisplayID
 local function SetDefaultModel(tabType)
 	if tabType == 1 then 
-		addon.DisplayCreature(venari)
+		addon.DisplayCreature()
 	else
-		addon.DisplayCreature(addon.Bosses[creatureDisplayID])
+		addon.DisplayCreature(creatureDisplayID.encounterID)
 	end
 end
+
 
 function addon.SetTab(tabType)
 	local info = frames.tg.info
@@ -390,8 +388,13 @@ function addon.SetTab(tabType)
 			info[data.button]:UnlockHighlight();
 		end
 	end
-	SetDefaultModel(tabType)
+	if tabType == 1 then
+		info[TTG_Tabs[3].button]:Hide()
+	else
+		info[TTG_Tabs[3].button]:Show()
+	end
 
+	SetDefaultModel(tabType)
 end
 
 local creature = {
@@ -400,14 +403,18 @@ local creature = {
 
 }
 
-function addon.DisplayCreature(data)
+function addon.DisplayCreature(UnitID)
+	local data = addon.Bosses[UnitID]
+	if not data then 
+		data =  {"venari", 95004, {}, 65} 
+		UnitID = 95004
+	end
 --156239
 	local modelScene = frames.tg.info.model;
 	--cal data = addon.Bosses[mobID]
-
 	if data then -- and (EncounterJournal.creatureDisplayID ~= self.displayInfo or forceUpdate) then
-		local scene = data[3] or 9
-		modelScene:SetFromModelSceneID(9, true);
+		local scene = addon.BossCamera[UnitID] or 9
+		modelScene:SetFromModelSceneID(scene, true);
 		--local x,y,z = modelScene:GetCameraPosition()
 		----print(x)
 		--modelScene:SetCameraPosition(x, y, z+500)
@@ -441,45 +448,39 @@ end
 function addon.CreateBossButtons()
 	local bossIndex = 1;
 	--local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex);
-	 for bossID, data in pairs(addon.Bosses) do
-	local name = "test"
-	local bossButton;
---frames.tg.info.bossesScroll.child;
-	local hasBossAbilities = false;
-	--while bossID do
-		bossButton = _G["TorgastTourGuideBossButton"..bossIndex];
-		if not bossButton then -- create a new header;
+	for bossID, data in pairs(addon.Bosses) do
+		local name = data[1]
+		local bossButton = _G["TorgastTourGuideBossButton"..bossIndex]
+		local hasBossAbilities = false;
+
+		if not bossButton then
 			bossButton = CreateFrame("BUTTON", "TorgastTourGuideBossButton"..bossIndex, frames.tg.info.bossesScroll.child, "TorghastTourGuideBossButtonTemplate");
 			if bossIndex > 1 then
-				bossButton:SetPoint("TOPLEFT", _G["TorgastTourGuideBossButton"..(bossIndex-1)], "BOTTOMLEFT", 0, -15);
+				bossButton:SetPoint("TOPLEFT", _G["TorgastTourGuideBossButton"..(bossIndex - 1)], "BOTTOMLEFT", 0, -15)
+				bossButton:UnlockHighlight();
 			else
-				creatureDisplayID = bossID
-				bossButton:SetPoint("TOPLEFT", frames.tg.info.bossesScroll.child, "TOPLEFT", 0, -10);
+				
+				bossButton:SetPoint("TOPLEFT", frames.tg.info.bossesScroll.child, "TOPLEFT", 0, -10)
+				bossButton:LockHighlight();
 			end
 		end
 
-		--bossButton.link = link;
-		bossButton:SetText(data[1]);
-		bossButton:Show();
-		bossButton.encounterID = bossID;
-		--Use the boss' first creature as the button icon
-		--local _, _, _, _, bossImage = EJ_GetCreatureInfo(1, bossID);
-		local bossImage --= data[2]
-		bossImage = bossImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
-		--bossButton.creature:SetTexture(bossImage);
-		SetPortraitTextureFromCreatureDisplayID(bossButton.creature, data[2])
-		--bossButton:UnlockHighlight();
+		bossButton:SetText(name)
+		bossButton:Show()
+		bossButton.encounterID = bossID
+		if bossIndex == 1 then 
+			creatureDisplayID = bossButton
 
-		--EncounterJournalBossButton_UpdateDifficultyOverlay(bossButton);
-
-		---if ( not hasBossAbilities ) then
-			--hasBossAbilities = rootSectionID > 0;
-		--end
+		end
+		bossButton:SetScript("OnClick", function() addon.BossClick(bossButton) end)
+		--Use the boss' first creature as the button ico
+		local bossImage = data[2] or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default"
+		SetPortraitTextureFromCreatureDisplayID(bossButton.creature, bossImage)
 
 		bossIndex = bossIndex + 1;
-		--name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex);
 	end
 end
+
 
 function addon.ToggleTourGuide()
 	if TorghastTourGuide:IsShown() then
@@ -488,3 +489,183 @@ function addon.ToggleTourGuide()
 		TorghastTourGuide:Show()
 	end
 end
+
+
+function addon.BossClick(bossButton)
+	creatureDisplayID:UnlockHighlight();
+	creatureDisplayID = bossButton
+	addon.DisplayCreature(creatureDisplayID.encounterID)
+	bossButton:LockHighlight();
+	addon.ClearOverview()
+	for i, spellID in ipairs(addon.Bosses[creatureDisplayID.encounterID][3]) do
+		addon.SetUpOverview(spellID, i)
+	end
+
+	addon.SetUpTips(addon.BossTips[creatureDisplayID.encounterID], frames.tg.info.detailsScroll.child.overviews[#(addon.Bosses[creatureDisplayID.encounterID][3])])
+end
+
+
+function addon.SetUpTips(tipdata, anchor)
+	local parent = frames.tg.info.detailsScroll.child
+	if not parent.tips then 
+		local infoHeader = CreateFrame("FRAME", nil, parent, "TorghastTourGuideInfoTemplate");
+		--infoHeader.description:Hide();
+		--infoHeader.overviewDescription:Hide();
+		--infoHeader.descriptionBG:Hide();
+		infoHeader.descriptionBG:ClearAllPoints()
+		infoHeader.descriptionBG:SetPoint("TOPLEFT", infoHeader, "BOTTOMLEFT")
+		infoHeader.descriptionBG:SetPoint("TOPRIGHT", infoHeader, "BOTTOMRIGHT")
+
+		--infoHeader.descriptionBGBottom:Hide();
+		infoHeader.button.abilityIcon:Hide();
+		infoHeader.button.icon1:Hide();
+		infoHeader.button.icon2:Hide();
+		infoHeader.button.icon3:Hide();
+		infoHeader.button.icon4:Hide();
+		infoHeader.button.title:SetText(L["Tips & Tricks"])
+		local textRightAnchor = infoHeader.button.icon1;
+		--infoHeader.button.title:SetPoint("LEFT", 5, 0);
+		infoHeader.button.title:SetPoint("RIGHT", -5, 0);
+		parent.tips = infoHeader
+	end
+
+	parent.tips:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT" , 0, -15 )
+	parent.tips:SetPoint("TOPRIGHT", anchor, "BOTTOMRIGHT", 0, -15)
+	parent.tips:Show()
+	parent.bullets = parent.bullets or {}
+
+	for index, data in ipairs(parent.bullets) do
+		data:Hide()
+	end
+
+	for index, data in ipairs(tipdata) do
+		local infoBullet
+		if not parent.bullets[index] then -- create a new header;
+			infoBullet = CreateFrame("Frame", nil, parent, "TorghastTourGuideOverviewBulletTemplate")
+			parent.bullets[index] = infoBullet
+		else
+			infoBullet = parent.bullets[index]
+			infoBullet:Show()
+		end
+
+		if (index == 1) then
+			infoBullet:SetPoint("TOPLEFT", parent.tips, "BOTTOMLEFT" , 4, -10 )
+			infoBullet:SetPoint("TOPRIGHT", parent.tips, "BOTTOMRIGHT", -4, -10)
+
+		else
+			infoBullet:SetPoint("TOPLEFT", parent.bullets[index - 1], "BOTTOMLEFT", 0, -9);
+			infoBullet:SetPoint("TOPRIGHT", parent.bullets[index - 1], "BOTTOMRIGHT", 0, -9);
+		end
+
+		infoBullet.Text:SetWordWrap(true)
+		infoBullet.Text:SetText(data)
+		infoBullet.Text:SetHeight(200)
+	--	infoBullet:SetWidth(parent:GetWidth() - 13);
+		infoBullet.Text:SetWidth(parent.tips:GetWidth() - 26);
+		infoBullet:SetHeight(infoBullet.Text:GetStringHeight() + 5)
+		parent.tips.descriptionBG:SetPoint("BOTTOMRIGHT", infoBullet, "BOTTOMRIGHT", 0, -3)
+	end
+end
+
+
+function addon.ClearOverview()
+	if not frames.tg.info.detailsScroll.child.overviews then return end
+	for index, data in ipairs(frames.tg.info.detailsScroll.child.overviews) do
+		data:Hide()
+	end
+
+end
+
+
+function addon.SetUpOverview(spellID, index)
+	local name, _,texture = GetSpellInfo(spellID)
+	local infoHeader;
+	local self = frames.tg.info.detailsScroll.child
+	self.overviews = self.overviews or {}
+	if not self.overviews[index] then -- create a new header;
+		infoHeader = CreateFrame("FRAME", "xEncounterJournalOverviewInfoHeader"..index, self, "TorghastTourGuideInfoTemplate");
+		--infoHeader.description:Hide();
+		--infoHeader.overviewDescription:Hide();
+		--infoHeader.descriptionBG:Hide();
+		--infoHeader.descriptionBGBottom:Hide();
+		--infoHeader.button.abilityIcon:Hide();
+		infoHeader.button.icon1:Hide();
+		infoHeader.button.icon2:Hide();
+		infoHeader.button.icon3:Hide();
+		infoHeader.button.icon4:Hide();
+		infoHeader.overviewIndex = index;
+		
+		local textRightAnchor = infoHeader.button.icon1;
+		--infoHeader.button.title:SetPoint("LEFT", 5, 0);
+		infoHeader.button.title:SetPoint("RIGHT", textRightAnchor, "LEFT", -5, 0);
+
+		self.overviews[index] = infoHeader;
+
+	else
+		infoHeader = self.overviews[index];
+	end
+infoHeader:Show()
+
+	infoHeader:ClearAllPoints();
+	if (index == 1) then
+		infoHeader:SetPoint("TOPLEFT",  0, -15 );
+		infoHeader:SetPoint("TOPRIGHT", 0, -15 );
+	else
+		infoHeader:SetPoint("TOPLEFT", self.overviews[index-1], "BOTTOMLEFT", 0, -9);
+		infoHeader:SetPoint("TOPRIGHT", self.overviews[index-1], "BOTTOMRIGHT", 0, -9);
+	end
+
+	--infoHeader.description:Hide();
+
+	--for i = 1, #infoHeader.Bullets do
+		--infoHeader.Bullets[i]:Hide();
+	--end
+
+	--wipe(infoHeader.Bullets);
+	--local sectionInfo = C_EncounterJournal.GetSectionInfo(overviewSectionID);
+
+	if (not sectionInfo) then
+		--infoHeader:Hide();
+		--return;
+	end
+
+	--EncounterJournal_SetupIconFlags(overviewSectionID, infoHeader.button);
+
+	--infoHeader.spellID = sectionInfo.spellID;
+
+infoHeader.button.title:Show()
+	--infoHeader.button.title:SetText(sectionInfo.title);
+	--infoHeader.button.link = sectionInfo.link;
+	--infoHeader.sectionID = overviewSectionID;
+	if spellID == 999999999 then 
+		local spell = Spell:CreateFromSpellID(300824)
+		spell:ContinueOnSpellLoad(function()
+			local name = spell:GetSpellName()
+			local texture = spell:GetSpellTexture()
+			infoHeader.button.abilityIcon:SetTexture(texture)
+			infoHeader.button.abilityIcon:Show()
+			infoHeader.button.title:SetText(name);
+			infoHeader.description:SetText(L["Split_Desc"])
+			infoHeader:SetHeight(infoHeader.description:GetHeight() + 40)
+		end)
+
+	else
+
+		local spell = Spell:CreateFromSpellID(spellID)
+		spell:ContinueOnSpellLoad(function()
+			local name = spell:GetSpellName()
+			local desc = spell:GetSpellDescription()
+			local texture = spell:GetSpellTexture()
+			infoHeader.button.abilityIcon:SetTexture(texture)
+			infoHeader.button.abilityIcon:Show()
+			infoHeader.button.title:SetText(name);
+			infoHeader.description:SetText(desc)
+			infoHeader:SetHeight(infoHeader.description:GetHeight() + 40)
+		end)
+
+	end
+
+	--EncounterJournal_SetDescriptionWithBullets(infoHeader, sectionInfo.description);
+	infoHeader:Show();
+end
+
