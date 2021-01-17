@@ -45,6 +45,7 @@ local function Disable()
 	end
 end
 
+
 local function InTorghast()
 	local id = C_Map.GetBestMapForUnit("player");
 	if id then
@@ -57,6 +58,7 @@ local function InTorghast()
 	return Disable()
 end
 
+
 function addon:EventHandler(event, arg1 )
 	if event == "PLAYER_ENTERING_WORLD" then
 		InTorghast()
@@ -67,8 +69,9 @@ function addon:EventHandler(event, arg1 )
 	end		
 end
 
+
 function addon:OnEnable()
-addon.initTourGuide()
+	addon.initTourGuide()
 end
 
 do
@@ -80,7 +83,6 @@ do
 			return id
 		end
 	end
-
 
 	local function CheckModified()
 		for i=1,GameTooltip:NumLines() do
@@ -155,6 +157,7 @@ function addon.InitFrames()
 
 	b.Icon:SetAtlas("Campaign-QuestLog-LoreBook")
 	b.Icon:SetPoint("TOPLEFT", 5, -5)
+	b:SetScript("OnClick", addon.ToggleTourGuide)
 
 	local f = CreateFrame("Frame", nil, ScenarioStageBlock)
 	frames.f = f
@@ -166,7 +169,7 @@ function addon.InitFrames()
 	f.ravFrame = CreateFrame("Frame", nil, f)
 	f.ravFrame:SetSize(30, 15)
 	f.ravFrame:SetPoint("TOPLEFT")
-	f.ravButton = CreateFrame("Button", "a", f.ravFrame, "SecureActionButtonTemplate")
+	f.ravButton = CreateFrame("Button", nil, f.ravFrame, "SecureActionButtonTemplate")
 	f.ravButton:SetAttribute("type", "item")
 	f.ravButton:SetAllPoints()
 	f.ravButton:SetScript("OnEnter", function(self)  AnimaCountTooltip(self, "rav") end)
@@ -182,7 +185,7 @@ function addon.InitFrames()
 	f.cellFrame = CreateFrame("Frame", nil, f)
 	f.cellFrame:SetSize(30, 15)
 	f.cellFrame:SetPoint("LEFT",f.ravFrame, "RIGHT", 15, 0 )
-	f.cellButton = CreateFrame("Button", "b", f.cellFrame, "SecureActionButtonTemplate")
+	f.cellButton = CreateFrame("Button", nil, f.cellFrame, "SecureActionButtonTemplate")
 	f.cellButton:SetAttribute("type", "item")
 	f.cellButton:SetAllPoints()
 	f.cellButton:SetScript("OnEnter", function(self) AnimaCountTooltip(self, "cell") end)
@@ -199,19 +202,9 @@ function addon.InitFrames()
 end
 
 
-local retry = 0
 local function CreateUpgradeFrame(parent, id)
 	local upgradeInfo = addon.Upgrades[id]
-	local itemName, _, _, _, _, _, _, _,_, itemTexture = GetItemInfo(id)
-	itemName, _, _, _, _, _, _, _,_, itemTexture = GetItemInfo(id)
-
-	--if not itemName then 
-		--if retry < 3 then
-			--retry = retry + 1
-			--return CreateUpgradeFrame(parent, id)
-		--end
-	--end
-
+	local item = Item:CreateFromItemID(id)
 	local known = C_QuestLog.IsQuestFlaggedCompleted(upgradeInfo[2])
 	local description = GetSpellDescription(upgradeInfo[1])
 	local color = RED_FONT_COLOR_CODE
@@ -228,28 +221,31 @@ local function CreateUpgradeFrame(parent, id)
 	f.icon:SetTexture(itemTexture)
 	f.icon:SetPoint("TOPLEFT")
 	f.name = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	f.name:SetText(color..itemName)
 	f.name:SetPoint("LEFT",f.icon, "RIGHT", 5, 0)
+	item:ContinueOnItemLoad(function()
+		local name = item:GetItemName() 
+		local icon = item:GetItemIcon()
+		f.name:SetText(color..name)
+		f.icon:SetTexture(icon)
+	end)
 	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
 	f.desc:SetText(description)
 	f.desc:SetPoint("TOPLEFT",f.icon, "BOTTOMLEFT",0, 0)
-	f.desc:SetWidth(400)
+	f.desc:SetWidth(370)
 	f.desc:SetJustifyH("LEFT")
 	local height = f.desc:GetStringHeight()
 	f:SetHeight(height + 35)
-	--retry = 0
 	return f
 end
 
+
 local function CreateUpgradeListFrame(parent)
 	local f = CreateFrame("Frame", nil, parent)
-	frames.upgrades = f
-	--f:SetSize(50, 100)
-	f:SetPoint("TOPLEFT")
+	--frames.upgrades = f
+	frames.tg.info.upgrades = f
+	f:SetPoint("TOPLEFT", 400, -40 )
 	f:SetPoint("BOTTOMRIGHT")
-	--f:SetFrameLevel(100)
 	f:Show()
-	--f:Hide()
 
 	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
 	f.desc:SetText(L["Torghast Upgrades"])
@@ -260,8 +256,8 @@ local function CreateUpgradeListFrame(parent)
 	for id in pairs(addon.Upgrades) do
 		f[index] = CreateUpgradeFrame(f, id)
 		if index == 1 then 
-			f[index]:SetPoint("TOPLEFT", 100, -70)
-			f[index]:SetPoint("TOPRIGHT", -50, -70)
+			f[index]:SetPoint("TOPLEFT", 20, -20)
+			f[index]:SetPoint("TOPRIGHT", 0, 0)
 		else
 			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT" )
 		end
@@ -269,8 +265,11 @@ local function CreateUpgradeListFrame(parent)
 	end
 
 end
+
+EncounterJournalScrollBarMixin = {}
+local venari = {"venari", 95004, 65}
 function addon.initTourGuide()
-	local f = CreateFrame("Frame", nil, UIParent, "TourGideFrameTemplate")
+	local f = CreateFrame("Frame", "TorghastTourGuide", UIParent, "TourGuideTemplate2")
 	frames.tg = f
 	--f:SetSize(50, 100)
 	f:SetPoint("TOP")
@@ -278,6 +277,11 @@ function addon.initTourGuide()
 	f:Show()
 --f:Hide()
 	CreateUpgradeListFrame(f)
+		local f2 = CreateFrame("Frame", nil, f)
+	frames.text = f2
+
+	addon.DisplayCreature(venari)
+	addon.CreateBossButtons()
 end
 	
 local blessing = 324717
@@ -313,17 +317,26 @@ function addon.UpdateCellCount()
 
 	local ravCount, cellCount, reqCount = unpack(GetCellCounts())
 	if ravCount > 0 then 
-		local item = GetItemInfo(ravID)
-		f.ravButton:SetAttribute("item", item)
+		local item = Item:CreateFromItemID(ravID)
+		item:ContinueOnItemLoad(function()
+			local name = item:GetItemName() 
+			f.cellButton:SetAttribute("item", name)
+		end)
 	else 
 		f.ravButton:SetAttribute("item", nil)
 	end
 	if cellCount > 0 then
-		local item = GetItemInfo(184662)
-		f.cellButton:SetAttribute("item", item)
+		local item = Item:CreateFromItemID(cellID)
+		item:ContinueOnItemLoad(function()
+			local name = item:GetItemName() 
+			f.cellButton:SetAttribute("item", name)
+		end)
 	elseif reqCount > 0 then 
-		local item = GetItemInfo(168207)
-		f.cellButton:SetAttribute("item", item)
+		local item = Item:CreateFromItemID(168207)
+		item:ContinueOnItemLoad(function()
+			local name = item:GetItemName() 
+			f.cellButton:SetAttribute("item", name)
+		end)
 	else
 		f.cellButton:SetAttribute("item", nil)
 	end
@@ -335,3 +348,143 @@ end
 
 --PlayerChoiceFrame.Option1
 --CONFIRM_PURCHASE_NONREFUNDABLE_ITEM
+
+
+local TTG_Tabs = {}
+
+--frames.tg.info.bossesScroll.child
+TTG_Tabs[1] = {frame = "upgrades", button="overviewTab"};
+TTG_Tabs[2] = {frame = "bossesScroll", button="bossTab"};
+--TTG_Tabs[3] = {frame="detailsScroll", button="bossTab"};
+--TTG_Tabs[4] = {frame="model", button="modelTab"};
+
+function TorghastTourGuide_TabClicked(self, button)
+	local tabType = self:GetID();
+	addon.SetTab(tabType);
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN);
+end
+
+local creatureDisplayID = 156239
+
+local function SetDefaultModel(tabType)
+	if tabType == 1 then 
+		addon.DisplayCreature(venari)
+	else
+		addon.DisplayCreature(addon.Bosses[creatureDisplayID])
+	end
+end
+
+function addon.SetTab(tabType)
+	local info = frames.tg.info
+	--info.tab = tabType;
+	for key, data in pairs(TTG_Tabs) do
+		if key == tabType then
+			info[data.frame]:Show();
+			info[data.button].selected:Show();
+			info[data.button].unselected:Hide();
+			info[data.button]:LockHighlight();
+		else
+			info[data.frame]:Hide();
+			info[data.button].selected:Hide();
+			info[data.button].unselected:Show();
+			info[data.button]:UnlockHighlight();
+		end
+	end
+	SetDefaultModel(tabType)
+
+end
+
+local creature = {
+["name"]= "Dark Ascended Corrus",
+["id"] = 156239,
+
+}
+
+function addon.DisplayCreature(data)
+--156239
+	local modelScene = frames.tg.info.model;
+	--cal data = addon.Bosses[mobID]
+
+	if data then -- and (EncounterJournal.creatureDisplayID ~= self.displayInfo or forceUpdate) then
+		local scene = data[3] or 9
+		modelScene:SetFromModelSceneID(9, true);
+		--local x,y,z = modelScene:GetCameraPosition()
+		----print(x)
+		--modelScene:SetCameraPosition(x, y, z+500)
+		--modelScene:SetFogColor(0, 0, 1)
+		--modelScene:SetFogNear(100)
+--65
+
+		local creature = modelScene:GetActorByTag("creature");
+		if creature then
+			creature:SetModelByCreatureDisplayID(data[2], true);
+		end
+
+
+
+		--EncounterJournal.creatureDisplayID = self.displayInfo;
+	end
+
+	modelScene.imageTitle:SetText(data[1]);
+
+	--self:Disable();
+	--frames.tg.info.shownCreatureButton = self;
+
+	-- Ensure that the models tab properly updates the selected button (it's possible to display creatures here
+	-- that only have a portrait/creature button on the abilities tab).
+	--local creatureButton = EncounterJournal_FindCreatureButtonForDisplayInfo(self.displayInfo);
+	--if creatureButton and creatureButton:IsShown() then
+		--creatureButton:Click();
+	--end
+end
+
+function addon.CreateBossButtons()
+	local bossIndex = 1;
+	--local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex);
+	 for bossID, data in pairs(addon.Bosses) do
+	local name = "test"
+	local bossButton;
+--frames.tg.info.bossesScroll.child;
+	local hasBossAbilities = false;
+	--while bossID do
+		bossButton = _G["TorgastTourGuideBossButton"..bossIndex];
+		if not bossButton then -- create a new header;
+			bossButton = CreateFrame("BUTTON", "TorgastTourGuideBossButton"..bossIndex, frames.tg.info.bossesScroll.child, "TorghastTourGuideBossButtonTemplate");
+			if bossIndex > 1 then
+				bossButton:SetPoint("TOPLEFT", _G["TorgastTourGuideBossButton"..(bossIndex-1)], "BOTTOMLEFT", 0, -15);
+			else
+				creatureDisplayID = bossID
+				bossButton:SetPoint("TOPLEFT", frames.tg.info.bossesScroll.child, "TOPLEFT", 0, -10);
+			end
+		end
+
+		--bossButton.link = link;
+		bossButton:SetText(data[1]);
+		bossButton:Show();
+		bossButton.encounterID = bossID;
+		--Use the boss' first creature as the button icon
+		--local _, _, _, _, bossImage = EJ_GetCreatureInfo(1, bossID);
+		local bossImage --= data[2]
+		bossImage = bossImage or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default";
+		--bossButton.creature:SetTexture(bossImage);
+		SetPortraitTextureFromCreatureDisplayID(bossButton.creature, data[2])
+		--bossButton:UnlockHighlight();
+
+		--EncounterJournalBossButton_UpdateDifficultyOverlay(bossButton);
+
+		---if ( not hasBossAbilities ) then
+			--hasBossAbilities = rootSectionID > 0;
+		--end
+
+		bossIndex = bossIndex + 1;
+		--name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex);
+	end
+end
+
+function addon.ToggleTourGuide()
+	if TorghastTourGuide:IsShown() then
+		TorghastTourGuide:Hide()
+	else
+		TorghastTourGuide:Show()
+	end
+end

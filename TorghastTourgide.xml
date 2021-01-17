@@ -2,99 +2,337 @@
 ..\FrameXML\UI.xsd">
 	<Script file="TorghastTourgide.lua"/>
 
-	
+<Texture name="UI-EJ-DungeonNameBg" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="256" y="64"/>
+		<TexCoords left="0.34570313" right="0.84570313" top="0.42871094" bottom="0.49121094"/>
+	</Texture>
+		<Texture name="UI-EJ-LeftPageHeader" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="386" y="39"/>
+		<TexCoords left="0.00000000" right="0.755859375" top="0.9599609375" bottom="1"/>
+	</Texture>
+	<Texture name="UI-EJ-RightPageHeader" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="386" y="39"/>
+		<TexCoords left="0.755859375" right="0.00000000" top="0.9599609375" bottom="1"/>
+	</Texture>
+<Texture name="UI-EJ-Tab-Highlight" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="63" y="57"/>
+		<TexCoords left="0.00195313" right="0.12500000" top="0.90332031" bottom="0.95898438"/>
+	</Texture>
+	<Texture name="UI-EJ-Tab-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="63" y="57"/>
+		<TexCoords left="0.12890625" right="0.25195313" top="0.90332031" bottom="0.95898438"/>
+	</Texture>
+	<Texture name="UI-EJ-Tab-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="63" y="57"/>
+		<TexCoords left="0.25585938" right="0.37890625" top="0.90332031" bottom="0.95898438"/>
+	</Texture>
+	<Texture name="TTG-UI-EJ-Tab-BossIcon-Selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="48" y="43"/>
+		<TexCoords left="0.90234375" right="0.99609375" top="0.26953125" bottom="0.31152344"/>
+	</Texture>
+	<Texture name="TTG-UI-EJ-Tab-BossIcon-UnSelected" file="Interface\EncounterJournal\UI-EncounterJournalTextures" virtual="true" >
+		<Size x="48" y="43"/>
+		<TexCoords left="0.85546875" right="0.94921875" top="0.52441406" bottom="0.56640625"/>
+	</Texture>
 
-	<Frame name="TourGideFrameTemplate" toplevel="true" movable="true" enableMouse="true" hidden="false" parent="UIParent" inherits="ButtonFrameTemplate" frameStrata="MEDIUM" virtual = "true">
-		<Size>
-			<AbsDimension x="550" y="525"/>
-		</Size>
-		<Layers>
-			<Layer level="OVERLAY">
 
-				<Texture name="$parentSpellBookPage1" file="Interface\Spellbook\Spellbook-Page-1">
-					<Anchors>
-						<Anchor point="TOPLEFT" x="7" y="-25"/>
-					</Anchors>
-				</Texture>
-				<Texture name="$parentSpellBookPage2" file="Interface\Spellbook\Spellbook-Page-2">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parentSpellBookPage1" relativePoint="TOPRIGHT" />
-					</Anchors>
-				</Texture>
-
-			</Layer>
-		</Layers>
+	<Button name="TorghastTourGuideBossButtonTemplate" virtual="true" hidden="true">
+		<Size x="325" y="50"/>
 		<Frames>
-			<Frame name="$parentNavigationFrame" setAllPoints="true">
+			<Frame>
+				<Size x="1" y="1"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="-4" y="13"/>
+				</Anchors>
 				<Layers>
-					<Layer level="OVERLAY">
-						<Texture name="$parentSpellBookPage3" file="Interface\Spellbook\Spellbook-Icon">
-							<Size>
-								<AbsDimension x="55" y="55"/>
-							</Size>
+					<Layer level="OVERLAY" textureSubLevel="6">
+						<Texture name="$parentCreature" file="Interface\EncounterJournal\UI-EJ-BOSS-Default" parentKey="creature">
+							<Size x="50" y="50"/>
 							<Anchors>
-								<Anchor point="TOPLEFT" x="-5" y="5"/>
+								<Anchor point="TOPLEFT" x="15" y="-25"/>
 							</Anchors>
 						</Texture>
-						<FontString name="SpellBookPageText" inherits="GameFontBlack" justifyH="RIGHT">
-							<Size>
-								<AbsDimension x="102" y="0"/>
-							</Size>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnLoad>
+						self:GetParent().creature = self.creature;
+					</OnLoad>
+				</Scripts>
+			</Frame>
+		</Frames>
+
+		<HighlightTexture inherits="UI-EJ-Tab-Highlight" alphaMode="ADD"/>
+		<NormalTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+			<Size x="325" y="55"/>
+			<TexCoords left="0.00195313" right="0.63671875" top="0.21386719" bottom="0.26757813"/>
+		</NormalTexture>
+		<PushedTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+			<Size x="325" y="55"/>
+			<TexCoords left="0.00195313" right="0.63671875" top="0.10253906" bottom="0.15625000"/>
+		</PushedTexture>
+		<HighlightTexture name="$parentBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+			<Size x="325" y="55"/>
+			<TexCoords left="0.00195313" right="0.63671875" top="0.15820313" bottom="0.21191406"/>
+		</HighlightTexture>
+		<ButtonText name="$parentText" parentKey="text" justifyH="LEFT"  justifyV="MIDDLE">
+			<Size x="300" y="15"/>
+			<Anchors>
+				<Anchor point="TOPLEFT" x="75" y="-20"/>
+			</Anchors>
+			<Color r="0.827" g="0.659" b="0.463"/>
+		</ButtonText>
+		<NormalFont style="GameFontNormalMed3">
+			<Color r="0.827" g="0.659" b="0.463"/>
+		</NormalFont>
+		<HighlightFont style="GameFontNormalMed3">
+			<Color r="0.973" g="0.902" b="0.581"/>
+		</HighlightFont>
+		<DisabledFont style="GameFontHighlightMedium"/>
+		<Scripts>
+
+		</Scripts>
+	</Button>
+
+	<Slider name="EncounterJournalScrollBarTemplate" mixin="EncounterJournalScrollBarMixin" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar" virtual="true">
+		<Anchors>
+			<Anchor point="TOPRIGHT" x="0" y="-17"/>
+			<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
+		</Anchors>
+		<Scripts>
+			
+		</Scripts>
+	</Slider>
+	<Button name="EncounterTabTemplate" frameLevel="510" virtual="true">
+		<Size x="63" y="57"/>
+		<NormalTexture inherits="UI-EJ-Tab-UnSelected"/>
+		<PushedTexture inherits="UI-EJ-Tab-Selected"/>
+		<DisabledTexture inherits="UI-EJ-Tab-UnSelected"/>
+		<HighlightTexture inherits="UI-EJ-Tab-Highlight" alphaMode="ADD"/>
+		<Scripts>
+			
+			<OnEnter>
+				GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+				GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+			</OnEnter>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Button>
+
+
+
+
+		<Frame name="TourGuideTemplate2" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="false" virtual="true">
+		<Size x="800" y="496"/>
+		<Anchors>
+			<Anchor point="CENTER" x="0" y="0"/>
+		</Anchors>
+		<Frames>
+			<Frame name="$parentInfo" parentKey="info" useParentLevel="true">
+				<Size x="785" y="425"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" x="0" y="0"/>
+					<Anchor point="BOTTOMRIGHT" x="-1" y="2"/>
+				</Anchors>
+				<Layers>
+					<Layer level="BACKGROUND">
+						<Texture name="$parentBG" file="Interface\EncounterJournal\UI-EJ-JournalBG">
+							<Size x="785" y="425"/>
 							<Anchors>
-								<Anchor point="BOTTOMRIGHT">
-									<Offset>
-										<AbsDimension x="-110" y="38"/>
-									</Offset>
-								</Anchor>
+								<Anchor point="TOPLEFT" x="0" y="-25"/>
+								<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
 							</Anchors>
-							<Color r="0.25" g="0.12" b="0"/>
+							<TexCoords left="0" right="0.766601562" top="0" bottom="0.830078125"/>
+						</Texture>
+					</Layer>
+					<Layer level="OVERLAY">
+						<FontString name="$parentEncounterTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="encounterTitle">
+							<Size x="227" y="12"/>
+							<Anchors>
+								<Anchor point="BOTTOMLEFT" relativePoint="TOPRIGHT" x="-350" y="-36"/>
+							</Anchors>
+							<Color r="0.902" g="0.788" b="0.671"/>
+						</FontString>
+
+						<FontString name="$parentInstanceTitle" inherits="GameFontNormalLarge" justifyH="LEFT" parentKey="instanceTitle">
+							<Size x="290" y="12"/>
+							<Anchors>
+								<Anchor point="LEFT" relativeKey="$parent.difficultyIcon" relativePoint="RIGHT" x="-4" y="0"/>
+							</Anchors>
+							<Color r="0.902" g="0.788" b="0.671"/>
 						</FontString>
 					</Layer>
 				</Layers>
 				<Frames>
-					<Button name="SpellBookPrevPageButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+					<Button name="$parentOverviewTab" inherits="EncounterTabTemplate" parentKey="overviewTab" id="1">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT" relativeTo="SpellBookFrame">
-								<Offset>
-									<AbsDimension x="-66" y="26"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-12" y="-35"/>
 						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentUnselect" atlas="adventureguide-icon-whatsnew" parentKey="unselected">
+									<Size x="35" y="35"/>
+									<Anchors>
+										<Anchor point="RIGHT" x="-12" y="-2"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentSelect" atlas="adventureguide-icon-whatsnew" parentKey="selected">
+									<Size x="35" y="35"/>
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="$parentUnselect" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Scripts>
-							<OnClick function="SpellBookPrevPageButton_OnClick"/>
+							<OnLoad>
+								self.tooltip = "Overview"
+							</OnLoad>
+							<OnClick>
+								TorghastTourGuide_TabClicked(self, button)
+							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-PrevPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
-					<Button name="SpellBookNextPageButton">
-						<Size>
-							<AbsDimension x="32" y="32"/>
-						</Size>
+					<Button name="$parentBossTab" inherits="EncounterTabTemplate" parentKey="bossTab" id="2">
 						<Anchors>
-							<Anchor point="BOTTOMRIGHT">
-								<Offset>
-									<AbsDimension x="-31" y="26"/>
-								</Offset>
-							</Anchor>
+							<Anchor point="TOP" relativeTo="$parentOverviewTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentUnselect" inherits="TTG-UI-EJ-Tab-BossIcon-UnSelected" parentKey="unselected">
+									<Anchors>
+										<Anchor point="RIGHT" x="-6" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture name="$parentSelect" inherits="TTG-UI-EJ-Tab-BossIcon-Selected" parentKey="selected">
+									<Anchors>
+										<Anchor point="CENTER" relativeTo="$parentUnselect" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
 						<Scripts>
-							<OnClick function="SpellBookNextPageButton_OnClick"/>
+							<OnLoad>
+								self.tooltip = "Bosses"
+							</OnLoad>
+							<OnClick>
+								TorghastTourGuide_TabClicked(self, button)
+							</OnClick>
 						</Scripts>
-						<NormalTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Up"/>
-						<PushedTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Down"/>
-						<DisabledTexture file="Interface\Buttons\UI-SpellbookIcon-NextPage-Disabled"/>
-						<HighlightTexture file="Interface\Buttons\UI-Common-MouseHilight" alphaMode="ADD"/>
 					</Button>
+					<ScrollFrame name="$parentBossesScrollFrame" useParentLevel="true" parentKey="bossesScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
+						<Size x="375" y="440"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-05" y="5"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="EncounterJournalScrollBarTemplate"/>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child">
+								<Size x="320" y="372"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+
+					<ModelScene name="$parentModelFrame" parentKey="model" inherits="ModelSceneMixinTemplate" hidden="false">
+						<Size x="400" y="471"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="0" y="1"/>
+						</Anchors>
+						<Layers>
+							<Layer level="BACKGROUND" textureSubLevel="1">
+								<Texture name="$parentDungeonBG" file="Interface\EncounterJournal\UI-EJ-BACKGROUND-Default" parentKey="dungeonBG">
+									<Size x="400" y="471"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="0" y="-2"/>
+									</Anchors>
+									<TexCoords left="0.76953125" right="0" top="0" bottom="0.830078125"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY">
+								<Texture name="$parentShadow" parentKey ="shadow" file="Interface\EncounterJournal\UI-EJ-BossModelPaperFrame">
+									<Size x="400" y="425"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="3" y="-3"/>
+										<Anchor point="BOTTOMRIGHT" x="0" y="0"/>
+
+									</Anchors>
+									<TexCoords left="0.7674" right="0" top="0" bottom="0.828125"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="1">
+								<Texture name="$parentTitleBG" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+									<Size x="395" y="63"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="-2"/>
+									</Anchors>
+									<TexCoords left="0.00195313" right="0.77343750" top="0.26953125" bottom="0.33105469"/>
+								</Texture>
+							</Layer>
+							<Layer level="OVERLAY" textureSubLevel="2">
+								<FontString name="$parentImageTile" inherits="QuestTitleFontBlackShadow" justifyH="CENTER" parentKey="imageTitle">
+									<Size x="380" y="10"/>
+									<Anchors>
+										<Anchor point="BOTTOM" x="0" y="6"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="modelDisplayIdLabel" inherits="GameFontNormalSmall" justifyH="LEFT" hidden="true" text="Display ID:">
+									<Size x="60" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.imageTitle" relativePoint="TOPLEFT" x="30" y="6"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="modelDisplayId" inherits="GameFontHighlightSmall" justifyH="LEFT" wordwrap="true" hidden="true">
+									<Size x="320" y="0"/>
+									<Anchors>
+										<Anchor point="LEFT" relativeKey="$parent.modelDisplayIdLabel" relativePoint="RIGHT" x="2" y="0"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="modelName" inherits="GameFontHighlightSmall" justifyH="CENTER" wordwrap="true" hidden="true">
+									<Size x="320" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOM" relativeKey="$parent.imageTitle" relativePoint="TOP" x="0" y="26"/>
+									</Anchors>
+								</FontString>
+								<FontString parentKey="modelNameLabel" inherits="GameFontNormalSmall" justifyH="LEFT" hidden="true" text="Model Path:">
+									<Size x="320" y="0"/>
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" relativeKey="$parent.modelName" relativePoint="TOPLEFT" x="0" y="6"/>
+									</Anchors>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnShow>
+							</OnShow>
+							<OnLoad inherit="append">
+								local ULx, ULy, LLx, LLy, URx, URy, LRx, LRy = self.shadow:GetTexCoord()
+								self.shadow:SetTexCoord(URx, URy, LRx, LRy, ULx, ULy, LLx, LLy); -- Inverse X
+								--self:GetParent().imageTitle = self.imageTitle;
+							</OnLoad>
+						</Scripts>
+					</ModelScene>
 				</Frames>
 			</Frame>
 
 		</Frames>
 		<Scripts>
+
 		</Scripts>
 	</Frame>
 </Ui>
