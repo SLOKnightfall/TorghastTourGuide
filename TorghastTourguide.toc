@@ -24,6 +24,6 @@ Locale\locale-enUS.lua
 
 
 
-TorghastTourgide.xml
+TorghastTourguide.xml
 Data\PowerData.lua
 Data\BossData.lua

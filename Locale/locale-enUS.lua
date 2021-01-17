@@ -2,8 +2,7 @@ local addonName, addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName,"enUS",true)
 
 
---_G["BINDING_NAME_TOGGLE_HONORINFOPANEL"] = "Toggle Display"
---_G["BINDING_HEADER_HONORINFOPANEL"] = "Honor Info Panel"
+
 
 L["Anima Cell"] = true
 L["Dropped Anima Cell"] = true
@@ -13,29 +12,47 @@ L["%s - \n%s:\n%s"] = true
 L["%s - %s%s"] = true
 L["Torghast Upgrades"] = true
 L["Tips & Tricks"] = true
+L["Toggle Guide"] = true
+L["WoWHead Links"] = true
 
+
+--Options
+L["General Options"] = true
+L["Tooltip Options"] = true
+L["Show Rare Ability Drop Tooltips"] = true
+L["Show Ravenous Anima Cell Tooltips"] = true
+L["Settings"]=true
+L["Options"]=true
+L["Always"] = true
+
+
+
+L["BOSSLINK"] = "Boss Link: https://www.wowhead.com/npc=%s"
+L["GUIDELINK"] = "Guide Link: https://www.wowhead.com/guides/torghast-floor-boss-strategies-abilities-tips-tricks"
+
+_G["BINDING_NAME_TOGGLE_TORGHASTTOURGUIDE"] = "Toggle Guide"
+_G["BINDING_HEADER_TORGHASTTOURGUIDE"] = addonName
 
 --Bosses
-
-L[156239] = "Dark Ascended Corrus"
-L[170418] = "Goxul the Devourer"
-L[153165] = "Custodian Thonar"
-L[156015] = "Writhing Soulmass"
-L[153382] = "Maw of the Maw"
-L[159755] = "The Grand Malleare"
-L[151331] = "Cellblock Sentinel"
-L[153011] = "Binder Baritas"
-L[159190] = "Synod"
-L[153174] = "Watchers of Death"
-L[155250] = "Decayspeaker"
-L[171422] = "Arch-Suppressor Laguas"
-L[169859] = "Observer Zelgar"
-L[151329] = "Warden Skoldus"
-L[153451] = "Kosarus the Fallen"
-L[155945] = "Gherus the Chained"
-L[152995] = "Warden of Souls"
-L[157122] = "Patrician Cromwell"
-L[155251] = "Elder Longbranch"
+L["156239"] = "Dark Ascended Corrus"
+L["170418"] = "Goxul the Devourer"
+L["153165"] = "Custodian Thonar"
+L["156015"] = "Writhing Soulmass"
+L["153382"] = "Maw of the Maw"
+L["159755"] = "The Grand Malleare"
+L["151331"] = "Cellblock Sentinel"
+L["153011"] = "Binder Baritas"
+L["159190"] = "Synod"
+L["153174"] = "Watchers of Death"
+L["155250"] = "Decayspeaker"
+L["171422"] = "Arch-Suppressor Laguas"
+L["169859"] = "Observer Zelgar"
+L["151329"] = "Warden Skoldus"
+L["153451"] = "Kosarus the Fallen"
+L["155945"] = "Gherus the Chained"
+L["152995"] = "Warden of Souls"
+L["157122"] = "Patrician Cromwell"
+L["155251"] = "Elder Longbranch"
 --https://www.wowhead.com/guides/torghast-floor-boss-strategies-abilities-tips-tricks
 
 L["Split_Desc"] = "Writhing Soulmass splits into smaller units."

@@ -1,6 +1,8 @@
 <Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
 ..\FrameXML\UI.xsd">
-	<Script file="TorghastTourgide.lua"/>
+	<Script file="TorghastTourguide.lua"/>
+	<Script file="Modules\Tooltips.lua"/>
+	<Script file="Modules\Guide.lua"/>
 
 	<Button name="TorghastTourGuideBossButtonTemplate" virtual="true" hidden="true">
 		<Size x="325" y="50"/>
@@ -58,13 +60,13 @@
 		</Scripts>
 	</Button>
 
-	<Slider name="TorghastTourGuideScrollBarTemplate" mixin="EncounterJournalScrollBarMixin" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar" virtual="true">
+	<Slider name="TorghastTourGuideScrollBarTemplate" mixin="TorghastTourGuideScrollBarMixin" inherits="MinimalScrollBarTemplate" parentKey="ScrollBar" virtual="true">
 		<Anchors>
 			<Anchor point="TOPRIGHT" x="0" y="-17"/>
 			<Anchor point="BOTTOMRIGHT" x="0" y="17"/>
 		</Anchors>
 		<Scripts>
-			
+			<OnLoad method="OnLoad"/>
 		</Scripts>
 	</Slider>
 
@@ -286,7 +288,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="TorghastTourGuideTemplate" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="false" virtual="true" movable="true"	 >
+	<Frame name="TorghastTourGuideTemplate" inherits="PortraitFrameTemplate" toplevel="true" enableMouse="true" parent="UIParent" hidden="true" virtual="true" movable="true">
 		<Size x="800" y="496"/>
 		<Anchors>
 			<Anchor point="CENTER"/>
@@ -559,6 +561,14 @@
 							</OnLoad>
 						</Scripts>
 					</ModelScene>
+
+					<Button name="$parentLinkButton" parentKey="LinkButton" inherits="MainHelpPlateButton" hidden = "true">
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeKey="$parent" x="0" y="-12" />
+						</Anchors>
+						<Scripts>
+						</Scripts>
+					</Button>
 					<ScrollFrame name="$parentDetailsScrollFrame" parentKey="detailsScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
 						<Size x="350" y="440"/>
 						<Anchors>

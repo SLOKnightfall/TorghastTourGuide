@@ -1,5 +1,5 @@
 <Bindings>
-	<Binding name="TOGGLE_HONORINFOPANEL" header="HONORINFOPANEL" category="ADDONS">
-        	HonorInfoPanel:ToggleDisplay()
+	<Binding name="TOGGLE_TORGHASTTOURGUIDE" header="TORGHASTTOURGUIDE" category="ADDONS">
+        	TorghastTourGuide_Toggle()
 	</Binding>
 </Bindings>
