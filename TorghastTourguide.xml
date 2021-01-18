@@ -3,6 +3,70 @@
 	<Script file="TorghastTourguide.lua"/>
 	<Script file="Modules\Tooltips.lua"/>
 	<Script file="Modules\Guide.lua"/>
+	<Script file="Modules\Powers.lua"/>
+
+ <GameTooltip name="MyScanningTooltip" inherits="GameTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP">>
+   <Scripts>
+     <Onload>
+     </Onload>
+   </Scripts>
+ </GameTooltip>
+
+	<Frame name="TorghastTourGuidePowerTemplate" virtual="true" hidden="false">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="50" y="50"/>
+		<Anchors>
+			<Anchor point="CENTER" x="50" y="50" />
+		</Anchors>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+					<Size x="35" y="35"/>
+					<TexCoords left="0.650390625" right="0.705078125" top="0.03125" bottom="0.0576171875"/>
+				</Texture>
+			</Layer>
+			<Layer level="OVERLAY">
+				<Texture parentKey="iconRing" atlas="adventureguide-ring">
+					<Size x="47" y="47"/>
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+				<FontString parentKey="Text" inherits="GameFontWhite" justifyH="CENTER" justifyV="CENTER" text="100">
+					<Size x="50" y="50"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
+	
+	<Frame name="TorghastTourGuideNoteTemplate" virtual="true" hidden="false">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="1" y="250"/>
+		<Anchors>
+			<Anchor point="TOPLEFT" relativeKey="$parent$parent.OptionText" relativePoint="BOTTOMLEFT" y="-5"/>
+			<Anchor point="TOPRIGHT" relativeKey="$parent$parent.OptionText" relativePoint="BOTTOMRIGHT" y="-5"/>
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<FontString parentKey="Text" inherits="GameFontWhite"  justifyH="CENTER" justifyV="TOP" text="100 asdf;jsdfjadsf \n asdfasdfasdfasdf">
+					<Anchors>
+						<Anchor point="TOPLEFT" />
+						<Anchor point="BOTTOMRIGHT" />
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+	</Frame>
 
 	<Button name="TorghastTourGuideBossButtonTemplate" virtual="true" hidden="true">
 		<Size x="325" y="50"/>
@@ -56,7 +120,6 @@
 		</HighlightFont>
 		<DisabledFont style="GameFontHighlightMedium"/>
 		<Scripts>
-
 		</Scripts>
 	</Button>
 

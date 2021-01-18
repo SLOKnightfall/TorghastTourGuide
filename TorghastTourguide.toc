@@ -3,7 +3,7 @@
 ## Version: @project-version@
 ## Author: SLOKnightfall
 ## Notes: Handy Info About Torghast
-## SavedVariables: TorghastTourgideDB
+## SavedVariables: TorghastTourgiudeDB
 ## OptionalDeps: Titan
 
 #Libraries
@@ -21,8 +21,6 @@ Libs\AceLocale-3.0\AceLocale-3.0.xml
 
 #Localization
 Locale\locale-enUS.lua
-
-
 
 TorghastTourguide.xml
 Data\PowerData.lua

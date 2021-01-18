@@ -106,6 +106,11 @@ local defaults = {
 		['*'] = true,
 	}
 }
+
+local noteDefaults = {
+	profile = {
+	}
+}
 local function Enable()
 	addon:RegisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
 	addon:RegisterEvent("CURSOR_UPDATE", "EventHandler")
@@ -116,6 +121,7 @@ local function Enable()
 	else
 		addon.InitFrames()
 	end
+		addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
 end
 
 
@@ -156,7 +162,13 @@ end
 
 ---Ace based addon initilization
 function addon:OnInitialize()
-	self.db = LibStub("AceDB-3.0"):New("TorghastTourgideDB", defaults, true)
+	TorghastTourgiudeDB = TorghastTourgiudeDB or {}
+	TorghastTourgiudeDB.Options = TorghastTourgiudeDB.Options or {}
+	TorghastTourgiudeDB.Notes = TorghastTourgiudeDB.Notes or {}
+	TorghastTourgiudeDB.Weights = TorghastTourgiudeDB.Weights or {}
+	self.db = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Options, defaults, true)
+	self.Weightsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Weights, noteDefaults, false)
+	self.Notesdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Notes, noteDefaults, false)
 	--options.args.settings.args.options = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	Profile = self.db.profile
 	LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, addonName)

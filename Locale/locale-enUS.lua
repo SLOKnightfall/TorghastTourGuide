@@ -26,6 +26,10 @@ L["Options"]=true
 L["Always"] = true
 
 
+L["Set Power Weight & Note"] = true
+L["Power Weight"] = true
+L["Power Notes"] = true
+
 
 L["BOSSLINK"] = "Boss Link: https://www.wowhead.com/npc=%s"
 L["GUIDELINK"] = "Guide Link: https://www.wowhead.com/guides/torghast-floor-boss-strategies-abilities-tips-tricks"
