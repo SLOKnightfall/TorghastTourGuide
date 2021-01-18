@@ -5,12 +5,6 @@
 	<Script file="Modules\Guide.lua"/>
 	<Script file="Modules\Powers.lua"/>
 
- <GameTooltip name="MyScanningTooltip" inherits="GameTooltipTemplate" parent="UIParent" frameStrata="TOOLTIP">>
-   <Scripts>
-     <Onload>
-     </Onload>
-   </Scripts>
- </GameTooltip>
 
 	<Frame name="TorghastTourGuidePowerTemplate" virtual="true" hidden="false">
 		<KeyValues>
@@ -46,7 +40,7 @@
 			</Layer>
 		</Layers>
 	</Frame>
-	
+
 	<Frame name="TorghastTourGuideNoteTemplate" virtual="true" hidden="false">
 		<KeyValues>
 			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>

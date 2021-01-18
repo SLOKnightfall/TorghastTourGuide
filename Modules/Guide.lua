@@ -19,7 +19,7 @@ local function CreateUpgradeFrame(parent, id)
 	local upgradeInfo = addon.Upgrades[id]
 	local item = Item:CreateFromItemID(id)
 	local known = C_QuestLog.IsQuestFlaggedCompleted(upgradeInfo[2])
-	local description = GetSpellDescription(upgradeInfo[1])
+	local spell = Spell:CreateFromSpellID(upgradeInfo[1])
 	local color = RED_FONT_COLOR_CODE
 	if known then
 		color = GREEN_FONT_COLOR_CODE
@@ -41,13 +41,19 @@ local function CreateUpgradeFrame(parent, id)
 		f.name:SetText(color..name)
 		f.icon:SetTexture(icon)
 	end)
+
 	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	f.desc:SetText(description)
+	spell:ContinueOnSpellLoad(function()
+		local description = spell:GetSpellDescription()
+		f.desc:SetText(description)
+	end)
+
 	f.desc:SetPoint("TOPLEFT",f.icon, "BOTTOMLEFT",0, 0)
 	f.desc:SetWidth(370)
 	f.desc:SetJustifyH("LEFT")
 	local height = f.desc:GetStringHeight()
 	f:SetHeight(height + 35)
+	
 	return f
 end
 

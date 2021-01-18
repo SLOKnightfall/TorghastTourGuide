@@ -15,8 +15,9 @@ local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local frames = {} 
 local cellCounts = {0,0,0}
+addon.cellCounts = cellCounts
 local Profile
-
+local isEnabled = false
 
 --ACE3 Option Handlers
 local optionHandler = {}
@@ -111,17 +112,31 @@ local noteDefaults = {
 	profile = {
 	}
 }
+
+
 local function Enable()
 	addon:RegisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
 	addon:RegisterEvent("CURSOR_UPDATE", "EventHandler")
 	addon:RegisterEvent("BAG_UPDATE", "EventHandler")
+	addon:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
+
+
 	if frames.f then
 		frames.f:Show()
 		frames.b:Show()
 	else
 		addon.InitFrames()
 	end
+	isEnabled = true
+	addon.InitPowers()
+
+	--if not IsAddOnLoaded("Blizzard_PlayerChoiceUI") then 
+		-- LoadAddOn("Blizzard_PlayerChoiceUI")
+		--end
+
+	if PlayerChoiceFrame and not addon:IsHooked(PlayerChoiceFrame, "OnShow") then
 		addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
+	end
 end
 
 
@@ -129,9 +144,15 @@ local function Disable()
 	addon:UnregisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
 	addon:UnregisterEvent("CURSOR_UPDATE", "EventHandler")
 	addon:UnregisterEvent("BAG_UPDATE", "EventHandler")
+	addon:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
 	if frames.f then
 		frames.f:Hide()
 		frames.b:Hide()
+	end
+	isEnabled = false
+
+	if PlayerChoiceFrame and addon:IsHooked(PlayerChoiceFrame, "OnShow") then
+		addon:Unhook(PlayerChoiceFrame, "OnShow")
 	end
 end
 	
@@ -152,10 +173,14 @@ end
 function addon:EventHandler(event, arg1)
 	if event == "PLAYER_ENTERING_WORLD" then
 		InTorghast()
+	elseif event == "ADDON_LOADED" and arg1 == "Blizzard_PlayerChoiceUI" and isEnabled then 
+		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end) end)
 	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
 		C_Timer.After(0.1, addon.PowerTooltips)
 	elseif event == "BAG_UPDATE" then
 		addon.UpdateCellCount()
+	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
+		addon.InitPowers()
 	end		
 end
 
@@ -177,11 +202,31 @@ function addon:OnInitialize()
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addonName, addonName)
 	
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler" )
+	addon:RegisterEvent("ADDON_LOADED", "EventHandler" )
 end
 
+local RAVENOUS_CELL_ID = 170540
+local PLUNDERED_CELL_ID = 168207
+local REQUISITIONED_CELL_ID = 184662
 
+local ravName, cellName, reqName
 function addon:OnEnable()
 	addon.initTourGuide()
+
+	local item = Item:CreateFromItemID(RAVENOUS_CELL_ID)
+	item:ContinueOnItemLoad(function()
+		ravName = item:GetItemName() 
+	end)
+
+	local item2 = Item:CreateFromItemID(PLUNDERED_CELL_ID)
+	item2:ContinueOnItemLoad(function()
+		cellName = item2:GetItemName() 
+	end)
+
+	local item3 = Item:CreateFromItemID(REQUISITIONED_CELL_ID)
+	item3:ContinueOnItemLoad(function()
+		reqName = item3:GetItemName() 
+	end)
 end
 
 
@@ -261,9 +306,7 @@ function addon.InitFrames()
 end
 
 local blessing = 324717
-local ravID = 170540
-local cellID = 184662
-local reqID = 168207
+
 local runecarver = 164937
 local function GetCellCounts()
 	cellCounts = {0,0,0}
@@ -273,11 +316,11 @@ local function GetCellCounts()
 			for c=1,slots do
 				local _,_,_,_,_,_,itemLink,_,_,itemID = GetContainerItemInfo(t,c)
 
-				if (itemID == ravID) then
+				if itemID == RAVENOUS_CELL_ID then
 					cellCounts[1] = cellCounts[1] + 1
-				elseif itemID == cellID then 
+				elseif itemID == PLUNDERED_CELL_ID then
 					cellCounts[2] = cellCounts[2] + 1
-				elseif itemID == reqID then
+				elseif itemID == REQUISITIONED_CELL_ID then
 					cellCounts[3] = cellCounts[3] + 1
 				end
 			end
@@ -287,33 +330,21 @@ local function GetCellCounts()
 	return cellCounts
 end
 
-
 function addon.UpdateCellCount()
 	if not frames.f then return end
 	local f = frames.f
 
 	local ravCount, cellCount, reqCount = unpack(GetCellCounts())
 	if ravCount > 0 then 
-		local item = Item:CreateFromItemID(ravID)
-		item:ContinueOnItemLoad(function()
-			local name = item:GetItemName() 
-			f.cellButton:SetAttribute("item", name)
-		end)
+		f.ravButton:SetAttribute("item", ravName)
 	else 
 		f.ravButton:SetAttribute("item", nil)
 	end
+
 	if cellCount > 0 then
-		local item = Item:CreateFromItemID(cellID)
-		item:ContinueOnItemLoad(function()
-			local name = item:GetItemName() 
-			f.cellButton:SetAttribute("item", name)
-		end)
+		f.cellButton:SetAttribute("item", cellName)
 	elseif reqCount > 0 then 
-		local item = Item:CreateFromItemID(168207)
-		item:ContinueOnItemLoad(function()
-			local name = item:GetItemName() 
-			f.cellButton:SetAttribute("item", name)
-		end)
+		f.cellButton:SetAttribute("item", reqName)
 	else
 		f.cellButton:SetAttribute("item", nil)
 	end

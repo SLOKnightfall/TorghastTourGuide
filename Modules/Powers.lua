@@ -3,17 +3,26 @@ addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
---PlayerChoiceFrame.Option1
-
-local LISTWINDOW
+local NotesDB
+local WeightsDB
 
 local function GetSpec()
-
 	local currentSpec = GetSpecialization()
 	local currentSpecID = currentSpec and select(1, GetSpecializationInfo(currentSpec))
 	return currentSpecID
-
 end
+
+
+function addon.InitPowers()
+	local spec = GetSpec()
+	addon.Notesdb.profile[spec] = addon.Notesdb.profile[spec] or {}
+	NotesDB = addon.Notesdb.profile[spec]
+	addon.Weightsdb.profile[spec] = addon.Weightsdb.profile[spec] or {}
+	WeightsDB = addon.Weightsdb.profile[spec]
+end
+
+
+local LISTWINDOW
 function EditWeight(self, frame)
 	if LISTWINDOW then LISTWINDOW:Hide() end
 
@@ -22,38 +31,36 @@ function EditWeight(self, frame)
 	f:SetTitle(L["Set Power Weight & Note"])
 	f:SetLayout("Flow")
 	f:EnableResize(false)
-	f:SetHeight(210)
+	f:SetHeight(235)
 	f:SetWidth(350)
 	LISTWINDOW = f
 
-	local spec = GetSpec()
-	addon.Notesdb.profile[spec] = addon.Notesdb.profile[spec] or {}
-	addon.Weightsdb.profile[spec] = addon.Notesdb.profile[spec] or {}
 	local spellID = frame.spellID
-
-	local note = addon.Notesdb.profile[spec]
-	local weight = addon.Weightsdb.profile[spec]
-
 	_G["TTG_NoteWindow"] = f.frame
 	tinsert(UISpecialFrames, "TTG_NoteWindow")
 	local EditBox = AceGUI:Create("EditBox")
-	--EditBox:SetFullHeight(true)
-	EditBox:SetWidth(100)
+	EditBox.frame:SetWidth(200)
+	EditBox.editbox:ClearAllPoints()
+	EditBox.editbox:SetPoint("BOTTOMLEFT", 6, 0)
+	EditBox.editbox:SetWidth(80)
+	EditBox.button:ClearAllPoints()
+	EditBox.button:SetPoint("LEFT",EditBox.editbox, "RIGHT")
 	EditBox:SetLabel(L["Power Weight"])
-	EditBox:SetText(weight[spellID] or "")
-
-	EditBox:SetCallback("OnEnterPressed" , function() weight[spellID] = EditBox:GetText(); frame.weight.Text:SetText(weight[spellID]) end)
-
-	--MultiLineEditBox:SetText((L["BOSSLINK"]):format(creatureDisplayID.encounterID).."\n"..L["GUIDELINK"])
+	EditBox:SetText(WeightsDB[spellID] or "")
+	EditBox:SetCallback("OnEnterPressed" , function() WeightsDB[spellID] = EditBox:GetText(); frame.weight.Text:SetText(WeightsDB[spellID]) end)
 	f:AddChild(EditBox)
+
 	local MultiLineEditBox = AceGUI:Create("MultiLineEditBox")
-	--MultiLineEditBox:SetFullHeight(true)
 	MultiLineEditBox:SetFullWidth(true)
 	MultiLineEditBox:SetLabel(L["Power Notes"])
-	MultiLineEditBox:SetCallback("OnEnterPressed" , function() note[spellID] = MultiLineEditBox:GetText(); frame.notes.Text:SetText(note[spellID])  end)
-	MultiLineEditBox:SetText(note[spellID] or "")
-	--MultiLineEditBox:SetText((L["BOSSLINK"]):format(creatureDisplayID.encounterID).."\n"..L["GUIDELINK"])
+	MultiLineEditBox:SetCallback("OnEnterPressed" , function() NotesDB[spellID] = MultiLineEditBox:GetText(); frame.notes.Text:SetText(NotesDB[spellID])  end)
+	MultiLineEditBox:SetText(NotesDB[spellID] or "")
 	f:AddChild(MultiLineEditBox)
+	
+	local Button = AceGUI:Create("Button")
+	Button:SetText(CLOSE)
+	Button:SetCallback("OnClick", function() f:Hide() end)
+	f:AddChild(Button)
 end
 
 
@@ -63,9 +70,11 @@ function addon.PowerShow()
 		local weight, notes
 		if not frame.weight then 
 			local notes = CreateFrame("Frame", nil, frame, "TorghastTourGuideNoteTemplate")
+			notes:SetScript("OnMouseDown", function(self) EditWeight(self, frame) end)
+
 			local weight = CreateFrame("Frame", nil, frame, "TorghastTourGuidePowerTemplate")
-			--b:SetScript("OnEnter", function(self)  addon.ShowTooltip(self, "This Is a Note")  end)
-			--b:SetScript("OnLeave", function(self) MyScanningTooltip:Hide() end)
+			--	weight:SetScript("OnEnter", function(self) self:GetParent().MouseOverOverride:EnableMouse(false);  addon.ShowTooltip(self, "This Is a Note")  end)
+			--	weight:SetScript("OnLeave", function(self) GameTooltip:Hide(); self:GetParent().MouseOverOverride:EnableMouse(true); end)
 			weight:SetScript("OnMouseDown", function(self) EditWeight(self, frame) end)
 			weight:SetFrameLevel(15)
 			frame.weight = weight
@@ -73,17 +82,10 @@ function addon.PowerShow()
 			--addon:Hook(frame, "UpdateMouseOverStateOnOption", function(self) C_Timer.After(0.2, mouseover(self)) end, true)
 		end
 
-		local spec = GetSpec()
-		addon.Notesdb.profile[spec] = addon.Notesdb.profile[spec] or {}
-		addon.Weightsdb.profile[spec] = addon.Notesdb.profile[spec] or {}
 		local spellID = frame.spellID
-		local noteDB = addon.Notesdb.profile[spec]
-		local weightDB = addon.Weightsdb.profile[spec]
-
 		if spellID then 
-		frame.weight.Text:SetText(weightDB[spellID] or "")
-		frame.notes.Text:SetText(noteDB[spellID] or "")
-			--print(spellID)
+			frame.weight.Text:SetText(WeightsDB[spellID] or "")
+			frame.notes.Text:SetText(NotesDB[spellID] or "")
 		end
 	end
 end

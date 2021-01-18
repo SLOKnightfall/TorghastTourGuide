@@ -37,22 +37,26 @@ do
 		return false
 	end
 
+
 	function addon.PowerTooltips()
 		local profile = addon.db.profile
 		local unitID = GetUnitId()
 		if not unitID then return end
 
-		if (cellCounts[1] > 0  and profile.ShowRavenousTooltips) or (profile.ShowRavenousTooltips and profile.ShowRavenousTooltips_Always) then 
-			local mobPowerInfo = addon.mobs[unitID]
+		if (addon.cellCounts[1] > 0  and profile.ShowRavenousTooltips) or (profile.ShowRavenousTooltips and profile.ShowRavenousTooltips_Always) then 
+			local mobPowerID = addon.mobs[unitID]
+			if mobPowerID then 
+				local spell = Spell:CreateFromSpellID(mobPowerID)
+				spell:ContinueOnSpellLoad(function()
+					local powerName = spell:GetSpellName()
+					local powerDescription = spell:GetSpellDescription()		
 
-			local powerName = GetSpellInfo(mobPowerInfo) 
-			local powerDescription = GetSpellDescription(mobPowerInfo)
-				powerDescription = GetSpellDescription(mobPowerInfo) or "" -- Sometimes return nil at first
-			--end
-			if powerName and not CheckModified() then
-				GameTooltip:AddDoubleLine(powerName, L["Ravenous Anima Cell"], 0.9, 0.8, 0.5, 1, 0)
-				GameTooltip:AddLine(powerDescription, 0.9, 0.8, 0.5, 1, 0)
-				GameTooltip:Show()
+					if powerName and not CheckModified() then
+						GameTooltip:AddDoubleLine(powerName, L["Ravenous Anima Cell"], 0.9, 0.8, 0.5, 1, 0)
+						GameTooltip:AddLine(powerDescription, 0.9, 0.8, 0.5, 1, 0)
+						GameTooltip:Show()
+					end
+				end)
 			end
 		end
 
