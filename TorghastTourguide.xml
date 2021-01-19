@@ -449,9 +449,95 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentBossTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossTab" id="2">
+					<Button name="$parentRavenousPowerTab" inherits="TorghastTourGuideTabTemplate" parentKey="ravenousTab" id="2">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentOverviewTab" relativePoint="BOTTOM" x="0" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\Addons\TorghastTourguide\Icons\inv_misc_orb_05">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="0"/>
+									</Anchors>
+									<Size x="40" y="40"/>
+								</Texture>
+								<Texture name="$parentSelect" parentKey="selected" file="Interface\Addons\TorghastTourguide\Icons\inv_misc_orb_05">
+								
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="0"/>
+									</Anchors>
+									<Size x="40" y="40"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+							<OnLoad>
+								self.tooltip = "Ravenous Anima Cell Powers"
+							</OnLoad>
+							<OnClick>
+								TorghastTourGuide_TabClicked(self, button)
+							</OnClick>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parentRavenousMobScrollFrame" useParentLevel="true" parentKey="ravMobScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
+						<Size x="375" y="440"/>
+						<Anchors>
+							<Anchor point="BOTTOMLEFT" x="-05" y="5"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="TorghastTourGuideScrollBarTemplate"/>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child">
+								<Size x="320" y="372"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<ScrollFrame name="$parentRavenousPowerScrollFrame" useParentLevel="true" parentKey="ravPowerScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
+						<Size x="375" y="440"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-05" y="5"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="TorghastTourGuideScrollBarTemplate"/>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child">
+								<Size x="320" y="372"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<Button name="$parentBossTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossTab" id="3">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentRavenousPowerTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -460,7 +546,7 @@
 										<Anchor point="RIGHT" x="-6" y="0"/>
 									</Anchors>
 									<Size x="48" y="43"/>
-									<TexCoords left="0.85546875" right="0.94921875" top="0.52441406" bottom="0.56640625"/>
+									<TexCoords left="0.90234375" right="0.99609375" top="0.26953125" bottom="0.31152344"/>
 								</Texture>
 								<Texture name="$parentSelect" parentKey="selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
 									<Anchors>
@@ -480,7 +566,7 @@
 							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentBossDetailsTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossDetailsTab" id="3" hidden = "true">
+					<Button name="$parentBossDetailsTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossDetailsTab" id="4" hidden = "true">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentBossTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>

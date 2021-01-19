@@ -43,7 +43,7 @@ do
 		local unitID = GetUnitId()
 		if not unitID then return end
 
-		if (addon.cellCounts[1] > 0  and profile.ShowRavenousTooltips) or (profile.ShowRavenousTooltips and profile.ShowRavenousTooltips_Always) then 
+		if (addon.ravCount > 0  and profile.ShowRavenousTooltips) or (profile.ShowRavenousTooltips and profile.ShowRavenousTooltips_Always) then 
 			local mobPowerID = addon.mobs[unitID]
 			if mobPowerID then 
 				local spell = Spell:CreateFromSpellID(mobPowerID)

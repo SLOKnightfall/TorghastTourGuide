@@ -53,7 +53,7 @@ local function CreateUpgradeFrame(parent, id)
 	f.desc:SetJustifyH("LEFT")
 	local height = f.desc:GetStringHeight()
 	f:SetHeight(height + 35)
-	
+
 	return f
 end
 
@@ -66,7 +66,7 @@ local function CreateUpgradeListFrame(parent)
 	f:SetPoint("BOTTOMRIGHT")
 	f:Show()
 
-	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	f.desc:SetText(L["Torghast Upgrades"])
 	f.desc:SetPoint("TOP", 0, -5)
 	f.desc:SetJustifyH("CENTER")
@@ -85,6 +85,125 @@ local function CreateUpgradeListFrame(parent)
 end
 
 
+local function CreatePowerFrame(powerID)
+	local spell = Spell:CreateFromSpellID(powerID)
+
+	local f = CreateFrame("Frame", nil, frames.tg.info.ravPowerScroll.child) 
+	f:SetSize(20, 100)
+	f:Show()
+
+	f.icon = f:CreateTexture(nil, "OVERLAY")
+	f.icon:SetSize(25,25)
+	f.icon:SetTexture(itemTexture)
+	f.icon:SetPoint("TOPLEFT")
+	f.name = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
+	f.name:SetPoint("LEFT",f.icon, "RIGHT", 5, 0)
+	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
+	f.desc:SetPoint("TOPLEFT",f.icon, "BOTTOMLEFT",0, 0)
+	f.desc:SetWidth(330)
+	f.desc:SetJustifyH("LEFT")
+
+	spell:ContinueOnSpellLoad(function()
+		local name = spell:GetSpellName() 
+		local icon = spell:GetSpellTexture()
+		local description = spell:GetSpellDescription()
+		f.name:SetText(name)
+		f.icon:SetTexture(icon)
+		f.desc:SetText(description)
+	end)
+
+	local height = f.desc:GetStringHeight()
+	f:SetHeight(height + 35)
+
+	return f
+end
+
+local function CreateRavinousPowerListFrame()
+	local f = frames.tg.info.ravPowerScroll.child
+	local index = 1
+	local name = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	name:SetPoint("TOPLEFT", 20, -20)
+	name:SetText(L["Ravenous Anima Cell Powers"])
+	local note = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
+	note:SetPoint("TOPLEFT", name, "BOTTOMLEFT" , 0, -5)
+	note:SetPoint("TOPRIGHT", 0, 0)
+	note:SetText(L["Rav_Note"])
+
+	for name, powerID in pairs(addon.PowerNames) do
+		f[index] = CreatePowerFrame(powerID)
+		if index == 1 then 
+			f[index]:SetPoint("TOPLEFT", note, "BOTTOMLEFT", 0, -5)
+			f[index]:SetPoint("TOPRIGHT", 0, 0)
+		else
+			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT" )
+		end
+		index = index + 1
+	end
+end
+
+
+local function CreateMobInfoFrame(mobID)
+	local mobPower = addon.mobs[mobID]
+	
+	local f = CreateFrame("Frame", nil, frames.tg.info.ravMobScroll.child) 
+	f:SetSize(100, 20)
+	f:Show()
+
+	f.name = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
+	f.name:SetPoint("LEFT", 5, 0)
+	f.name:SetText(L[tostring(mobID)]..":")
+	f.icon = f:CreateTexture(nil, "OVERLAY")
+	f.icon:SetSize(15,15)
+	f.icon:SetPoint("LEFT",f.name, "RIGHT", 5, 0)
+	f.power = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
+	f.power:SetPoint("LEFT",f.icon, "RIGHT", 2, 0)
+
+	if mobPower then 
+		local spell = Spell:CreateFromSpellID(mobPower)
+		spell:ContinueOnSpellLoad(function()
+			local name = spell:GetSpellName() 
+			local icon = spell:GetSpellTexture()
+			--local description = spell:GetSpellDescription()
+			f.icon:SetTexture(icon)
+			f.power:SetText(name)
+		end)
+	end
+
+	return f
+end
+
+local function CreateRavinousMobListFrame()
+	local f = frames.tg.info.ravMobScroll.child
+	local zoneIndex = 1
+	local name = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	name:SetPoint("TOPLEFT", 20, -20)
+	name:SetText(L["Torghast Mobs"])
+
+	local lastIndex
+	for zoneIndex, data in ipairs(addon.ZoneList) do
+		local zone = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		zone:SetText(data[1])
+		if zoneIndex == 1 then 
+			zone:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -10 )
+			--zone:SetPoint("TOPRIGHT", 0, 0)
+		else
+			zone:SetPoint("TOPLEFT", lastIndex, "BOTTOMLEFT", 0, -10 )
+		end
+
+		for index, mobID in ipairs(data[2]) do
+			f[index] = CreateMobInfoFrame(mobID)
+			if index == 1 then 
+				f[index]:SetPoint("TOPLEFT", zone, "BOTTOMLEFT")
+				f[index]:SetPoint("TOPRIGHT", 0, 0)
+			else
+				f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT" )
+			end
+			lastIndex = f[index]
+		end
+		
+	end
+end
+
 TorghastTourGuideScrollBarMixin = {};
 function TorghastTourGuideScrollBarMixin:OnLoad()
 	self.trackBG:SetVertexColor(ENCOUNTER_JOURNAL_SCROLL_BAR_BACKGROUND_COLOR:GetRGBA());
@@ -96,6 +215,8 @@ function addon.initTourGuide()
 	tinsert(UISpecialFrames,"TorghastTourGuide")
 
 	CreateUpgradeListFrame(f)
+	CreateRavinousPowerListFrame()
+	CreateRavinousMobListFrame()
 	addon.CreateBossButtons()
 	addon.DisplayCreature()
 
@@ -109,9 +230,10 @@ end
 --CONFIRM_PURCHASE_NONREFUNDABLE_ITEM
 
 local TTG_Tabs = {}
-TTG_Tabs[1] = {frame = "upgrades", button="overviewTab"}
-TTG_Tabs[2] = {frame = "bossesScroll", button="bossTab"}
-TTG_Tabs[3] = {frame="detailsScroll", button="bossDetailsTab"}
+TTG_Tabs[1] = {frame = "upgrades", button = "overviewTab"}
+TTG_Tabs[2] = {frame = "ravPowerScroll", button = "ravenousTab"}
+TTG_Tabs[3] = {frame = "bossesScroll", button = "bossTab"}
+TTG_Tabs[4] = {frame = "detailsScroll", button = "bossDetailsTab"}
 --TTG_Tabs[4] = {frame="model", button="modelTab"}
 
 function TorghastTourGuide_TabClicked(self, button)
@@ -146,12 +268,23 @@ function addon.SetTab(tabType)
 			info[data.button]:UnlockHighlight()
 		end
 	end
-	if tabType == 1 then
-		info[TTG_Tabs[3].button]:Hide()
+
+
+	if tabType == 2 then
+		info.ravMobScroll:Show()
+		info.model:Hide()
 	else
-		info[TTG_Tabs[3].button]:Show()
+		info.ravMobScroll:Hide()
+		info.model:Show()
 	end
-	if tabType == 3 then
+
+	if tabType == 3 or tabType == 4 then
+		info[TTG_Tabs[4].button]:Show()
+	else
+		info[TTG_Tabs[4].button]:Hide()
+	end
+
+	if tabType == 4 then
 		info.LinkButton:Show()
 	else
 		info.LinkButton:Hide()

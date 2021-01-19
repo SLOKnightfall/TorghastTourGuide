@@ -15,7 +15,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local frames = {} 
 local cellCounts = {0,0,0,0}
-addon.ravCounts = 0
+addon.ravCount = 0
 local Profile
 local isEnabled = false
 
@@ -368,6 +368,7 @@ function addon.UpdateItemCount()
 	local f = frames.f
 
 	local ravCount, cellCount, reqCount, potionCount = unpack(GetItemCounts())
+	addon.ravCount = ravCount
 	if ravCount > 0 then 
 		f.ravButton:SetAttribute("item", ravName)
 	else 

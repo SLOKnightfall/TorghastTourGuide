@@ -14,7 +14,8 @@ L["Torghast Upgrades"] = true
 L["Tips & Tricks"] = true
 L["Toggle Guide"] = true
 L["WoWHead Links"] = true
-
+L["Ravenous Anima Cell Powers"] = true
+L["Torghast Mobs"] = true
 
 --Options
 L["General Options"] = true
@@ -59,7 +60,7 @@ L["157122"] = "Patrician Cromwell"
 L["155251"] = "Elder Longbranch"
 --https://www.wowhead.com/guides/torghast-floor-boss-strategies-abilities-tips-tricks
 
-
+L["Rav_Note"] = "*If you already have a unique power then you will get Pouch of Phantasm instead*"
 
 
 L["All Wings"] = true
@@ -70,6 +71,12 @@ L["170257"] = "Broker Ve'nott"
 L["155798"] = 'Mawsworn Shackler'
 --L["150965"] = "Mawsworn Shackler"
 --L["171172"] = "Mawsworn Shackler"
+L["152661"] = "Mawsworn Ward"
+L["165060"] = "Animimic"
+L["170419"] = "Lost Dredger"
+L["160161"] = "Fog Dweller"
+    --["164897"] = "Fog Dweller"
+
 	
 L["Skoldus Hall"] = true
 L["152708"] = "Mawsworn Seeker"
@@ -78,7 +85,7 @@ L["150959"] = "Mawsworn Interceptor"
 L["150958"] = "Mawsworn Guard"
 L["153874"] = "Mawsworn Sentry"
 
-L["Fracture Chambers"] = true
+L["Fractured Chambers"] = true
 L["155790"] = "Mawsworn Acolyte"
 L["155830"] = "Mawsworn Disciple"
 L["157810"] = "Mawsworn Endbringer"
