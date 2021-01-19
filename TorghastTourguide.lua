@@ -14,8 +14,8 @@ addon = LibStub("AceAddon-3.0"):NewAddon(addon, addonName, "AceEvent-3.0", "AceC
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local frames = {} 
-local cellCounts = {0,0,0}
-addon.cellCounts = cellCounts
+local cellCounts = {0,0,0,0}
+addon.ravCounts = 0
 local Profile
 local isEnabled = false
 
@@ -178,7 +178,7 @@ function addon:EventHandler(event, arg1)
 	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
 		C_Timer.After(0.1, addon.PowerTooltips)
 	elseif event == "BAG_UPDATE" then
-		addon.UpdateCellCount()
+		addon.UpdateItemCount()
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		addon.InitPowers()
 	end		
@@ -208,8 +208,9 @@ end
 local RAVENOUS_CELL_ID = 170540
 local PLUNDERED_CELL_ID = 168207
 local REQUISITIONED_CELL_ID = 184662
+local OBSCURING_ESSENCE_POTION_ID = 176331
 
-local ravName, cellName, reqName
+local ravName, cellName, reqName, obscuringName
 function addon:OnEnable()
 	addon.initTourGuide()
 
@@ -226,6 +227,11 @@ function addon:OnEnable()
 	local item3 = Item:CreateFromItemID(REQUISITIONED_CELL_ID)
 	item3:ContinueOnItemLoad(function()
 		reqName = item3:GetItemName() 
+	end)
+
+	local item4 = Item:CreateFromItemID(OBSCURING_ESSENCE_POTION_ID)
+	item3:ContinueOnItemLoad(function()
+		obscuringName = item4:GetItemName() 
 	end)
 end
 
@@ -255,15 +261,20 @@ function addon.InitFrames()
 
 	local f = CreateFrame("Frame", nil, ScenarioStageBlock)
 	frames.f = f
-	f:SetSize(50, 20)
-	f:SetPoint("TOPRIGHT", -20, -20)
+
+	--f:SetSize(50, 20)
+	--f:SetPoint("TOPRIGHT", -20, -20)
+	f:SetPoint("TOPRIGHT")
+	f:SetPoint("BOTTOMLEFT")
 	f:SetFrameLevel(100)
 	f:Show()
 
 	local function AnimaCountTooltip(self, type)
 		local name = L["Anima Cell"]
 		if type == "rav" then 
-			name = L["Ravenous Anima Cell"]
+			name = ravName
+		elseif type == "potion" then
+			name = obscuringName
 		end
 
 		local text = (L["%s Count"]):format(name)
@@ -272,7 +283,7 @@ function addon.InitFrames()
 
 	f.ravFrame = CreateFrame("Frame", nil, f)
 	f.ravFrame:SetSize(30, 15)
-	f.ravFrame:SetPoint("TOPLEFT")
+	f.ravFrame:SetPoint("TOP", 45, -20)
 	f.ravButton = CreateFrame("Button", nil, f.ravFrame, "SecureActionButtonTemplate")
 	f.ravButton:SetAttribute("type", "item")
 	f.ravButton:SetAllPoints()
@@ -292,7 +303,7 @@ function addon.InitFrames()
 	f.cellButton = CreateFrame("Button", nil, f.cellFrame, "SecureActionButtonTemplate")
 	f.cellButton:SetAttribute("type", "item")
 	f.cellButton:SetAllPoints()
-	f.cellButton:SetScript("OnEnter", function(self) AnimaCountTooltip (self, "cell") end)
+	f.cellButton:SetScript("OnEnter", function(self) AnimaCountTooltip(self, "cell") end)
 	f.cellButton:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
 	f.cellIcon = f.cellFrame:CreateTexture(nil, "OVERLAY")
 	f.cellIcon:SetSize(15,15)
@@ -302,14 +313,33 @@ function addon.InitFrames()
 	f.cellCount:SetText("0")
 	f.cellCount:SetPoint("LEFT",f.cellIcon, "RIGHT", 5, 0)
 
-	addon.UpdateCellCount()
+	f.potionFrame = CreateFrame("Frame", nil, f)
+	f.potionFrame:SetFrameStrata("HIGH")
+	f.potionFrame:SetFrameLevel(50)
+	f.potionFrame:SetSize(30, 15)
+	f.potionFrame:SetPoint("BOTTOM",-10, 22)
+	f.potionButton = CreateFrame("Button", nil, f.potionFrame, "SecureActionButtonTemplate")
+	f.potionButton:SetAttribute("type", "item")
+	f.potionButton:SetAllPoints()
+	f.potionButton:SetScript("OnEnter", function(self) AnimaCountTooltip(self, "potion") end)
+	f.potionButton:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
+	f.potionIcon = f.potionFrame:CreateTexture(nil, "OVERLAY")
+	f.potionIcon:SetSize(15,15)
+	f.potionIcon:SetTexture("Interface\\Icons\\Inv_alchemy_70_potion2_nightborne")
+	f.potionIcon:SetPoint("TOPLEFT")
+	f.potionCount = f.potionFrame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+	f.potionCount:SetText("0")
+	f.potionCount:SetPoint("LEFT",f.potionIcon, "RIGHT", 5, 0)
+
+
+	addon.UpdateItemCount()
 end
 
 local blessing = 324717
 
 local runecarver = 164937
-local function GetCellCounts()
-	cellCounts = {0,0,0}
+local function GetItemCounts()
+	cellCounts = {0,0,0,0}
 	for t=0,4 do
 		local slots = GetContainerNumSlots(t)
 		if (slots > 0) then
@@ -322,6 +352,9 @@ local function GetCellCounts()
 					cellCounts[2] = cellCounts[2] + 1
 				elseif itemID == REQUISITIONED_CELL_ID then
 					cellCounts[3] = cellCounts[3] + 1
+				elseif itemID == OBSCURING_ESSENCE_POTION_ID then
+					cellCounts[4] = cellCounts[4] + 1
+
 				end
 			end
 		end
@@ -330,11 +363,11 @@ local function GetCellCounts()
 	return cellCounts
 end
 
-function addon.UpdateCellCount()
+function addon.UpdateItemCount()
 	if not frames.f then return end
 	local f = frames.f
 
-	local ravCount, cellCount, reqCount = unpack(GetCellCounts())
+	local ravCount, cellCount, reqCount, potionCount = unpack(GetItemCounts())
 	if ravCount > 0 then 
 		f.ravButton:SetAttribute("item", ravName)
 	else 
@@ -347,6 +380,12 @@ function addon.UpdateCellCount()
 		f.cellButton:SetAttribute("item", reqName)
 	else
 		f.cellButton:SetAttribute("item", nil)
+	end
+
+	if potionCount > 0 then
+		f.potionButton:SetAttribute("item", obscuringName)
+	else
+		f.potionButton:SetAttribute("item", nil)
 	end
 
 	f.ravCount:SetText(ravCount)

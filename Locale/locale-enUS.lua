@@ -59,6 +59,109 @@ L["157122"] = "Patrician Cromwell"
 L["155251"] = "Elder Longbranch"
 --https://www.wowhead.com/guides/torghast-floor-boss-strategies-abilities-tips-tricks
 
+
+
+
+L["All Wings"] = true
+L["151353"] = "Mawrat"
+L["154030"] = "Oddly Large Mawrat"
+L["152594"] = "Broker Ve'ken"
+L["170257"] = "Broker Ve'nott"
+L["155798"] = 'Mawsworn Shackler'
+--L["150965"] = "Mawsworn Shackler"
+--L["171172"] = "Mawsworn Shackler"
+	
+L["Skoldus Hall"] = true
+L["152708"] = "Mawsworn Seeker"
+L["153878"] = 'Mawsworn Archer'
+L["150959"] = "Mawsworn Interceptor"
+L["150958"] = "Mawsworn Guard"
+L["153874"] = "Mawsworn Sentry"
+
+L["Fracture Chambers"] = true
+L["155790"] = "Mawsworn Acolyte"
+L["155830"] = "Mawsworn Disciple"
+L["157810"] = "Mawsworn Endbringer"
+L["155949"] = "Mawsworn Soulbinder"
+--L["155831"] = "Mawsworn Soulbinder"
+L["157809"] = "Mawsworn Darkcaster"
+L["155812"] = "Mawsworn Ritualist"
+L["155824"] = "Lumbering Creation"
+L["155793"] = "Skeletal Remains"
+L["157819"] = "Mawsworn Shadestalker"
+--L["171173"] = "Mawsworn Shadestalker"
+
+L["Soulforges"] = true
+L["157584"] = "Flameforge Master"
+L["157583"] = "Forge Keeper"
+L["157572"] = "Mawsworn Firecaller"
+L["157571"] = "Mawsworn Flametender"	
+L["152708"] = "Mawsworn Seeker"
+L["153878"] = "Mawsworn Archer"
+L["157634"] = "Flameforge Enforcer"
+L["150958"] = 'Mawsworn Guard'
+L["153874"] = "Mawsworn Sentry"
+
+L["Coldheart Interstitia"] = true
+L["156212"] = "Coldheart Agent"
+L["165594"] = "Coldheart Ambusher"
+L["156157"] = "Coldheart Ascendant"
+L["156226"] = "Coldheart Binder"
+L["156213"] = "Coldheart Guardian"
+L["156159"] = "Coldheart Javelineer"
+L["156219"] = "Coldheart Scout"
+
+L["Upper Reaches"] = true
+L["152708"] = "Mawsworn Seeker"
+L["155790"] = "Mawsworn Acolyte"
+L["155830"] = "Mawsworn Disciple"
+L["157810"] = 'Mawsworn Endbringer'
+L["155949"] = "Mawsworn Soulbinder"
+--L["155831"] = "Mawsworn Soulbinder"
+L["157809"] = "Mawsworn Darkcaster"
+L["155812"] = "Mawsworn Ritualist"
+L["155824"] = "Lumbering Creation"
+L["155793"] = "Skeletal Remains"
+L["150958"] = "Mawsworn Guard"
+L["153874"] = "Mawsworn Sentry"
+
+L["Mort'Regar"] = true
+L["151816"] = "Deadsoul Scavenger"
+L["152644"] = "Deadsoul Drifter"
+L["151815"] = "Deadsoul Echo"
+L["151816"] = "Deadsoul Scavenger"
+L["151814"] = "Deadsoul Shade"
+L["153879"] = "Deadsoul Shadow"
+L["153885"] = "Deadsoul Shambler"
+L["153882"] = "Deadsoul Spirit"
+L["153552"] = "Weeping Wraith"
+
+L["162661"] = "Mawsworn Ward"
+	
+L["Fae Invader"] = true
+L["155225"] = "Faeleaf Grovesinger"
+L["155221"] = "Faeleaf Tender"
+L["155216"] = "Faeleaf Warden"
+L["155226"] = "Verdant Keeper"
+L["155215"] = "Faeleaf Lasher"
+L["155211"] = "Gormling Pest"
+L["155219"] = "Gormling Spitter"
+	
+L["Elementals"] = true
+L["154128"] = "Blazing Elemental"
+L["154129"] = "Burning Emberguard"
+
+L["Prisoner"] = true
+L["154011"] = "Armed Prisoner"
+L["154015"] = "Escaped Ritualist"
+L["154014"] = "Imprisoned Cabalist"
+L["154020"] = "Prisonbreak Cursewalker"
+L["154018"] = "Prisonbreak Mauler"
+L["154016"] = "Prisonbreak Soulmender"	
+
+	--Misc
+L["164897"] =  "Fog Dweller"	
+
 L["Split_Desc"] = "Writhing Soulmass splits into smaller units."
 
 L["Corrus_Tip1"] = "Blinding Smoke Capsules can be used to completely avoid Shadow Rip, if you have them available from any vendors. If not, you can interrupt Shadow Swipe if you're having issues with it, but it should not be your first priority. The DOT from Shadow Rip is very weak."

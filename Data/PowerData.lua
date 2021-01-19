@@ -1,5 +1,6 @@
 local addonName, addon = ...
 addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
+local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 
 --GetMawPowerLinkBySpellID(305308)
 --GetSpellDescription(304918)
@@ -161,6 +162,19 @@ addon.mobs = {
 
 	--Misc
 	[164897] =  PowerNames["Pouch of Phantasma"], --Fog Dweller		
+}
+
+addon.ZoneList = {
+	[L["All Wings"]] = {151353,154030,152594,170257,155798,},
+	[L["Skoldus Hall"]] = {152708,153878,150959,150958,153874,},
+	[L["Fracture Chambers"]] = {155790,155830,157810,155949,157809,155812,155824,155793,157819,},
+	[L["Soulforges"]] = {157584,157583,157572,157571,152708,153878,157634,150958,153874,},
+	[L["Coldheart Interstitia"]] = {156212,165594,156157,156226,156213,156159,156219,},
+	[L["Upper Reaches"]] = {152708,155790,155830,157810,155949,157809,155812,155824,155793,150958,153874,},
+	[L["Mort'Regar"]] = {151816,152644,151815,151816,151814,153879,153885,153882,153552,162661,},
+	[L["Fae Invader"]] = {155225,155221,155216,155226,155215,155211,155219,},
+	[L["Elementals"]] = {154128,154129,},
+	[L["Prisoner"]] = {154011,154015,154014,154020,154018,154016,},
 }
 
 addon.RareIDs = {
