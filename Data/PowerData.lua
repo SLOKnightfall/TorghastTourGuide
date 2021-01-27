@@ -185,6 +185,12 @@ local RarePowerNames = {
 }
 
 addon.RareIDs = {
+	[152500] = {}, --Deadsoul Amalgam
+	[173080] = {}, --Wandering Death
+
+
+
+
 	[173134] = {RarePowerNames["Fallen Armaments"], RarePowerNames["Dark Fortress"]}, --Darksworn Goliath
 	[173114] = {RarePowerNames["Pulsing Rot-hive"], RarePowerNames["Swarm Form"]}, --Invasive Decayfly
 	[156134] = {RarePowerNames["Spectral Oats"], RarePowerNames["Spectral Bridle"]}, --Ghastly Charger
@@ -202,6 +208,10 @@ addon.RareIDs = {
 	[156237] = {RarePowerNames["Fallen Armaments"], RarePowerNames["Dark Fortress"]}, --Imperator Dara
 	[169823] = {RarePowerNames["Lumbering Form"], RarePowerNames["Potent Acid Gland"],}, -- PowerNames["Obleron Endurance x3"]}, --Gorm Behemoth
 }
+
+
+	--[156239] = {L["156239"],93489,{304948,304946,345554}}, --Dark Ascended Corrus
+
 
 
 addon.Upgrades = {

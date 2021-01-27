@@ -204,6 +204,45 @@ local function CreateRavinousMobListFrame()
 	end
 end
 
+
+TorghastTourGuideTabMixin = {}
+function TorghastTourGuideTabMixin:OnLoad()
+	local tab = self:GetID()
+
+	if tab == 1 then 
+		self.tooltip = L["Overview"]
+	elseif tab == 2 then 
+		self.tooltip = L["Ravenous Anima Cell Powers"]
+	elseif tab == 3 then 
+		self.tooltip = L["Rares"]
+	elseif tab == 4 then 
+		self.tooltip = L["Bosses"]
+	elseif tab == 5 then 
+		self.tooltip = L["Bosses Ability"]
+	end
+
+end
+
+
+function TorghastTourGuideTabMixin:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+	GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
+end
+
+
+local function TorghastTourGuide_TabClicked(self, button)
+	local tabType = self:GetID()
+	addon.SetTab(tabType)
+	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN)
+end
+
+
+function TorghastTourGuideTabMixin:OnClick()
+	TorghastTourGuide_TabClicked(self, button)
+end
+
+
+
 TorghastTourGuideScrollBarMixin = {};
 function TorghastTourGuideScrollBarMixin:OnLoad()
 	self.trackBG:SetVertexColor(ENCOUNTER_JOURNAL_SCROLL_BAR_BACKGROUND_COLOR:GetRGBA());
@@ -232,15 +271,12 @@ end
 local TTG_Tabs = {}
 TTG_Tabs[1] = {frame = "upgrades", button = "overviewTab"}
 TTG_Tabs[2] = {frame = "ravPowerScroll", button = "ravenousTab"}
-TTG_Tabs[3] = {frame = "bossesScroll", button = "bossTab"}
-TTG_Tabs[4] = {frame = "detailsScroll", button = "bossDetailsTab"}
+TTG_Tabs[3] = {frame = "bossesScroll", button = "rareTab"}
+TTG_Tabs[4] = {frame = "bossesScroll", button = "bossTab"}
+TTG_Tabs[5] = {frame = "detailsScroll", button = "bossDetailsTab"}
 --TTG_Tabs[4] = {frame="model", button="modelTab"}
 
-function TorghastTourGuide_TabClicked(self, button)
-	local tabType = self:GetID()
-	addon.SetTab(tabType)
-	PlaySound(SOUNDKIT.IG_ABILITY_PAGE_TURN)
-end
+
 
 
 local creatureDisplayID
@@ -278,13 +314,22 @@ function addon.SetTab(tabType)
 		info.model:Show()
 	end
 
-	if tabType == 3 or tabType == 4 then
-		info[TTG_Tabs[4].button]:Show()
+
+	if tabType == 3 then
+		--info.ravMobScroll:Show()
+		--info.model:Hide()
 	else
-		info[TTG_Tabs[4].button]:Hide()
+		--info.ravMobScroll:Hide()
+		--info.model:Show()
 	end
 
-	if tabType == 4 then
+	if tabType == 4 or tabType == 5 then
+		info[TTG_Tabs[5].button]:Show()
+	else
+		info[TTG_Tabs[5].button]:Hide()
+	end
+
+	if tabType == 5 then
 		info.LinkButton:Show()
 	else
 		info.LinkButton:Hide()

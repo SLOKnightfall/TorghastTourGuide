@@ -209,8 +209,9 @@ local RAVENOUS_CELL_ID = 170540
 local PLUNDERED_CELL_ID = 168207
 local REQUISITIONED_CELL_ID = 184662
 local OBSCURING_ESSENCE_POTION_ID = 176331
+local PHANTASMIC_INFUSER_ID = 184652
+local ravName, cellName, reqName, obscuringName, infuserName
 
-local ravName, cellName, reqName, obscuringName
 function addon:OnEnable()
 	addon.initTourGuide()
 
@@ -230,8 +231,13 @@ function addon:OnEnable()
 	end)
 
 	local item4 = Item:CreateFromItemID(OBSCURING_ESSENCE_POTION_ID)
-	item3:ContinueOnItemLoad(function()
+	item4:ContinueOnItemLoad(function()
 		obscuringName = item4:GetItemName() 
+	end)
+
+	local item5 = Item:CreateFromItemID(PHANTASMIC_INFUSER_ID)
+	item5:ContinueOnItemLoad(function()
+	infuserName = item5:GetItemName() 
 	end)
 end
 
@@ -275,9 +281,12 @@ function addon.InitFrames()
 			name = ravName
 		elseif type == "potion" then
 			name = obscuringName
+
+		elseif type == "infuser" then
+			name = infuserName
 		end
 
-		local text = (L["%s Count"]):format(name)
+		local text = (L["Click to use %s"]):format(name)
 		addon.ShowTooltip(self, text)
 	end
 
@@ -332,14 +341,30 @@ function addon.InitFrames()
 	f.potionCount:SetPoint("LEFT",f.potionIcon, "RIGHT", 5, 0)
 
 
+	f.infuserFrame = CreateFrame("Frame", nil, f)
+		f.infuserFrame:SetFrameStrata("HIGH")
+	f.infuserFrame:SetSize(30, 15)
+	f.infuserFrame:SetPoint("BOTTOMRIGHT", 40, 22)
+	f.infuserButton = CreateFrame("Button", nil, f.infuserFrame, "SecureActionButtonTemplate")
+	f.infuserButton:SetAttribute("type", "item")
+	f.infuserButton:SetAllPoints()
+	f.infuserButton:SetScript("OnEnter", function(self)  AnimaCountTooltip(self, "infuser") end)
+	f.infuserButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
+	f.infuserIcon = f.infuserFrame:CreateTexture(nil, "OVERLAY")
+	f.infuserIcon:SetSize(15,15)
+	f.infuserIcon:SetTexture("Interface\\Icons\\spell_burningsoul")
+	f.infuserIcon:SetPoint("TOPLEFT")
+
 	addon.UpdateItemCount()
 end
 
 local blessing = 324717
 
 local runecarver = 164937
+local hasInfuser = false
 local function GetItemCounts()
 	cellCounts = {0,0,0,0}
+	hasInfuser = false
 	for t=0,4 do
 		local slots = GetContainerNumSlots(t)
 		if (slots > 0) then
@@ -354,7 +379,8 @@ local function GetItemCounts()
 					cellCounts[3] = cellCounts[3] + 1
 				elseif itemID == OBSCURING_ESSENCE_POTION_ID then
 					cellCounts[4] = cellCounts[4] + 1
-
+				elseif itemID == PHANTASMIC_INFUSER_ID then
+					hasInfuser = true
 				end
 			end
 		end
@@ -389,6 +415,16 @@ function addon.UpdateItemCount()
 		f.potionButton:SetAttribute("item", nil)
 	end
 
+	if hasInfuser then
+		f.infuserButton:SetAttribute("item", infuserName)
+		f.infuserFrame:Show()
+	else
+		f.infuserButton:SetAttribute("item", nil)
+		f.infuserFrame:Hide()
+	end
+	--f.infuserIcon:SetDesaturated(true)
+
 	f.ravCount:SetText(ravCount)
 	f.cellCount:SetText(cellCount + reqCount)
+	f.potionCount:SetText(potionCount)
 end

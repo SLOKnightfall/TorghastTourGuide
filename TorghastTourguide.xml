@@ -175,7 +175,7 @@
 		</Layers>
 	</Frame>
 
-	<Button name="TorghastTourGuideTabTemplate" frameLevel="510" virtual="true">
+	<Button name="TorghastTourGuideTabTemplate" mixin="TorghastTourGuideTabMixin" frameLevel="510" virtual="true">
 		<Size x="63" y="57"/>
 		<NormalTexture file="Interface\EncounterJournal\UI-EncounterJournalTextures">
 			<Size x="63" y="57"/>
@@ -194,10 +194,9 @@
 			<TexCoords left="0.00195313" right="0.12500000" top="0.90332031" bottom="0.95898438"/>
 		</HighlightTexture>
 		<Scripts>
-			<OnEnter>
-				GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
-				GameTooltip:SetText(self.tooltip, nil, nil, nil, nil, true);
-			</OnEnter>
+			<OnLoad method="OnLoad"/>
+			<OnEnter method="OnEnter"/>
+			<OnClick method="OnClick"/>
 			<OnLeave function="GameTooltip_Hide"/>
 		</Scripts>
 	</Button>
@@ -441,12 +440,6 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self.tooltip = "Overview"
-							</OnLoad>
-							<OnClick>
-								TorghastTourGuide_TabClicked(self, button)
-							</OnClick>
 						</Scripts>
 					</Button>
 					<Button name="$parentRavenousPowerTab" inherits="TorghastTourGuideTabTemplate" parentKey="ravenousTab" id="2">
@@ -471,12 +464,6 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self.tooltip = "Ravenous Anima Cell Powers"
-							</OnLoad>
-							<OnClick>
-								TorghastTourGuide_TabClicked(self, button)
-							</OnClick>
 						</Scripts>
 					</Button>
 					<ScrollFrame name="$parentRavenousMobScrollFrame" useParentLevel="true" parentKey="ravMobScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
@@ -535,9 +522,34 @@
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
-					<Button name="$parentBossTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossTab" id="3">
+					<Button name="$parentRareTab" inherits="TorghastTourGuideTabTemplate" parentKey="rareTab" id="3">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentRavenousPowerTab" relativePoint="BOTTOM" x="0" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\EncounterJournal\DungeonJournal">
+									<Anchors>
+										<Anchor point="RIGHT" x="-6" y="0"/>
+									</Anchors>
+									<Size x="48" y="43"/>
+									<TexCoords left="0.393555" right="0.44043" top="0.710938" bottom="0.794922"/>
+								</Texture>
+								<Texture name="$parentSelect" parentKey="selected" file="Interface\EncounterJournal\DungeonJournal">
+									<Anchors>
+										<Anchor point="RIGHT" x="-6" y="0"/>
+									</Anchors>
+									<Size x="48" y="43"/>
+									<TexCoords left="0.393555" right="0.44043" top="0.710938" bottom="0.794922"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+						</Scripts>
+					</Button>
+					<Button name="$parentBossTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossTab" id="4">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentRareTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -558,15 +570,9 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self.tooltip = "Bosses"
-							</OnLoad>
-							<OnClick>
-								TorghastTourGuide_TabClicked(self, button)
-							</OnClick>
 						</Scripts>
 					</Button>
-					<Button name="$parentBossDetailsTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossDetailsTab" id="4" hidden = "true">
+					<Button name="$parentBossDetailsTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossDetailsTab" id="5" hidden = "true">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentBossTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>
@@ -589,12 +595,6 @@
 							</Layer>
 						</Layers>
 						<Scripts>
-							<OnLoad>
-								self.tooltip = "Bosses Ability"
-							</OnLoad>
-							<OnClick>
-								TorghastTourGuide_TabClicked(self, button)
-							</OnClick>
 						</Scripts>
 					</Button>
 					<ScrollFrame name="$parentBossesScrollFrame" useParentLevel="true" parentKey="bossesScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">

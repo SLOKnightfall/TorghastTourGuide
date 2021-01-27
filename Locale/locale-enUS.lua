@@ -1,9 +1,11 @@
 local addonName, addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName,"enUS",true)
 
+_G["BINDING_NAME_TOGGLE_TORGHASTTOURGUIDE"] = "Toggle Guide"
+_G["BINDING_HEADER_TORGHASTTOURGUIDE"] = addonName
 
 
-
+L["Click to use %s"] = true
 L["Anima Cell"] = true
 L["Dropped Anima Cell"] = true
 L["Ravenous Anima Cell"] = true
@@ -35,8 +37,13 @@ L["Power Notes"] = true
 L["BOSSLINK"] = "Boss Link: https://www.wowhead.com/npc=%s"
 L["GUIDELINK"] = "Guide Link: https://www.wowhead.com/guides/torghast-floor-boss-strategies-abilities-tips-tricks"
 
-_G["BINDING_NAME_TOGGLE_TORGHASTTOURGUIDE"] = "Toggle Guide"
-_G["BINDING_HEADER_TORGHASTTOURGUIDE"] = addonName
+--Tooltip
+L["Overview"] = true
+L["Ravenous Anima Cell Powers"] = true
+L["Rares"] = true
+L["Bosses"] = true
+L["Bosses Ability"] = true
+
 
 --Bosses
 L["156239"] = "Dark Ascended Corrus"
