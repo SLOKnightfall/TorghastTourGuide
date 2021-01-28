@@ -57,6 +57,128 @@ local function CreateUpgradeFrame(parent, id)
 	return f
 end
 
+local function CreateStatsFrame(parent)
+	local f = CreateFrame("Frame", nil, parent)
+	local current = addon.Statsdb.profile.current
+	local total = addon.Statsdb.profile.total
+	--frames.upgrades = f
+	frames.tg.info.stats = f
+	addon.Stats.Frame = f
+	f:SetPoint("TOPLEFT", 400, -40 )
+	f:SetPoint("BOTTOMRIGHT")
+	f:Show()
+
+	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.desc:SetText(L["Stats"])
+	f.desc:SetPoint("TOP", 0, -5)
+	f.desc:SetJustifyH("CENTER")
+
+	f.current = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.current:SetText(L["CURRENT RUN:"])
+	f.current:SetPoint("TOPLEFT", 25, -25)
+	f.current:SetJustifyH("CENTER")
+
+	f.currentTimeCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentTimeCount:SetText((L["%sTime Spent: %s"]):format("", current.Time))
+	f.currentTimeCount:SetPoint("TOPLEFT", f.current, "BOTTOMLEFT", 15, -5)
+	f.currentTimeCount:SetJustifyH("CENTER")
+
+	f.currentFloorCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentFloorCount:SetText((L["%sFloors Climbed: %s"]):format("", current.FloorsCompleted))
+	f.currentFloorCount:SetPoint("TOPLEFT", f.currentTimeCount, "BOTTOMLEFT", 0, -5)
+	f.currentFloorCount:SetJustifyH("CENTER")
+
+	f.currentPhantasmaCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentPhantasmaCount:SetText((L["%sPhantasma Collected: %s"]):format("", current.Phantasma))
+	f.currentPhantasmaCount:SetPoint("TOPLEFT", f.currentFloorCount, "BOTTOMLEFT", 0, -5)
+	f.currentPhantasmaCount:SetJustifyH("CENTER")
+
+	f.currentAnimaCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentAnimaCount:SetText((L["%sAnima Powers Collected: %s"]):format("", current.AnimaOrbs))
+	f.currentAnimaCount:SetPoint("TOPLEFT", f.currentPhantasmaCount, "BOTTOMLEFT", 0, -5)
+	f.currentAnimaCount:SetJustifyH("CENTER")
+
+	f.currentDeathCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentDeathCount:SetText((L["%sDeaths: %s"]):format("", current.Deaths))
+	f.currentDeathCount:SetPoint("TOPLEFT", f.currentAnimaCount, "BOTTOMLEFT", 0, -5)
+	f.currentDeathCount:SetJustifyH("CENTER")
+
+	f.currentgrueCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentgrueCount:SetText((L["%sTimes Tarragrue Released: %s"]):format("", current.Grue))
+	f.currentgrueCount:SetPoint("TOPLEFT", f.currentDeathCount, "BOTTOMLEFT", 0, -5)
+	f.currentgrueCount:SetJustifyH("CENTER")
+
+	f.currentkillCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentkillCount:SetText((L["%sMobs Killed: %s"]):format("", current.MobsKilled))
+	f.currentkillCount:SetPoint("TOPLEFT", f.currentgrueCount, "BOTTOMLEFT", 0, -5)
+	f.currentkillCount:SetJustifyH("CENTER")
+
+	f.currentpotsCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentpotsCount:SetText((L["%sAshen Phylactery Broken: %s"]):format("", current.JarsBroken))
+	f.currentpotsCount:SetPoint("TOPLEFT", f.currentkillCount, "BOTTOMLEFT", 0, -5)
+	f.currentpotsCount:SetJustifyH("CENTER")
+
+	f.currentratkillCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentratkillCount:SetText((L["%sMawrats Killed: %s"]):format("", current.Mawrats))
+	f.currentratkillCount:SetPoint("TOPLEFT", f.currentpotsCount, "BOTTOMLEFT", 0, -5)
+	f.currentratkillCount:SetJustifyH("CENTER")
+
+	f.totals = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totals:SetText(L["TOTALS:"])
+	f.totals:SetPoint("TOPLEFT", f.currentratkillCount, "BOTTOMLEFT", -15, -5)
+	f.totals:SetJustifyH("CENTER")
+
+	f.totalTimeCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalTimeCount:SetText((L["%sTime Spent: %s"]):format(L["Total "], total.Time))
+	f.totalTimeCount:SetPoint("TOPLEFT", f.totals, "BOTTOMLEFT", 15, -5)
+	f.totalTimeCount:SetJustifyH("CENTER")
+
+	f.totalFloorCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalFloorCount:SetText((L["%sFloors Climbed: %s"]):format(L["Total "], total.FloorsCompleted))
+	f.totalFloorCount:SetPoint("TOPLEFT", f.totalTimeCount, "BOTTOMLEFT", 0, -5)
+	f.totalFloorCount:SetJustifyH("CENTER")
+
+	f.totalPhantasmaCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalPhantasmaCount:SetText((L["%sPhantasma Collected: %s"] ):format(L["Total "], total.Phantasma))
+	f.totalPhantasmaCount:SetPoint("TOPLEFT", f.totalFloorCount, "BOTTOMLEFT", 0, -5)
+	f.totalPhantasmaCount:SetJustifyH("CENTER")
+
+	f.totalAnimaCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalAnimaCount:SetText((L["%sAnima Powers Collected: %s"]):format(L["Total "], total.AnimaOrbs))
+	f.totalAnimaCount:SetPoint("TOPLEFT", f.totalPhantasmaCount, "BOTTOMLEFT", 0, -5)
+	f.totalAnimaCount:SetJustifyH("CENTER")
+
+	f.totalDeathCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalDeathCount:SetText((L["%sDeaths: %s"]):format(L["Total "], total.Deaths))
+	f.totalDeathCount:SetPoint("TOPLEFT", f.totalAnimaCount, "BOTTOMLEFT", 0, -5)
+	f.totalDeathCount:SetJustifyH("CENTER")
+
+	f.totalgrueCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalgrueCount:SetText((L["%sTimes Tarragrue Released: %s"]):format(L["Total "], total.Grue))
+	f.totalgrueCount:SetPoint("TOPLEFT", f.totalDeathCount, "BOTTOMLEFT", 0, -5)
+	f.totalgrueCount:SetJustifyH("CENTER")
+
+	f.totalkillCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalkillCount:SetText((L["%sMobs Killed: %s"]):format(L["Total "], total.MobsKilled))
+	f.totalkillCount:SetPoint("TOPLEFT", f.totalgrueCount, "BOTTOMLEFT", 0, -5)
+	f.totalkillCount:SetJustifyH("CENTER")
+
+	f.totalpotsCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalpotsCount:SetText((L["%sAshen Phylactery Broken: %s"]):format(L["Total "], total.JarsBroken))
+	f.totalpotsCount:SetPoint("TOPLEFT", f.totalkillCount, "BOTTOMLEFT", 0, -5)
+	f.totalpotsCount:SetJustifyH("CENTER")
+
+	f.totalratkillCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalratkillCount:SetText((L["%sMawrats Killed: %s"]):format(L["Total "], total.Mawrats))
+	f.totalratkillCount:SetPoint("TOPLEFT", f.totalpotsCount, "BOTTOMLEFT", 0, -5)
+	f.totalratkillCount:SetJustifyH("CENTER")
+
+
+
+
+
+
+end 
 
 local function CreateUpgradeListFrame(parent)
 	local f = CreateFrame("Frame", nil, parent)
@@ -110,6 +232,9 @@ local function CreatePowerFrame(powerID)
 		f.name:SetText(name)
 		f.icon:SetTexture(icon)
 		f.desc:SetText(description)
+
+		local height = f.desc:GetStringHeight()
+		f:SetHeight(height + 35)
 	end)
 
 	local height = f.desc:GetStringHeight()
@@ -210,14 +335,16 @@ function TorghastTourGuideTabMixin:OnLoad()
 	local tab = self:GetID()
 
 	if tab == 1 then 
-		self.tooltip = L["Overview"]
+		self.tooltip = L["Stats"]
 	elseif tab == 2 then 
-		self.tooltip = L["Ravenous Anima Cell Powers"]
+		self.tooltip = L["Upgrades"]
 	elseif tab == 3 then 
-		self.tooltip = L["Rares"]
+		self.tooltip = L["Ravenous Anima Cell Powers"]
 	elseif tab == 4 then 
-		self.tooltip = L["Bosses"]
+		self.tooltip = L["Rares"]
 	elseif tab == 5 then 
+		self.tooltip = L["Bosses"]
+	elseif tab == 6 then 
 		self.tooltip = L["Bosses Ability"]
 	end
 
@@ -253,11 +380,14 @@ function addon.initTourGuide()
 	frames.tg = f
 	tinsert(UISpecialFrames,"TorghastTourGuide")
 
+	CreateStatsFrame(f)
 	CreateUpgradeListFrame(f)
 	CreateRavinousPowerListFrame()
 	CreateRavinousMobListFrame()
 	addon.CreateBossButtons()
-	addon.DisplayCreature()
+	addon.DisplayCreature(152253)
+
+	addon.SetTab(1)
 
 	f.info.LinkButton:SetScript("OnEnter", function(self) addon.ShowTooltip(self, L["WoWHead Links"]) end)
 	f.info.LinkButton:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
@@ -269,20 +399,23 @@ end
 --CONFIRM_PURCHASE_NONREFUNDABLE_ITEM
 
 local TTG_Tabs = {}
-TTG_Tabs[1] = {frame = "upgrades", button = "overviewTab"}
-TTG_Tabs[2] = {frame = "ravPowerScroll", button = "ravenousTab"}
-TTG_Tabs[3] = {frame = "bossesScroll", button = "rareTab"}
-TTG_Tabs[4] = {frame = "bossesScroll", button = "bossTab"}
-TTG_Tabs[5] = {frame = "detailsScroll", button = "bossDetailsTab"}
---TTG_Tabs[4] = {frame="model", button="modelTab"}
+TTG_Tabs[1] = {frame = "stats", button = "statsTab"}
+TTG_Tabs[2] = {frame = "upgrades", button = "overviewTab"}
+TTG_Tabs[3] = {frame = "ravPowerScroll", button = "ravenousTab"}
+TTG_Tabs[4] = {frame = "bossesScroll", button = "rareTab"}
+TTG_Tabs[5] = {frame = "bossesScroll", button = "bossTab"}
+TTG_Tabs[6] = {frame = "detailsScroll", button = "bossDetailsTab"}
 
+--TTG_Tabs[4] = {frame="model", button="modelTab"}
 
 
 
 local creatureDisplayID
 local function SetDefaultModel(tabType)
 	if tabType == 1 then 
-		addon.DisplayCreature()
+		addon.DisplayCreature(152253)
+	elseif tabType == 2 then 
+		addon.DisplayCreature(95004)
 	else
 		addon.DisplayCreature(creatureDisplayID.encounterID)
 	end
@@ -307,6 +440,16 @@ function addon.SetTab(tabType)
 
 
 	if tabType == 2 then
+		--info.upgrades:Show()
+		info.model:Hide()
+	else
+		--info.upgrades:Hide()
+		info.model:Show()
+	end
+
+
+
+	if tabType == 3 then
 		info.ravMobScroll:Show()
 		info.model:Hide()
 	else
@@ -315,7 +458,7 @@ function addon.SetTab(tabType)
 	end
 
 
-	if tabType == 3 then
+	if tabType == 4 then
 		--info.ravMobScroll:Show()
 		--info.model:Hide()
 	else
@@ -323,35 +466,39 @@ function addon.SetTab(tabType)
 		--info.model:Show()
 	end
 
-	if tabType == 4 or tabType == 5 then
-		info[TTG_Tabs[5].button]:Show()
+	if tabType == 5 or tabType == 6 then
+		--info[TTG_Tabs[6].button]:Show()
 	else
-		info[TTG_Tabs[5].button]:Hide()
+		--info[TTG_Tabs[6].button]:Hide()
 	end
 
-	if tabType == 5 then
+	if tabType == 6 then
 		info.LinkButton:Show()
 	else
 		info.LinkButton:Hide()
 	end
 
+	if tabType == 1 then
+		--info.LinkButton:Show()
+	else
+		--info.LinkButton:Hide()
+	end
 
 	SetDefaultModel(tabType)
 end
 
 
+local defaultsDisplay = {
+	[95004] = {"venari", 95004, {}, 362} ,
+	[152253] = {"tarragrue", 99060, {}, 65} ,
+}
+ 
 function addon.DisplayCreature(UnitID)
-	local data = addon.Bosses[UnitID]
-	if not data then 
-		data =  {"venari", 95004, {}, 65} 
-		UnitID = 95004
-	end
-
+	local data = defaultsDisplay[UnitID] or addon.Bosses[UnitID]
 	local modelScene = frames.tg.info.model
 	if data then -- and (EncounterJournal.creatureDisplayID ~= self.displayInfo or forceUpdate) then
 		local scene = addon.BossCamera[UnitID] or 9
 		modelScene:SetFromModelSceneID(scene, true)
-
 		local creature = modelScene:GetActorByTag("creature")
 		if creature then
 			creature:SetModelByCreatureDisplayID(data[2], true)

@@ -4,7 +4,7 @@
 	<Script file="Modules\Tooltips.lua"/>
 	<Script file="Modules\Guide.lua"/>
 	<Script file="Modules\Powers.lua"/>
-
+	<Script file="Modules\Stats.lua"/>
 
 	<Frame name="TorghastTourGuidePowerTemplate" virtual="true" hidden="false">
 		<KeyValues>
@@ -419,9 +419,10 @@
 						</Layer>
 					</Layers>
 					</Frame>
-					<Button name="$parentOverviewTab" inherits="TorghastTourGuideTabTemplate" parentKey="overviewTab" id="1">
+					<Button name="$parentStatsTab" inherits="TorghastTourGuideTabTemplate" parentKey="statsTab" id="1">
 						<Anchors>
 							<Anchor point="TOPLEFT" relativePoint="TOPRIGHT" x="-12" y="-35"/>
+
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -442,7 +443,32 @@
 						<Scripts>
 						</Scripts>
 					</Button>
-					<Button name="$parentRavenousPowerTab" inherits="TorghastTourGuideTabTemplate" parentKey="ravenousTab" id="2">
+					<Button name="$parentOverviewTab" inherits="TorghastTourGuideTabTemplate" parentKey="overviewTab" id="2">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentStatsTab" relativePoint="BOTTOM" x="0" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\EncounterJournal\DungeonJournal">
+									<Anchors>
+										<Anchor point="RIGHT" x="-6" y="0"/>
+									</Anchors>
+									<Size x="48" y="43"/>
+									<TexCoords left="0.344727" right="0.391602" top="0.798828" bottom="0.882812"/>
+								</Texture>
+								<Texture name="$parentSelect" parentKey="selected" file="Interface\EncounterJournal\DungeonJournal">
+									<Anchors>
+										<Anchor point="RIGHT" x="-6" y="0"/>
+									</Anchors>
+									<Size x="48" y="43"/>
+									<TexCoords left="0.344727" right="0.391602" top="0.798828" bottom="0.882812"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+						</Scripts>
+					</Button>
+					<Button name="$parentRavenousPowerTab" inherits="TorghastTourGuideTabTemplate" parentKey="ravenousTab" id="3">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentOverviewTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>
@@ -522,7 +548,7 @@
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
-					<Button name="$parentRareTab" inherits="TorghastTourGuideTabTemplate" parentKey="rareTab" id="3">
+					<Button name="$parentRareTab" inherits="TorghastTourGuideTabTemplate" parentKey="rareTab" id="4">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentRavenousPowerTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>
@@ -547,7 +573,7 @@
 						<Scripts>
 						</Scripts>
 					</Button>
-					<Button name="$parentBossTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossTab" id="4">
+					<Button name="$parentBossTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossTab" id="5">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentRareTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>
@@ -572,7 +598,7 @@
 						<Scripts>
 						</Scripts>
 					</Button>
-					<Button name="$parentBossDetailsTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossDetailsTab" id="5" hidden = "true">
+					<Button name="$parentBossDetailsTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossDetailsTab" id="6" hidden = "false">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentBossTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>

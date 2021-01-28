@@ -48,15 +48,22 @@ addon.BossTips = {
 }
 
 addon.BossCamera = {
-	[95004] = 9, --venari
+	[95004] = 362, --venari
+	[152253] = 9, --tarraske
 	[156239] = 65, --Dark Ascended Corrus
 	[170418] = 65, --Goxul the Devourer
 	[156015] = 9, --Writhing Soulmass
 	[153382] = 9, --Maw of the Maw
-	[159755] = 65, --The Grand Malleare
+	[159755] = 9, --The Grand Malleare
 	[151331] = 65, --Cellblock Sentinel
 	[169859] = 65, --Observer Zelgar
 	[152995] = 9, --Warden of Souls
-	[157122] =65, --Patrician Cromwell
-	[155251] =65 , --Elder Longbranch
+	[157122] = 355, --Patrician Cromwell
+	[155251] = 66 , --Elder Longbranch
+	[153011] = 65, --Binder Baritas
+	[153174] = 65, --Watchers of Death
+
+	--[151329] = 355, --Warden of Souls
+	--[153165] = 65, --Custodian Thonar
+
 }

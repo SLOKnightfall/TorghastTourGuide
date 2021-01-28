@@ -113,12 +113,55 @@ local noteDefaults = {
 	}
 }
 
+local statsDefaults = {
+	profile = {
+		current = {
+			Phantasma = 0,
+			Mawrats = 0,
+			AnimaOrbs = 0,
+			JarsBroken = 0,
+			FloorsCompleted = 0,
+			Deaths = 0,
+			Grue = 0,
+			MobsKilled = 0,
+			Time = 0,
+		},
+		total = {
+			Phantasma = 0,
+			Mawrats = 0,
+			AnimaOrbs = 0,
+			JarsBroken = 0,
+			FloorsCompleted = 0,
+			Deaths = 0,
+			Grue = 0,
+			MobsKilled = 0,
+			Time = 0,
+		}
+	}
+}
+
+
+
+--f:RegisterEvent("PLAYER_LOGOUT")
+--f:RegisterEvent("PLAYER_ENTERING_WORLD")
+--f:RegisterEvent("ADDON_LOADED")
+
+
 
 local function Enable()
 	addon:RegisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
 	addon:RegisterEvent("CURSOR_UPDATE", "EventHandler")
 	addon:RegisterEvent("BAG_UPDATE", "EventHandler")
 	addon:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
+
+addon:RegisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
+addon:RegisterEvent("PLAYER_CHOICE_UPDATE", "EventHandler")
+addon:RegisterEvent("PLAYER_DEAD", "EventHandler")
+addon:RegisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
+addon:RegisterEvent("UNIT_COMBAT", "EventHandler")
+addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "EventHandler")
+addon:RegisterEvent("NAME_PLATE_UNIT_ADDED", "EventHandler")
+addon:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
 
 
 	if frames.f then
@@ -145,6 +188,17 @@ local function Disable()
 	addon:UnregisterEvent("CURSOR_UPDATE", "EventHandler")
 	addon:UnregisterEvent("BAG_UPDATE", "EventHandler")
 	addon:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
+
+	addon:UnregisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
+addon:UnregisterEvent("PLAYER_CHOICE_UPDATE", "EventHandler")
+addon:UnregisterEvent("PLAYER_DEAD", "EventHandler")
+addon:UnregisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
+addon:UnregisterEvent("UNIT_COMBAT", "EventHandler")
+addon:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "EventHandler")
+
+addon:UnregisterEvent("NAME_PLATE_UNIT_ADDED", "EventHandler")
+addon:UnregisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
+
 	if frames.f then
 		frames.f:Hide()
 		frames.b:Hide()
@@ -170,6 +224,31 @@ local function InTorghast()
 end
 
 
+function addon:GetCIDFromGUID(guid)
+	local guidType, _, playerdbID, _, _, cid, _ = strsplit("-", guid or "")
+	if guidType and (guidType == "Creature" or guidType == "Vehicle" or guidType == "Pet") then
+		return tonumber(cid)
+	elseif type and (guidType == "Player" or guidType == "Item") then
+		return tonumber(playerdbID)
+	end
+	return 0
+end
+
+local ashen = {
+[164698] = true,
+[167986] = true,
+[165523] = true,
+[165533] = true,
+[170525] = true,
+[167987] = true,
+}
+
+local ashenCache = {}
+local function ClearAshenCache()
+	ashenCache = {}
+end
+
+
 function addon:EventHandler(event, arg1)
 	if event == "PLAYER_ENTERING_WORLD" then
 		InTorghast()
@@ -181,6 +260,48 @@ function addon:EventHandler(event, arg1)
 		addon.UpdateItemCount()
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		addon.InitPowers()
+
+	elseif event == "PLAYER_DEAD" then
+		addon.Stats:IncreaseDeathCount()
+	elseif event == "CURRENCY_DISPLAY_UPDATE" then
+			--local currencyType, quantity, quantityChange, quantityGainSource, quantityLostSource = ...
+			addon.Stats:PhantasmasGain() --newPhantasma(currencyType, quantity, quantityChange, quantityGainSource, quantityLostSource)
+	elseif event == "PLAYER_CHOICE_UPDATE" then
+
+
+			addon.Stats:AnimaGain()
+	elseif event == "NAME_PLATE_UNIT_ADDED" or event == "FORBIDDEN_NAME_PLATE_UNIT_ADDED"  then
+		if arg1 then
+			local guid = UnitGUID(arg1)
+			if not guid then return end
+			local cid = self:GetCIDFromGUID(guid)
+			if cid == 152253 then --and not warnedGUIDs[guid] then
+				--warnedGUIDs[guid] = true
+				--PlaySoundFile("Interface\\AddOns\\DBM-CHallenges\\Shadowlands\\Stars.mp3", "Master")
+				addon.Stats.GrueReleased()
+			end
+		end
+
+	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
+		local _, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _ = CombatLogGetCurrentEventInfo()
+		if not destGUID then return end
+		local cid = self:GetCIDFromGUID(destGUID)
+		local playerGUID = UnitGUID("player")
+		local petGUID = UnitGUID("pet")
+		--print(cid == ashen[cid])
+--print(CombatLogGetCurrentEventInfo())
+		if (subevent == "UNIT_DIED") and (cid == 151353) then
+			addon.Stats.RatKilled()
+			--Revisit to count only player & pet kills?
+		elseif (subevent == "UNIT_DIED") then --and (sourceGUID == playerGUID ) then
+			addon.Stats.MobKilled()
+
+		elseif (cid and ashen[cid])  and (sourceGUID == playerGUID or sourceGUID == petGUID) and not ashenCache[destGUID] then
+			print(cid)
+			ashenCache[destGUID] = true
+			addon.Stats.PotBroken()
+		end
+
 	end		
 end
 
@@ -191,9 +312,11 @@ function addon:OnInitialize()
 	TorghastTourgiudeDB.Options = TorghastTourgiudeDB.Options or {}
 	TorghastTourgiudeDB.Notes = TorghastTourgiudeDB.Notes or {}
 	TorghastTourgiudeDB.Weights = TorghastTourgiudeDB.Weights or {}
+	TorghastTourgiudeDB.Stats = TorghastTourgiudeDB.Stats or {}
 	self.db = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Options, defaults, true)
 	self.Weightsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Weights, noteDefaults, false)
 	self.Notesdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Notes, noteDefaults, false)
+	self.Statsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Stats, statsDefaults, false)
 	--options.args.settings.args.options = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
 	Profile = self.db.profile
 	LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, addonName)

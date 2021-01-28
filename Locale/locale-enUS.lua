@@ -29,6 +29,34 @@ L["Options"]=true
 L["Always"] = true
 
 
+
+--Stats
+L["TOTALS:"] = true
+L["CURRENT RUN:"] = true
+L["Total Deaths: %s"] = true
+L["Total Floors Climbed: %s"] = true
+L["Total Anima Powers Collected: %s"] = true
+L["Total Phantasma Collected: %s"] = true
+L["Total Ashen Phylactery Broken: %s"] = true
+L["Total Mobs Killed: %s"] = true
+L["Total Mawrats Killed: %s"] = true
+L["Times Tarragrue Released: %s"] = true
+L["Total Time Spent: %s"] = true
+
+L["Total "] = true
+L["%sDeaths: %s"] = true
+L["%sFloors Climbed: %s"] = true
+L["%sAnima Powers Collected: %s"] = true
+L["%sPhantasma Collected: %s"] = true
+L["%sAshen Phylactery Broken: %s"] = true
+L["%sMobs Killed: %s"] = true
+L["%sMawrats Killed: %s"] = true
+L["%sTimes Tarragrue Released: %s"] = true
+L["%sTime Spent: %s"] = true
+
+
+
+
 L["Set Power Weight & Note"] = true
 L["Power Weight"] = true
 L["Power Notes"] = true
@@ -38,12 +66,12 @@ L["BOSSLINK"] = "Boss Link: https://www.wowhead.com/npc=%s"
 L["GUIDELINK"] = "Guide Link: https://www.wowhead.com/guides/torghast-floor-boss-strategies-abilities-tips-tricks"
 
 --Tooltip
-L["Overview"] = true
+L["Upgrades"] = true
 L["Ravenous Anima Cell Powers"] = true
 L["Rares"] = true
 L["Bosses"] = true
 L["Bosses Ability"] = true
-
+L["Stats"] = true
 
 --Bosses
 L["156239"] = "Dark Ascended Corrus"
