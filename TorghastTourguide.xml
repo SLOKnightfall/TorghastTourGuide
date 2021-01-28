@@ -443,6 +443,34 @@
 						<Scripts>
 						</Scripts>
 					</Button>
+					<ScrollFrame name="$parentStatsScrollFrame" useParentLevel="true" parentKey="statsScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
+						<Size x="375" y="440"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-05" y="5"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="TorghastTourGuideScrollBarTemplate"/>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child">
+								<Size x="320" y="372"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
 					<Button name="$parentOverviewTab" inherits="TorghastTourGuideTabTemplate" parentKey="overviewTab" id="2">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentStatsTab" relativePoint="BOTTOM" x="0" y="2"/>
@@ -573,6 +601,35 @@
 						<Scripts>
 						</Scripts>
 					</Button>
+
+					<ScrollFrame name="$parentRareScrollFrame" useParentLevel="true" parentKey="rareScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
+						<Size x="375" y="440"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-05" y="5"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="TorghastTourGuideScrollBarTemplate"/>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child">
+								<Size x="320" y="372"/>
+								<Anchors>
+									<Anchor point="TOPLEFT" x="0" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
 					<Button name="$parentBossTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossTab" id="5">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentRareTab" relativePoint="BOTTOM" x="0" y="2"/>

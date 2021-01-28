@@ -19,6 +19,8 @@ addon.ravCount = 0
 local Profile
 local isEnabled = false
 
+addon.Stats = {}
+
 --ACE3 Option Handlers
 local optionHandler = {}
 function optionHandler:Setter(info, value)
@@ -113,56 +115,60 @@ local noteDefaults = {
 	}
 }
 
-local statsDefaults = {
-	profile = {
-		current = {
+local function ResetCounts()
+	local defaults = {
 			Phantasma = 0,
-			Mawrats = 0,
-			AnimaOrbs = 0,
+			AnimaPowers = 0,
 			JarsBroken = 0,
 			FloorsCompleted = 0,
 			Deaths = 0,
 			Grue = 0,
 			MobsKilled = 0,
-			Time = 0,
-		},
-		total = {
-			Phantasma = 0,
 			Mawrats = 0,
-			AnimaOrbs = 0,
-			JarsBroken = 0,
-			FloorsCompleted = 0,
-			Deaths = 0,
-			Grue = 0,
-			MobsKilled = 0,
+			Rares = 0,
+			Bosses = 0,
 			Time = 0,
+			CurrentTime = 0,
+			TrapSprung = 0,
+			Bosses = 0,
+			Rares = 0,
+			SoulsSaved = 0,
+			Chests = 0,
+			QuestsCompleted = 0,
+			RunsCompleted = 0,
 		}
-	}
+
+	return defaults
+end
+addon.Stats.ResetCounts = ResetCounts
+
+
+local statsDefaults = {
+	profile = {}
 }
-
-
-
---f:RegisterEvent("PLAYER_LOGOUT")
---f:RegisterEvent("PLAYER_ENTERING_WORLD")
---f:RegisterEvent("ADDON_LOADED")
-
+statsDefaults.profile.current = ResetCounts()
+statsDefaults.profile.total = ResetCounts()
 
 
 local function Enable()
+	if isEnabled then return end
 	addon:RegisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
 	addon:RegisterEvent("CURSOR_UPDATE", "EventHandler")
 	addon:RegisterEvent("BAG_UPDATE", "EventHandler")
 	addon:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
 
-addon:RegisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
-addon:RegisterEvent("PLAYER_CHOICE_UPDATE", "EventHandler")
-addon:RegisterEvent("PLAYER_DEAD", "EventHandler")
-addon:RegisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
-addon:RegisterEvent("UNIT_COMBAT", "EventHandler")
-addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "EventHandler")
-addon:RegisterEvent("NAME_PLATE_UNIT_ADDED", "EventHandler")
-addon:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
+	addon:RegisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
+	addon:RegisterEvent("PLAYER_DEAD", "EventHandler")
+	addon:RegisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
+	addon:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "EventHandler")
+	addon:RegisterEvent("NAME_PLATE_UNIT_ADDED", "EventHandler")
+	addon:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
+	addon:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "EventHandler")
+	addon:RegisterEvent("QUEST_TURNED_IN", "EventHandler")
 
+	if not addon.Statsdb.profile.current.CurentTime then 
+		addon.Statsdb.profile.current.CurentTime = GetTime()
+	end
 
 	if frames.f then
 		frames.f:Show()
@@ -172,7 +178,10 @@ addon:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
 	end
 	isEnabled = true
 	addon.InitPowers()
+	frames.f:RegisterUnitEvent("UNIT_AURA", "player");
+	frames.f:RegisterUnitEvent("UNIT_TARGET", "target");
 
+	frames.f:SetScript("OnEvent", function(...) addon.EventHandler(...) end)
 	--if not IsAddOnLoaded("Blizzard_PlayerChoiceUI") then 
 		-- LoadAddOn("Blizzard_PlayerChoiceUI")
 		--end
@@ -190,15 +199,19 @@ local function Disable()
 	addon:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
 
 	addon:UnregisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
-addon:UnregisterEvent("PLAYER_CHOICE_UPDATE", "EventHandler")
-addon:UnregisterEvent("PLAYER_DEAD", "EventHandler")
-addon:UnregisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
-addon:UnregisterEvent("UNIT_COMBAT", "EventHandler")
-addon:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "EventHandler")
 
-addon:UnregisterEvent("NAME_PLATE_UNIT_ADDED", "EventHandler")
-addon:UnregisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
+	addon:UnregisterEvent("PLAYER_DEAD", "EventHandler")
+	addon:UnregisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
+	addon:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "EventHandler")
 
+	addon:UnregisterEvent("NAME_PLATE_UNIT_ADDED", "EventHandler")
+	addon:UnregisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
+	addon:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", "EventHandler")
+	addon:UnregisterEvent("QUEST_TURNED_IN", "EventHandler")
+
+
+
+	addon.Statsdb.profile.total.Time = addon.Statsdb.profile.total.CurrentTime
 	if frames.f then
 		frames.f:Hide()
 		frames.b:Hide()
@@ -211,19 +224,6 @@ addon:UnregisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
 end
 	
 
-local function InTorghast()
-	local id = C_Map.GetBestMapForUnit("player")
-	if id then
-		local name = C_Map.GetMapInfo(id).name
-		if name and name == "Torghast" then
-			return Enable()
-		end
-	end
-
-	return Disable()
-end
-
-
 function addon:GetCIDFromGUID(guid)
 	local guidType, _, playerdbID, _, _, cid, _ = strsplit("-", guid or "")
 	if guidType and (guidType == "Creature" or guidType == "Vehicle" or guidType == "Pet") then
@@ -235,73 +235,150 @@ function addon:GetCIDFromGUID(guid)
 end
 
 local ashen = {
-[164698] = true,
-[167986] = true,
-[165523] = true,
-[165533] = true,
-[170525] = true,
-[167987] = true,
+	[164698] = true,
+	[167986] = true,
+	[165523] = true,
+	[165533] = true,
+	[170525] = true,
+	[167987] = true,
+}
+
+
+local traps = {
+	[307023] = true, --soul-burst
+	[331321] = true,-- spike trap
+	[306772] = true,--scythe
 }
 
 local ashenCache = {}
 local function ClearAshenCache()
 	ashenCache = {}
 end
-
-
-function addon:EventHandler(event, arg1)
+local grueFound = {}
+local PHANTASMA_ID_NUMBER = 1728
+local FREEING_SPELLID = 342127
+local OPEN_CHEST_SPELLID = 320060
+local mobList = {}
+local currentFloor = 1
+local runType
+function addon:EventHandler(event, arg1, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
-		InTorghast()
+		if IsInJailersTower() then 
+			Enable()
+		else
+			Disable()
+		end
+
+	elseif event == "JAILERS_TOWER_LEVEL_UPDATE" then
+		local level = arg1
+		currentFloor = arg1
+		runType = ...
+		--Enum.JailersTowerType
+		if level == 1 then 
+			addon.Stats:InitRun()
+		else
+			addon.Stats.IncreaseCounter("FloorsCompleted")
+		end
+
 	elseif event == "ADDON_LOADED" and arg1 == "Blizzard_PlayerChoiceUI" and isEnabled then 
 		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end) end)
+
+	--elseif event == "ADDON_LOADED" and arg1 == "Blizzard_BindingUI" then
+	--	print("aas")
+		  --  QuickKeybindFrame.phantomExtraActionButton:ClearAllPoints()
+   -- QuickKeybindFrame.phantomExtraActionButton:SetPoint("RIGHT", -4, -4)
+
 	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
 		C_Timer.After(0.1, addon.PowerTooltips)
 	elseif event == "BAG_UPDATE" then
+
 		addon.UpdateItemCount()
+
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		addon.InitPowers()
 
 	elseif event == "PLAYER_DEAD" then
-		addon.Stats:IncreaseDeathCount()
-	elseif event == "CURRENCY_DISPLAY_UPDATE" then
-			--local currencyType, quantity, quantityChange, quantityGainSource, quantityLostSource = ...
-			addon.Stats:PhantasmasGain() --newPhantasma(currencyType, quantity, quantityChange, quantityGainSource, quantityLostSource)
+			addon.Stats.IncreaseCounter("Deaths")
+
+	elseif event == "CURRENCY_DISPLAY_UPDATE" and arg1 == PHANTASMA_ID_NUMBER then 
+			local  quantity, quantityChange, quantityGainSource, quantityLostSource = ...
+			addon.Stats:SetPhantasma(quantityChange)
+
 	elseif event == "PLAYER_CHOICE_UPDATE" then
-
-
 			addon.Stats:AnimaGain()
+
 	elseif event == "NAME_PLATE_UNIT_ADDED" or event == "FORBIDDEN_NAME_PLATE_UNIT_ADDED"  then
 		if arg1 then
 			local guid = UnitGUID(arg1)
 			if not guid then return end
 			local cid = self:GetCIDFromGUID(guid)
-			if cid == 152253 then --and not warnedGUIDs[guid] then
-				--warnedGUIDs[guid] = true
+			if cid == 152253 and not grueFound[guid] then
+				grueFound[guid] = true
+				
 				--PlaySoundFile("Interface\\AddOns\\DBM-CHallenges\\Shadowlands\\Stars.mp3", "Master")
-				addon.Stats.GrueReleased()
+			addon.Stats.IncreaseCounter("Grue")
 			end
 		end
 
 	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
-		local _, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _ = CombatLogGetCurrentEventInfo()
-		if not destGUID then return end
+		local _, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellID = CombatLogGetCurrentEventInfo()
+		--print(CombatLogGetCurrentEventInfo())	
+		--if not destGUID then return end
 		local cid = self:GetCIDFromGUID(destGUID)
 		local playerGUID = UnitGUID("player")
 		local petGUID = UnitGUID("pet")
-		--print(cid == ashen[cid])
---print(CombatLogGetCurrentEventInfo())
-		if (subevent == "UNIT_DIED") and (cid == 151353) then
-			addon.Stats.RatKilled()
-			--Revisit to count only player & pet kills?
-		elseif (subevent == "UNIT_DIED") then --and (sourceGUID == playerGUID ) then
-			addon.Stats.MobKilled()
 
+			--Revisit to count only player & pet kills?
+		if (subevent == "UNIT_DIED") and destGUID ~= playerGUID then
+			addon.Stats.IncreaseCounter("MobsKilled")
+			if (cid == 151353) then 
+				addon.Stats.IncreaseCounter("Mawrats")
+			elseif 	mobList[destGUID]  and mobList[destGUID] == "rare" then
+				mobList[destGUID] = nil
+				addon.Stats.IncreaseCounter("Rares")
+			elseif 	mobList[destGUID]  and mobList[destGUID] == "boss" then
+				mobList[destGUID] = nil
+				addon.Stats.IncreaseCounter("Bosses")
+				if (currentFloor == 6 and runType ~= 0) or
+				  (currentFloor == 18 and runType == 0) then 
+					addon.Stats.IncreaseCounter("Bosses")
+				end
+			end
+		
+		elseif (subevent == "SPELL_DAMAGE")  and destGUID == playerGUID and traps[spellID] then 
+			addon.Stats.IncreaseCounter("TrapSprung")
+			
 		elseif (cid and ashen[cid])  and (sourceGUID == playerGUID or sourceGUID == petGUID) and not ashenCache[destGUID] then
-			print(cid)
 			ashenCache[destGUID] = true
-			addon.Stats.PotBroken()
+			addon.Stats.IncreaseCounter("JarsBroken")
 		end
 
+	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then 
+		local arg2, arg3 = ...
+		if arg1 == "player" and arg3 == FREEING_SPELLID then 
+			addon.Stats.IncreaseCounter("SoulsSaved")
+		elseif arg3 == OPEN_CHEST_SPELLID then 
+			addon.Stats.IncreaseCounter("Chests")
+		end
+	elseif event == "UNIT_AURA" then
+		addon.Stats:AnimaGain()
+
+	elseif event ==  "UNIT_TARGET" then
+		local unitClass = UnitClassification("target")
+		local level = UnitLevel("target")
+		if unitClass == "rare" or unitClass == "rareelite" then 
+			local guid = UnitGUID("target")
+			mobList[guid] = "rare"
+		elseif unitClass == "elite" and level >=62 then 
+			local guid = UnitGUID("target")
+			mobList[guid] = "boss"
+		end
+	elseif event ==  "QUEST_TURNED_IN" then
+		addon.Stats.IncreaseCounter("QuestsCompleted")
+
+
+	elseif(event == "SCENARIO_COMPLETED") then 
+			--print("Done")
 	end		
 end
 
@@ -326,6 +403,9 @@ function addon:OnInitialize()
 	
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler" )
 	addon:RegisterEvent("ADDON_LOADED", "EventHandler" )
+	addon:RegisterEvent("JAILERS_TOWER_LEVEL_UPDATE", "EventHandler" )
+
+	
 end
 
 local RAVENOUS_CELL_ID = 170540

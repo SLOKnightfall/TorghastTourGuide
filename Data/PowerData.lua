@@ -181,32 +181,36 @@ local RarePowerNames = {
 	["Blade of the Lifetaker"] = 300771,
 	["Pouch of Phantasma"] = 295072,
 	["Lumbering Form"] = 337938,
+	["The Fifth Skull"] = 337657,
+	["Brittle Bone Dust"] = 337645,
 	["Potent Acid Gland"] = 337928,
+	["Overgrowth Seedling"] = 338705,
+	["Ever-Beating Heart"] = 338733,
 }
 
+
 addon.RareIDs = {
-	[152500] = {}, --Deadsoul Amalgam
-	[173080] = {}, --Wandering Death
-
-
-
-
-	[173134] = {RarePowerNames["Fallen Armaments"], RarePowerNames["Dark Fortress"]}, --Darksworn Goliath
-	[173114] = {RarePowerNames["Pulsing Rot-hive"], RarePowerNames["Swarm Form"]}, --Invasive Decayfly
-	[156134] = {RarePowerNames["Spectral Oats"], RarePowerNames["Spectral Bridle"]}, --Ghastly Charger
-	[170385] = {RarePowerNames["Resonating Effigy"], RarePowerNames["Ephemeral Effigy"]}, --Writhing Misery
-	[152508] = {RarePowerNames["Tremorbeast Tusk"], RarePowerNames["Tremorbeast Heart"]}, --Dusky Tremorbeast
-	[173191] = {RarePowerNames["Soulward Clasp"], RarePowerNames["V'lara's Cape of Subterfuge"]}, --Soulstalker V'lara
-	[156158] = {RarePowerNames["Dark Fortress"], RarePowerNames["Fallen Armaments"]}, --Adjutant Felipos
-	[170414] = {RarePowerNames["Erratic Howler"], RarePowerNames["Unstable Form"]}, --Howling Spectre
-	[170417] = {RarePowerNames["Fractured Phantasma Lure"], RarePowerNames["Reinforced Lure Casing"]}, --Animated Stygia
-	[156142] = {RarePowerNames["Frostbite Wand"], RarePowerNames["Icy Heartcrust"]}, --Icy Heartcrust
-	[152517] = {RarePowerNames["Vitality Guillotine"], RarePowerNames["Blade of the Lifetaker"]}, --Deadsoul Lifetaker
-	[152612] = {RarePowerNames["Vial of Lost Potential"], RarePowerNames["Subjugator's Manacles"]}, --Subjugator Klontzas
-	[155483] = {RarePowerNames["Shimmering Wingcape"], RarePowerNames["Irritating Moth Dust"]}, --Faeleaf Shimmerwing
-	[173051] = {RarePowerNames["Elongated Skeletal Arms"], RarePowerNames["Coffer of Spectral Whispers"]}, --Suppressor Xelsor
-	[156237] = {RarePowerNames["Fallen Armaments"], RarePowerNames["Dark Fortress"]}, --Imperator Dara
-	[169823] = {RarePowerNames["Lumbering Form"], RarePowerNames["Potent Acid Gland"],}, -- PowerNames["Obleron Endurance x3"]}, --Gorm Behemoth
+	[152500] = {97777,{}}, --Deadsoul Amalgam
+	[173080] = {96338,{}}, --Wandering Death
+	[173238] = {98490,{RarePowerNames["Resonating Effigy"], RarePowerNames["Ephemeral Effigy"]}}, --Deadsoul Strider
+	[152612] = {100485,{RarePowerNames["Vial of Lost Potential"], RarePowerNames["Subjugator's Manacles"]}}, --Subjugator Klontzas
+	[152508] = {100490,{RarePowerNames["Tremorbeast Tusk"], RarePowerNames["Tremorbeast Heart"]}}, --Dusky Tremorbeast
+	[173051] = {97235,{RarePowerNames["Elongated Skeletal Arms"], RarePowerNames["Coffer of Spectral Whispers"]}}, --Suppressor Xelsor
+	[156134] = {97041,{RarePowerNames["Spectral Oats"], RarePowerNames["Spectral Bridle"]}}, --Ghastly Charger
+	[170417] = {88739,{RarePowerNames["Fractured Phantasma Lure"], RarePowerNames["Reinforced Lure Casing"]}}, --Animated Stygia
+	[155483] = {95199,{RarePowerNames["Shimmering Wingcape"], RarePowerNames["Irritating Moth Dust"]}}, --Faeleaf Shimmerwing
+	[170228] = {94814,{RarePowerNames["The Fifth Skull"], RarePowerNames["Brittle Bone Dust"]}}, --Bone Husk
+	[169823] = {94207,{RarePowerNames["Lumbering Form"], RarePowerNames["Potent Acid Gland"],}}, -- PowerNames["Obleron Endurance x3"]}, --Gorm Behemoth
+	[173114] = {18722,{RarePowerNames["Pulsing Rot-hive"], RarePowerNames["Swarm Form"]}}, --Invasive Decayfly
+	[173136] = {98171,{RarePowerNames["Overgrowth Seedling"], RarePowerNames["Ever-Beating Heart"]}}, --blightsmasher
+	[170414] = {88583,{RarePowerNames["Erratic Howler"], RarePowerNames["Unstable Form"]}}, --Howling Spectre
+	[173191] = {92415,{RarePowerNames["Soulward Clasp"], RarePowerNames["V'lara's Cape of Subterfuge"]}}, --Soulstalker V'lara
+	[152517] = {90427,{RarePowerNames["Vitality Guillotine"], RarePowerNames["Blade of the Lifetaker"]}}, --Deadsoul Lifetaker
+	[156158] = {93906,{RarePowerNames["Dark Fortress"], RarePowerNames["Fallen Armaments"]}}, --Adjutant Felipos
+	[173134] = {92664,{RarePowerNames["Fallen Armaments"], RarePowerNames["Dark Fortress"]}}, --Darksworn Goliath
+	[156237] = {94919,{RarePowerNames["Fallen Armaments"], RarePowerNames["Dark Fortress"]}}, --Imperator Dara
+	[170385] = {94278,{RarePowerNames["Resonating Effigy"], RarePowerNames["Ephemeral Effigy"]}}, --Writhing Misery
+	[156142] = {98720,{RarePowerNames["Frostbite Wand"], RarePowerNames["Icy Heartcrust"]}}, --Seeker of Souls
 }
 
 

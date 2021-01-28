@@ -31,18 +31,9 @@ L["Always"] = true
 
 
 --Stats
+L["STATS"] = true
 L["TOTALS:"] = true
 L["CURRENT RUN:"] = true
-L["Total Deaths: %s"] = true
-L["Total Floors Climbed: %s"] = true
-L["Total Anima Powers Collected: %s"] = true
-L["Total Phantasma Collected: %s"] = true
-L["Total Ashen Phylactery Broken: %s"] = true
-L["Total Mobs Killed: %s"] = true
-L["Total Mawrats Killed: %s"] = true
-L["Times Tarragrue Released: %s"] = true
-L["Total Time Spent: %s"] = true
-
 L["Total "] = true
 L["%sDeaths: %s"] = true
 L["%sFloors Climbed: %s"] = true
@@ -53,8 +44,12 @@ L["%sMobs Killed: %s"] = true
 L["%sMawrats Killed: %s"] = true
 L["%sTimes Tarragrue Released: %s"] = true
 L["%sTime Spent: %s"] = true
-
-
+L["%sTraps Sprung: %s"] = true
+L["Bosses: %s - Rares: %s - Mawrats: %s"] = true
+L["%sSouls Collected: %s"] = true
+L["%sChests Opened: %s"] = true
+L["%sQuests Completed: %s"] = true
+L["%sSuccessful Runs: %s"] = true
 
 
 L["Set Power Weight & Note"] = true
@@ -72,6 +67,35 @@ L["Rares"] = true
 L["Bosses"] = true
 L["Bosses Ability"] = true
 L["Stats"] = true
+
+
+	L["95004"] = "Venari"
+	L["152253"] = "The Tarragrue"
+
+--Rares
+L["152500"] = "Deadsoul Amalgam"
+L["173080"] = "Wandering Death"
+L["173238"] = "Deadsoul Strider"
+
+L["173134"] = "Darksworn Goliath"
+L["173114"] = "Invasive Decayfly"
+L["156134"] = "Ghastly Charger"
+L["170385"] = "Writhing Misery"
+L["152508"] = "Dusky Tremorbeast"
+L["173191"] = "Soulstalker V'lara"
+L["156158"] = "Adjutant Felipos"
+L["170414"] = "Howling Spectre"
+L["170417"] = "Animated Stygia"
+L["156142"] = "Seeker of Souls"
+L["152517"] = "Deadsoul Lifetaker"
+L["152612"] = "Subjugator Klontzas"
+L["155483"] = "Faeleaf Shimmerwing"
+L["173051"] = "Suppressor Xelsor"
+L["156237"] = "Imperator Dara"
+L["169823"] = "Gorm Behemoth"
+L["170228"] = "Bone Husk"
+L["173136"] = "Blightsmasher"
+
 
 --Bosses
 L["156239"] = "Dark Ascended Corrus"
