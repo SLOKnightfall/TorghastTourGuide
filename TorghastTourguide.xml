@@ -610,19 +610,19 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\EncounterJournal\DungeonJournal">
+								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\TargetingFrame\Nameplates">
 									<Anchors>
-										<Anchor point="RIGHT" x="-6" y="0"/>
+										<Anchor point="RIGHT" x="-12" y="0"/>
 									</Anchors>
-									<Size x="48" y="43"/>
-									<TexCoords left="0.393555" right="0.44043" top="0.710938" bottom="0.794922"/>
+									<Size x="035" y="35"/>
+									<TexCoords left="0.00390625" right="0.148438" top="0.523438" bottom="0.796875"/>
 								</Texture>
-								<Texture name="$parentSelect" parentKey="selected" file="Interface\EncounterJournal\DungeonJournal">
+								<Texture name="$parentSelect" parentKey="selected" file="Interface\TargetingFrame\Nameplates">
 									<Anchors>
-										<Anchor point="RIGHT" x="-6" y="0"/>
+										<Anchor point="RIGHT" x="-12" y="0"/>
 									</Anchors>
-									<Size x="48" y="43"/>
-									<TexCoords left="0.393555" right="0.44043" top="0.710938" bottom="0.794922"/>
+									<Size x="35" y="35"/>
+									<TexCoords left="0.00390625" right="0.148438" top="0.523438" bottom="0.796875"/>
 								</Texture>
 							</Layer>
 						</Layers>

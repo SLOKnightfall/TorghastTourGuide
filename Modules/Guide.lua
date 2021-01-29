@@ -666,7 +666,10 @@ function addon.CreateBossButtons()
 end
 
 
+
 function addon.CreateRareButtons()
+	local lastIndex
+
 	local f = frames.tg.info.rareScroll.child
 	f.banner = f:CreateTexture(nil, "OVERLAY")
 	f.banner:SetAtlas("bonusobjectives-title-bg")
@@ -688,7 +691,9 @@ function addon.CreateRareButtons()
 		if not rareButton then
 			rareButton = CreateFrame("BUTTON", "TorgastTourGuideRareButton"..rareIndex, frames.tg.info.rareScroll.child, "TorghastTourGuideBossButtonTemplate")
 			if rareIndex > 1 then
-				rareButton:SetPoint("TOPLEFT", _G["TorgastTourGuideRareButton"..(rareIndex - 1)], "BOTTOMLEFT", 0, -15)
+				rareButton:SetPoint("TOPLEFT", lastIndex, "BOTTOMLEFT", 0, -4)
+								--rareButton:SetPoint("TOPLEFT", _G["TorgastTourGuideRareButton"..(rareIndex - 1)], "BOTTOMLEFT", 0, -15)
+
 				rareButton:UnlockHighlight()
 			else
 				rareButton:ClearAllPoints()
@@ -708,6 +713,22 @@ function addon.CreateRareButtons()
 		--Use the boss' first creature as the button ico
 		local bossImage = data[1] or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default"
 		SetPortraitTextureFromCreatureDisplayID(rareButton.creature, bossImage)
+
+	lastIndex = rareButton
+	local frameindex = {}
+	for index, powerID in pairs(data[2]) do
+		frameindex[index] = CreatePowerFrame(powerID, f, "TTTG_RarePowers"..rareIndex..powerID, index)
+
+		if index == 1 then 
+			frameindex[index]:SetPoint("TOPLEFT", rareButton, "BOTTOMLEFT", 0,-10)
+
+		else
+			frameindex[index]:SetPoint("TOPLEFT", frameindex[index-1], "BOTTOMLEFT" )
+
+		end
+		frameindex[index]:SetFrameLevel(rareButton:GetFrameLevel() +1)
+		lastIndex = frameindex[index]
+	end
 
 		rareIndex = rareIndex + 1
 	end
