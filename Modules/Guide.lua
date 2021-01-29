@@ -15,271 +15,330 @@ local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local frames = {} 
 
-local function CreateUpgradeFrame(parent, id)
+
+local function CreatePowerFrame(powerID, parent, name, index)
+	local spell = Spell:CreateFromSpellID(powerID)
+
+	local infoHeader = CreateFrame("FRAME", name..index, parent, "TorghastTourGuideInfoTemplate")
+	infoHeader:SetPoint("TOPLEFT", 25, -50)
+	infoHeader:SetPoint("TOPRIGHT", 25, -50)
+	infoHeader.button.icon1:Hide()
+	infoHeader.button.icon2:Hide()
+	infoHeader.button.icon3:Hide()
+	infoHeader.button.icon4:Hide()
+	infoHeader.overviewIndex = index
+	
+	local textRightAnchor = infoHeader.button.icon1
+	infoHeader.button.title:SetPoint("RIGHT", textRightAnchor, "LEFT", -5, 0)
+	infoHeader:Show()
+
+	infoHeader.button.title:Show()
+	spell:ContinueOnSpellLoad(function()
+		local name = spell:GetSpellName()
+		local desc = spell:GetSpellDescription()
+		local texture = spell:GetSpellTexture()
+		infoHeader.button.abilityIcon:SetTexture(texture)
+		infoHeader.button.abilityIcon:Show()
+		infoHeader.button.title:SetText(name)
+		infoHeader.description:SetText(desc)
+		infoHeader.description:SetWidth(infoHeader:GetWidth() - 30)
+		infoHeader:SetHeight(infoHeader.description:GetHeight() + 55)
+	end)
+
+
+	infoHeader:Show()
+	return infoHeader
+end
+
+
+local function CreateUpgradeFrame(parent, id, index)
 	local upgradeInfo = addon.Upgrades[id]
 	local item = Item:CreateFromItemID(id)
 	local known = C_QuestLog.IsQuestFlaggedCompleted(upgradeInfo[2])
 	local spell = Spell:CreateFromSpellID(upgradeInfo[1])
-	local color = RED_FONT_COLOR_CODE
-	if known then
-		color = GREEN_FONT_COLOR_CODE
-	end
+	local infoHeader = CreateFrame("FRAME", "TTG_Upgrades"..index, parent, "TorghastTourGuideInfoTemplate")
+	infoHeader:SetPoint("TOPLEFT", 25, -50)
+	infoHeader:SetPoint("TOPRIGHT", 25, -50)
 
-	local f = CreateFrame("Frame", nil, parent) 
-	f:SetSize(20, 100)
-	f:Show()
+	infoHeader.button.icon1:Hide()
+	infoHeader.button.icon2:Hide()
+	infoHeader.button.icon3:Hide()
+	infoHeader.button.icon4:Hide()
+	
+	local textRightAnchor = infoHeader.button.icon1
+	infoHeader.button.title:SetPoint("RIGHT", textRightAnchor, "LEFT", -5, 0)
+	infoHeader:Show()
+	infoHeader.button.title:Show()
 
-	f.icon = f:CreateTexture(nil, "OVERLAY")
-	f.icon:SetSize(25,25)
-	f.icon:SetTexture(itemTexture)
-	f.icon:SetPoint("TOPLEFT")
-	f.name = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	f.name:SetPoint("LEFT",f.icon, "RIGHT", 5, 0)
 	item:ContinueOnItemLoad(function()
 		local name = item:GetItemName() 
 		local icon = item:GetItemIcon()
-		f.name:SetText(color..name)
-		f.icon:SetTexture(icon)
+		infoHeader.button.title:SetText(name)
+		if known then
+			infoHeader.button.title:SetTextColor(0,1,0)
+		else
+			infoHeader.button.title:SetTextColor(1,0,0)
+
+		end
+		infoHeader.button.abilityIcon:SetTexture(icon)
+		infoHeader.button.abilityIcon:Show()
+		infoHeader.button.title:SetText(name)
 	end)
 
-	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
 	spell:ContinueOnSpellLoad(function()
-		local description = spell:GetSpellDescription()
-		f.desc:SetText(description)
+		local desc = spell:GetSpellDescription()
+		infoHeader.description:SetText(desc)
+		infoHeader.description:SetWidth(infoHeader:GetWidth() - 30)
+		infoHeader:SetHeight(infoHeader.description:GetHeight() + 55)
 	end)
 
-	f.desc:SetPoint("TOPLEFT",f.icon, "BOTTOMLEFT",0, 0)
-	f.desc:SetWidth(370)
-	f.desc:SetJustifyH("LEFT")
-	local height = f.desc:GetStringHeight()
-	f:SetHeight(height + 35)
-
-	return f
+	infoHeader:Show()
+	return infoHeader
 end
 
 local function CreateStatsFrame(parent)
 	local f = CreateFrame("Frame", nil, frames.tg.info.statsScroll.child) 
 	local current = addon.Statsdb.profile.current
 	local total = addon.Statsdb.profile.total
-	--frames.upgrades = f
 	frames.tg.info.stats = f
 	addon.Stats.Frame = f
-		f:SetPoint("TOPLEFT")
-
+	f:SetPoint("TOPLEFT")
 	f:SetPoint("BOTTOMRIGHT")
 	f:Show()
 
+	f.banner = f:CreateTexture(nil, "OVERLAY")
+	f.banner:SetAtlas("bonusobjectives-title-bg")
+	f.banner:SetPoint("TOPLEFT", 25, -3)
+	f.banner:SetPoint("TOPRIGHT", 25, 3)
+	f.banner:SetHeight(30)
+
 	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	f.desc:SetText(L["STATS"])
-	f.desc:SetPoint("TOP", 0, -5)
+	f.desc:SetPoint("CENTER", f.banner, 0, 3)
 	f.desc:SetJustifyH("CENTER")
 
-	f.current = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	f.current:SetText(L["CURRENT RUN:"])
-	f.current:SetPoint("TOPLEFT", 25, -25)
-	f.current:SetJustifyH("CENTER")
+	f.currentBG = CreateFrame("FRAME", "TTTG_CurrentStats", frames.tg.info.statsScroll.child, "TorghastTourGuideInfoTemplate")
+	f.currentBG:ClearAllPoints()
+	f.currentBG:SetPoint("TOPLEFT", 25, -50)
+	f.currentBG:SetPoint("TOPRIGHT", 25, -50)
 
-	f.currentTimeCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	f.currentTimeCount:SetPoint("TOPLEFT", f.current, "BOTTOMLEFT", 15, -5)
+	f.currentBG.button.icon1:Hide()
+	f.currentBG.button.icon2:Hide()
+	f.currentBG.button.icon3:Hide()
+	f.currentBG.button.icon4:Hide()
+	local textRightAnchor = f.currentBG.button.icon1
+	f.currentBG.button.title:SetPoint("LEFT", 15, 0)
+	f.currentBG.button.title:SetPoint("RIGHT", textRightAnchor, "LEFT", -5, 0)
+
+	f.currentBG.button.title:SetText(L["CURRENT RUN:"])
+	f.currentBG.description:SetPoint("TOPRIGHT", -15, 0)
+	f.currentBG.description:SetPoint("BOTTOMLEFT", -5, 0)
+
+	f.currentTimeCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
+	f.currentTimeCount:SetPoint("TOPLEFT", 45, -78)
 	f.currentTimeCount:SetJustifyH("CENTER")
 
-	f.currentCompleteCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentCompleteCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentCompleteCount:SetPoint("TOPLEFT", f.currentTimeCount, "BOTTOMLEFT", 0, -5)
 	f.currentCompleteCount:SetJustifyH("CENTER")
 
-	f.currentFloorCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentFloorCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentFloorCount:SetPoint("TOPLEFT", f.currentCompleteCount, "BOTTOMLEFT", 0, -5)
 	f.currentFloorCount:SetJustifyH("CENTER")
 
-	f.currentPhantasmaCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentPhantasmaCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentPhantasmaCount:SetPoint("TOPLEFT", f.currentFloorCount, "BOTTOMLEFT", 0, -5)
 	f.currentPhantasmaCount:SetJustifyH("CENTER")
 
-	f.currentAnimaCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentAnimaCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentAnimaCount:SetPoint("TOPLEFT", f.currentPhantasmaCount, "BOTTOMLEFT", 0, -5)
 	f.currentAnimaCount:SetJustifyH("CENTER")
 
-	f.currentSoulsCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentSoulsCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentSoulsCount:SetPoint("TOPLEFT", f.currentAnimaCount, "BOTTOMLEFT", 0, -5)
 	f.currentSoulsCount:SetJustifyH("CENTER")
 
-	f.currentChestCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentChestCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentChestCount:SetPoint("TOPLEFT", f.currentSoulsCount, "BOTTOMLEFT", 0, -5)
 	f.currentChestCount:SetJustifyH("CENTER")
 
-	f.currentQuestCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentQuestCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentQuestCount:SetPoint("TOPLEFT", f.currentChestCount, "BOTTOMLEFT", 0, -5)
 	f.currentQuestCount:SetJustifyH("CENTER")
 
-	f.currentDeathCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentDeathCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentDeathCount:SetPoint("TOPLEFT", f.currentQuestCount, "BOTTOMLEFT", 0, -5)
 	f.currentDeathCount:SetJustifyH("CENTER")
 
-	f.currentTrapsCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentTrapsCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentTrapsCount:SetPoint("TOPLEFT", f.currentDeathCount, "BOTTOMLEFT", 0, -5)
 	f.currentTrapsCount:SetJustifyH("CENTER")
 
-	f.currentgrueCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentgrueCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentgrueCount:SetPoint("TOPLEFT", f.currentTrapsCount, "BOTTOMLEFT", 0, -5)
 	f.currentgrueCount:SetJustifyH("CENTER")
 
-	f.currentkillCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentkillCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentkillCount:SetPoint("TOPLEFT", f.currentgrueCount, "BOTTOMLEFT", 0, -5)
 	f.currentkillCount:SetJustifyH("CENTER")
 
-	f.currentKillBreakdown = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentKillBreakdown = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentKillBreakdown:SetPoint("TOPLEFT", f.currentkillCount, "BOTTOMLEFT", 0, -5)
 	f.currentKillBreakdown:SetJustifyH("CENTER")
 
-	f.currentpotsCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.currentpotsCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.currentpotsCount:SetPoint("TOPLEFT", f.currentKillBreakdown, "BOTTOMLEFT", 0, -5)
 	f.currentpotsCount:SetJustifyH("CENTER")
 
-	f.totals = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	f.totals:SetText(L["TOTALS:"])
-	f.totals:SetPoint("TOPLEFT", f.currentpotsCount, "BOTTOMLEFT", -15, -5)
-	f.totals:SetJustifyH("CENTER")
+	f.currentBG:SetPoint("BOTTOMLEFT", f.currentpotsCount,"BOTTOMLEFT",  25, 0)
+	f.currentBG:SetPoint("BOTTOMRIGHT", f.currentpotsCount,"BOTTOMRIGHT",  25, 0)
 
-	f.totalTimeCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	f.totalTimeCount:SetPoint("TOPLEFT", f.totals, "BOTTOMLEFT", 15, -5)
+	f.totalsBG = CreateFrame("FRAME", "TTTG_TotalStats", frames.tg.info.statsScroll.child, "TorghastTourGuideInfoTemplate")
+	f.totalsBG:ClearAllPoints()
+	f.totalsBG:SetPoint("TOPLEFT", f.currentBG, "BOTTOMLEFT", 0 ,-25)
+	f.totalsBG:SetPoint("TOPRIGHT", f.currentBG, "BOTTOMRIGHT", 0 ,-25)
+
+	f.totalsBG.button.icon1:Hide()
+	f.totalsBG.button.icon2:Hide()
+	f.totalsBG.button.icon3:Hide()
+	f.totalsBG.button.icon4:Hide()
+	local textRightAnchor = f.totalsBG.button.icon1
+	f.totalsBG.button.title:SetPoint("LEFT", 15, 0)
+	f.totalsBG.button.title:SetPoint("RIGHT", textRightAnchor, "LEFT", -5, 0)
+
+	f.totalsBG.button.title:SetText(L["TOTALS:"])
+	f.totalsBG.description:SetPoint("TOPRIGHT", -15, 0)
+	f.totalsBG.description:SetPoint("BOTTOMLEFT", -5, 0)
+
+	f.totalTimeCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
+	f.totalTimeCount:SetPoint("TOPLEFT", f.currentBG, "BOTTOMLEFT", 20, -55)
 	f.totalTimeCount:SetJustifyH("CENTER")
 
-	f.totalCompleteCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalCompleteCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalCompleteCount:SetPoint("TOPLEFT", f.totalTimeCount, "BOTTOMLEFT", 0, -5)
 	f.totalCompleteCount:SetJustifyH("CENTER")
 
-	f.totalFloorCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalFloorCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalFloorCount:SetPoint("TOPLEFT", f.totalCompleteCount, "BOTTOMLEFT", 0, -5)
 	f.totalFloorCount:SetJustifyH("CENTER")
 
-	f.totalPhantasmaCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalPhantasmaCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalPhantasmaCount:SetPoint("TOPLEFT", f.totalFloorCount, "BOTTOMLEFT", 0, -5)
 	f.totalPhantasmaCount:SetJustifyH("CENTER")
 
-	f.totalAnimaCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalAnimaCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalAnimaCount:SetPoint("TOPLEFT", f.totalPhantasmaCount, "BOTTOMLEFT", 0, -5)
 	f.totalAnimaCount:SetJustifyH("CENTER")
 
-	f.totalSoulsCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalSoulsCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalSoulsCount:SetPoint("TOPLEFT", f.totalAnimaCount, "BOTTOMLEFT", 0, -5)
 	f.totalSoulsCount:SetJustifyH("CENTER")
 
-	f.totalChestCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalChestCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalChestCount:SetPoint("TOPLEFT", f.totalSoulsCount, "BOTTOMLEFT", 0, -5)
 	f.totalChestCount:SetJustifyH("CENTER")
 
-	f.totalQuestCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalQuestCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalQuestCount:SetPoint("TOPLEFT", f.totalChestCount, "BOTTOMLEFT", 0, -5)
 	f.totalQuestCount:SetJustifyH("CENTER")
 
-	f.totalDeathCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalDeathCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalDeathCount:SetPoint("TOPLEFT", f.totalQuestCount, "BOTTOMLEFT", 0, -5)
 	f.totalDeathCount:SetJustifyH("CENTER")
 
-	f.totalTrapsCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalTrapsCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalTrapsCount:SetPoint("TOPLEFT", f.totalDeathCount, "BOTTOMLEFT", 0, -5)
 	f.totalTrapsCount:SetJustifyH("CENTER")
 
-	f.totalgrueCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalgrueCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalgrueCount:SetPoint("TOPLEFT", f.totalTrapsCount, "BOTTOMLEFT", 0, -5)
 	f.totalgrueCount:SetJustifyH("CENTER")
 
-	f.totalkillCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalkillCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalkillCount:SetPoint("TOPLEFT", f.totalgrueCount, "BOTTOMLEFT", 0, -5)
 	f.totalkillCount:SetJustifyH("CENTER")
 
-	f.totalKillBreakdown = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalKillBreakdown = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalKillBreakdown:SetPoint("TOPLEFT", f.totalkillCount, "BOTTOMLEFT", 0, -5)
 	f.totalKillBreakdown:SetJustifyH("CENTER")
 
-	f.totalpotsCount = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.totalpotsCount = f:CreateFontString(nil, "OVERLAY", "GameFontBlackMedium")
 	f.totalpotsCount:SetPoint("TOPLEFT", f.totalKillBreakdown, "BOTTOMLEFT", 0, -5)
 	f.totalpotsCount:SetJustifyH("CENTER")
+
+	f.totalsBG:SetPoint("BOTTOMLEFT", f.totalpotsCount,"BOTTOMLEFT",  25, 0)
+	f.totalsBG:SetPoint("BOTTOMRIGHT", f.totalpotsCount,"BOTTOMRIGHT",  25, 0)
 
 	addon.Stats:UpdateStats()
 end 
 
+
 local function CreateUpgradeListFrame(parent)
-	local f = CreateFrame("Frame", nil, parent)
-	--frames.upgrades = f
-	frames.tg.info.upgrades = f
-	f:SetPoint("TOPLEFT", 400, -40 )
+	local f = CreateFrame("Frame", nil, frames.tg.info.upgradesScroll.child) 
+	local current = addon.Statsdb.profile.current
+	local total = addon.Statsdb.profile.total
+	f:SetPoint("TOPLEFT")
 	f:SetPoint("BOTTOMRIGHT")
 	f:Show()
 
+	f.banner = f:CreateTexture(nil, "OVERLAY")
+	f.banner:SetAtlas("bonusobjectives-title-bg")
+	f.banner:SetPoint("TOPLEFT", 25, -3)
+	f.banner:SetPoint("TOPRIGHT", 25, 3)
+	f.banner:SetHeight(30)
+
 	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
 	f.desc:SetText(L["Torghast Upgrades"])
-	f.desc:SetPoint("TOP", 0, -5)
+	f.desc:SetPoint("CENTER", f.banner, 0, 3)
 	f.desc:SetJustifyH("CENTER")
 
 	local index = 1
 	for id in pairs(addon.Upgrades) do
-		f[index] = CreateUpgradeFrame(f, id)
+		f[index] = CreateUpgradeFrame(f, id, index)
+
 		if index == 1 then 
-			f[index]:SetPoint("TOPLEFT", 20, -20)
-			f[index]:SetPoint("TOPRIGHT", 0, 0)
+			f[index]:SetPoint("TOPLEFT", 25, -45)
+			f[index]:SetPoint("TOPRIGHT", 25, -45)
 		else
 			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT" )
+			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT" )
 		end
+
 		index = index + 1
 	end
 end
 
 
-local function CreatePowerFrame(powerID)
-	local spell = Spell:CreateFromSpellID(powerID)
-	local f = CreateFrame("Frame", nil, frames.tg.info.ravPowerScroll.child) 
-	f:SetSize(20, 100)
-	f:Show()
-
-	f.icon = f:CreateTexture(nil, "OVERLAY")
-	f.icon:SetSize(25,25)
-	f.icon:SetTexture(itemTexture)
-	f.icon:SetPoint("TOPLEFT")
-	f.name = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	f.name:SetPoint("LEFT",f.icon, "RIGHT", 5, 0)
-	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	f.desc:SetPoint("TOPLEFT",f.icon, "BOTTOMLEFT",0, 0)
-	f.desc:SetWidth(330)
-	f.desc:SetJustifyH("LEFT")
-
-	spell:ContinueOnSpellLoad(function()
-		local name = spell:GetSpellName() 
-		local icon = spell:GetSpellTexture()
-		local description = spell:GetSpellDescription()
-		f.name:SetText(name)
-		f.icon:SetTexture(icon)
-		f.desc:SetText(description)
-
-		local height = f.desc:GetStringHeight()
-		f:SetHeight(height + 35)
-	end)
-
-	local height = f.desc:GetStringHeight()
-	f:SetHeight(height + 35)
-
-	return f
-end
-
-
 local function CreateRavinousPowerListFrame()
 	local f = frames.tg.info.ravPowerScroll.child
+
+	f.banner = f:CreateTexture(nil, "OVERLAY")
+	f.banner:SetAtlas("bonusobjectives-title-bg")
+	f.banner:SetPoint("TOPLEFT", 25, -3)
+	f.banner:SetPoint("TOPRIGHT", 25, 3)
+	f.banner:SetHeight(30)
+
+	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.desc:SetText(L["Ravenous Anima Cell Powers"])
+	f.desc:SetPoint("CENTER", f.banner, 0, 3)
+	f.desc:SetJustifyH("CENTER")
+
 	local index = 1
-	local name = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	name:SetPoint("TOPLEFT", 20, -20)
-	name:SetText(L["Ravenous Anima Cell Powers"])
+
 	local note = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	note:SetPoint("TOPLEFT", name, "BOTTOMLEFT" , 0, -5)
-	note:SetPoint("TOPRIGHT", 0, 0)
+	note:SetPoint("TOPLEFT", f.desc, "BOTTOMLEFT" , -15, -8)
+	note:SetPoint("TOPRIGHT", f.desc,15, 0)
 	note:SetText(L["Rav_Note"])
 
 	for name, powerID in pairs(addon.PowerNames) do
-		f[index] = CreatePowerFrame(powerID)
+		f[index] = CreatePowerFrame(powerID, f, "TTTG_Powers", index)
+		f[index]:ClearAllPoints()
 		if index == 1 then 
-			f[index]:SetPoint("TOPLEFT", note, "BOTTOMLEFT", 0, -5)
-			f[index]:SetPoint("TOPRIGHT", 0, 0)
+			f[index]:SetPoint("TOPLEFT", 25, -65)
+			f[index]:SetPoint("TOPRIGHT", 25, -65)
 		else
-			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT" )
+			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
+			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
 		end
 		index = index + 1
 	end
@@ -293,7 +352,7 @@ local function CreateMobInfoFrame(mobID)
 	f:Show()
 
 	f.name = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	f.name:SetPoint("LEFT", 5, 0)
+	f.name:SetPoint("LEFT", 9, -3)
 	f.name:SetText(L[tostring(mobID)]..":")
 	f.icon = f:CreateTexture(nil, "OVERLAY")
 	f.icon:SetSize(15,15)
@@ -319,32 +378,63 @@ end
 local function CreateRavinousMobListFrame()
 	local f = frames.tg.info.ravMobScroll.child
 	local zoneIndex = 1
-	local name = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	name:SetPoint("TOPLEFT", 20, -20)
-	name:SetText(L["Torghast Mobs"])
+
+	f.banner = f:CreateTexture(nil, "OVERLAY")
+	f.banner:SetAtlas("bonusobjectives-title-bg")
+	f.banner:SetPoint("TOPLEFT", 25, -3)
+	f.banner:SetPoint("TOPRIGHT", 25, 3)
+	f.banner:SetHeight(30)
+
+	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.desc:SetText(L["Torghast Mobs"])
+	f.desc:SetPoint("CENTER", f.banner, 0, 3)
+	f.desc:SetJustifyH("CENTER")
 
 	local lastIndex
 	for zoneIndex, data in ipairs(addon.ZoneList) do
-		local zone = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-		zone:SetText(data[1])
+		local infoHeader = CreateFrame("FRAME", "TTG_MobZone"..zoneIndex, f, "TorghastTourGuideInfoTemplate")
+		infoHeader:SetPoint("TOPLEFT", 25, -50)
+		infoHeader:SetPoint("TOPRIGHT", 25, -50)
+
+		infoHeader.button.icon1:Hide()
+		infoHeader.button.icon2:Hide()
+		infoHeader.button.icon3:Hide()
+		infoHeader.button.icon4:Hide()
+		
+		local textRightAnchor = infoHeader.button.icon1
+		infoHeader.button.title:SetPoint("RIGHT", textRightAnchor, "LEFT", -5, 0)
+		infoHeader.button.title:SetText(data[1])
+		infoHeader:Show()
+
+		infoHeader.button.title:Show()
+
+		infoHeader.description:SetText(" ")
+		infoHeader.description:SetWidth(infoHeader:GetWidth() - 30)
+		infoHeader:SetHeight(infoHeader.description:GetHeight() + 55)
+
+		infoHeader:Show()
+	
 		if zoneIndex == 1 then 
-			zone:SetPoint("TOPLEFT", name, "BOTTOMLEFT", 0, -10 )
-			--zone:SetPoint("TOPRIGHT", 0, 0)
+			infoHeader:SetPoint("TOPLEFT", 25, -45)
+			infoHeader:SetPoint("TOPRIGHT", 25, -55)
 		else
-			zone:SetPoint("TOPLEFT", lastIndex, "BOTTOMLEFT", 0, -10 )
+			infoHeader:SetPoint("TOPLEFT", lastIndex, "BOTTOMLEFT",0,-25 )
 		end
 
 		for index, mobID in ipairs(data[2]) do
 			f[index] = CreateMobInfoFrame(mobID)
 			if index == 1 then 
-				f[index]:SetPoint("TOPLEFT", zone, "BOTTOMLEFT")
+				f[index]:SetPoint("TOPLEFT", infoHeader.button, "BOTTOMLEFT",0, -3)
 				f[index]:SetPoint("TOPRIGHT", 0, 0)
 			else
 				f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT" )
 			end
 			lastIndex = f[index]
 		end
-		
+
+
+		infoHeader.description:SetPoint("BOTTOM", lastIndex, "BOTTOM")
+		--infoHeader:SetHeight(infoHeader.description:GetHeight() + 55)
 	end
 end
 
@@ -418,7 +508,7 @@ end
 
 local TTG_Tabs = {}
 TTG_Tabs[1] = {frame = "statsScroll", button = "statsTab"}
-TTG_Tabs[2] = {frame = "upgrades", button = "overviewTab"}
+TTG_Tabs[2] = {frame = "upgradesScroll", button = "upgradesTab"}
 TTG_Tabs[3] = {frame = "ravPowerScroll", button = "ravenousTab"}
 TTG_Tabs[4] = {frame = "rareScroll", button = "rareTab"}
 TTG_Tabs[5] = {frame = "bossesScroll", button = "bossTab"}
@@ -528,6 +618,17 @@ end
 
 
 function addon.CreateBossButtons()
+	local f = frames.tg.info.bossesScroll.child
+	f.banner = f:CreateTexture(nil, "OVERLAY")
+	f.banner:SetAtlas("bonusobjectives-title-bg")
+	f.banner:SetPoint("TOPLEFT", 25, -3)
+	f.banner:SetPoint("TOPRIGHT", 25, 3)
+	f.banner:SetHeight(30)
+
+	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.desc:SetText(L["Bosses"])
+	f.desc:SetPoint("CENTER", f.banner, 0, 3)
+	f.desc:SetJustifyH("CENTER")
 	local bossIndex = 1
 	--local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex)
 	for bossID, data in pairs(addon.Bosses) do
@@ -536,13 +637,13 @@ function addon.CreateBossButtons()
 		local hasBossAbilities = false
 
 		if not bossButton then
-			bossButton = CreateFrame("BUTTON", "TorgastTourGuideBossButton"..bossIndex, frames.tg.info.bossesScroll.child, "TorghastTourGuideBossButtonTemplate")
+			bossButton = CreateFrame("BUTTON", "TorgastTourGuideBossButton"..bossIndex, f, "TorghastTourGuideBossButtonTemplate")
 			if bossIndex > 1 then
 				bossButton:SetPoint("TOPLEFT", _G["TorgastTourGuideBossButton"..(bossIndex - 1)], "BOTTOMLEFT", 0, -15)
 				bossButton:UnlockHighlight()
 			else
 				
-				bossButton:SetPoint("TOPLEFT", frames.tg.info.bossesScroll.child, "TOPLEFT", 0, -10)
+				bossButton:SetPoint("TOPRIGHT", f, "TOPRIGHT", 10, -40)
 				bossButton:LockHighlight()
 
 			end
@@ -565,8 +666,18 @@ function addon.CreateBossButtons()
 end
 
 
-
 function addon.CreateRareButtons()
+	local f = frames.tg.info.rareScroll.child
+	f.banner = f:CreateTexture(nil, "OVERLAY")
+	f.banner:SetAtlas("bonusobjectives-title-bg")
+	f.banner:SetPoint("TOPLEFT", 25, -3)
+	f.banner:SetPoint("TOPRIGHT", 25, 3)
+	f.banner:SetHeight(30)
+
+	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+	f.desc:SetText(L["Rares"])
+	f.desc:SetPoint("CENTER", f.banner, 0, 3)
+	f.desc:SetJustifyH("CENTER")
 	local rareIndex = 1
 	--local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex)
 	for rareID, data in pairs(addon.RareIDs) do
@@ -580,7 +691,8 @@ function addon.CreateRareButtons()
 				rareButton:SetPoint("TOPLEFT", _G["TorgastTourGuideRareButton"..(rareIndex - 1)], "BOTTOMLEFT", 0, -15)
 				rareButton:UnlockHighlight()
 			else
-				rareButton:SetPoint("TOPLEFT", frames.tg.info.rareScroll.child, "TOPLEFT", 0, -10)
+				rareButton:ClearAllPoints()
+				rareButton:SetPoint("TOPRIGHT", frames.tg.info.rareScroll.child, "TOPRIGHT", 10, -40)
 				rareButton:LockHighlight()
 			end
 		end
@@ -600,6 +712,7 @@ function addon.CreateRareButtons()
 		rareIndex = rareIndex + 1
 	end
 end
+
 
 function addon.ToggleTourGuide()
 	if TorghastTourGuide:IsShown() then
@@ -629,6 +742,7 @@ function addon.BossClick(bossButton)
 	addon.SetUpTips(addon.BossTips[creatureDisplayID.encounterID], frames.tg.info.detailsScroll.child.overviews[#(addon.Bosses[creatureDisplayID.encounterID][2])])
 end
 
+
 function addon.RareClick(button)
 	rareCreatureDisplayID:UnlockHighlight()
 	rareCreatureDisplayID = button
@@ -642,8 +756,8 @@ function addon.SetUpTips(tipdata, anchor)
 	if not parent.tips then 
 		local infoHeader = CreateFrame("FRAME", nil, parent, "TorghastTourGuideInfoTemplate")
 		infoHeader.descriptionBG:ClearAllPoints()
-		infoHeader.descriptionBG:SetPoint("TOPLEFT", infoHeader, "BOTTOMLEFT")
-		infoHeader.descriptionBG:SetPoint("TOPRIGHT", infoHeader, "BOTTOMRIGHT")
+		infoHeader.descriptionBG:SetPoint("TOPLEFT", infoHeader, "BOTTOMLEFT" , 8, 0)
+		infoHeader.descriptionBG:SetPoint("TOPRIGHT", infoHeader, "BOTTOMRIGHT", -8, 0)
 
 		infoHeader.button.abilityIcon:Hide()
 		infoHeader.button.icon1:Hide()
@@ -685,6 +799,8 @@ function addon.SetUpTips(tipdata, anchor)
 			infoBullet:SetPoint("TOPRIGHT", parent.bullets[index - 1], "BOTTOMRIGHT", 0, -9)
 		end
 
+		infoBullet.Text:SetPoint("TOPLEFT", 20, 0)
+		infoBullet.Text:SetPoint("TOPRIGHT", -20, 0)
 		infoBullet.Text:SetWordWrap(true)
 		infoBullet.Text:SetText(data)
 		infoBullet.Text:SetHeight(200)
@@ -748,7 +864,8 @@ function addon.SetUpOverview(spellID, index)
 			infoHeader.button.abilityIcon:Show()
 			infoHeader.button.title:SetText(name)
 			infoHeader.description:SetText(L["Split_Desc"])
-			infoHeader:SetHeight(infoHeader.description:GetHeight() + 40)
+			infoHeader.description:SetWidth(infoHeader:GetWidth() - 30)
+			infoHeader:SetHeight(infoHeader.description:GetHeight() + 45)
 		end)
 	else
 		local spell = Spell:CreateFromSpellID(spellID)
@@ -760,7 +877,10 @@ function addon.SetUpOverview(spellID, index)
 			infoHeader.button.abilityIcon:Show()
 			infoHeader.button.title:SetText(name)
 			infoHeader.description:SetText(desc)
-			infoHeader:SetHeight(infoHeader.description:GetHeight() + 40)
+
+			infoHeader.description:SetWidth(infoHeader:GetWidth() - 30)
+			infoHeader:SetHeight(infoHeader.description:GetHeight() + 45)
+
 		end)
 	end
 
