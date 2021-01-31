@@ -16,6 +16,9 @@ local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local frames = {} 
 
 
+
+
+
 local function CreatePowerFrame(powerID, parent, name, index)
 
 	local spell = Spell:CreateFromSpellID(powerID)
@@ -47,24 +50,24 @@ local function CreatePowerFrame(powerID, parent, name, index)
 	else
 
 	local weightText, noteText = addon.GetNotes(powerID)
+	--print(weightText)
 	if noteText ~= "" then 
 		noteText = "\n\n"..L["Notes:"].."\n"..noteText
 
 	end
-
+	if not infoHeader.weight then 
 		infoHeader.weight = CreateFrame("FRAME", nil, infoHeader, "TorghastTourGuidePowerTemplate")
 		infoHeader.weight:SetPoint("TOPRIGHT", infoHeader.button , "TOPLEFT", 25, 10)
 		infoHeader.weight:SetScale(.75, .75)
 		infoHeader.button.abilityIcon:SetPoint("LEFT", 5, 0)
-		infoHeader.spellID = powerID
-		infoHeader.weight.Text:SetText(weightText)
-		infoHeader.weight.tooltip = 
+		
 		infoHeader.weight:SetScript("OnMouseDown", function(self) addon.EditWeight(self, infoHeader) end)
 		infoHeader.weight:SetScript("OnEnter", function(self) 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
 									GameTooltip:SetText(L["Click to set weight & note"], nil, nil, nil, nil, true); end)
 		infoHeader.weight:SetScript("OnLeave", function() GameTooltip:Hide() end)
-
-
+	end
+	infoHeader.spellID = powerID
+	infoHeader.weight.Text:SetText(weightText)
 	spell:ContinueOnSpellLoad(function()
 		local name = spell:GetSpellName()
 		local desc = spell:GetSpellDescription()
@@ -342,29 +345,30 @@ local function CreateUpgradeListFrame(parent)
 end
 
 
-local function CreateRavinousPowerListFrame()
+function addon.CreateRavinousPowerListFrame()
 	local f = frames.tg.info.ravPowerScroll.child
+	if not f.banner then 
+		f.banner = f:CreateTexture(nil, "OVERLAY")
+		f.banner:SetAtlas("bonusobjectives-title-bg")
+		f.banner:SetPoint("TOPLEFT", 25, -3)
+		f.banner:SetPoint("TOPRIGHT", 25, 3)
+		f.banner:SetHeight(30)
 
-	f.banner = f:CreateTexture(nil, "OVERLAY")
-	f.banner:SetAtlas("bonusobjectives-title-bg")
-	f.banner:SetPoint("TOPLEFT", 25, -3)
-	f.banner:SetPoint("TOPRIGHT", 25, 3)
-	f.banner:SetHeight(30)
+		f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		f.desc:SetText(L["Ravenous Anima Cell Powers"])
+		f.desc:SetPoint("CENTER", f.banner, 0, 3)
+		f.desc:SetJustifyH("CENTER")
 
-	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	f.desc:SetText(L["Ravenous Anima Cell Powers"])
-	f.desc:SetPoint("CENTER", f.banner, 0, 3)
-	f.desc:SetJustifyH("CENTER")
-
+		local note = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
+		note:SetPoint("TOPLEFT", f.desc, "BOTTOMLEFT" , -15, -8)
+		note:SetPoint("TOPRIGHT", f.desc,15, 0)
+		note:SetText(L["Rav_Note"])
+	end
 	local index = 1
-
-	local note = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
-	note:SetPoint("TOPLEFT", f.desc, "BOTTOMLEFT" , -15, -8)
-	note:SetPoint("TOPRIGHT", f.desc,15, 0)
-	note:SetText(L["Rav_Note"])
-
 	for name, powerID in pairs(addon.PowerNames) do
-		f[index] = CreatePowerFrame(powerID, f, "TTTG_Powers", index)
+		if not f[index] then 
+			f[index] = CreatePowerFrame(powerID, f, "TTTG_Powers", index)
+		end
 		f[index]:ClearAllPoints()
 		if index == 1 then 
 			f[index]:SetPoint("TOPLEFT", 25, -65)
@@ -412,16 +416,18 @@ local function CreateRavinousMobListFrame()
 	local f = frames.tg.info.ravMobScroll.child
 	local zoneIndex = 1
 
-	f.banner = f:CreateTexture(nil, "OVERLAY")
-	f.banner:SetAtlas("bonusobjectives-title-bg")
-	f.banner:SetPoint("TOPLEFT", 25, -3)
-	f.banner:SetPoint("TOPRIGHT", 25, 3)
-	f.banner:SetHeight(30)
+	if f.banner then return end
+		f.banner = f:CreateTexture(nil, "OVERLAY")
+		f.banner:SetAtlas("bonusobjectives-title-bg")
+		f.banner:SetPoint("TOPLEFT", 25, -3)
+		f.banner:SetPoint("TOPRIGHT", 25, 3)
+		f.banner:SetHeight(30)
 
-	f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-	f.desc:SetText(L["Torghast Mobs"])
-	f.desc:SetPoint("CENTER", f.banner, 0, 3)
-	f.desc:SetJustifyH("CENTER")
+		f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		f.desc:SetText(L["Torghast Mobs"])
+		f.desc:SetPoint("CENTER", f.banner, 0, 3)
+		f.desc:SetJustifyH("CENTER")
+
 
 	local lastIndex
 	for zoneIndex, data in ipairs(addon.ZoneList) do
@@ -455,7 +461,9 @@ local function CreateRavinousMobListFrame()
 		end
 
 		for index, mobID in ipairs(data[2]) do
+			 
 			f[index] = CreateMobInfoFrame(mobID)
+			
 			if index == 1 then 
 				f[index]:SetPoint("TOPLEFT", infoHeader.button, "BOTTOMLEFT",0, -3)
 				f[index]:SetPoint("TOPRIGHT", 0, 0)
@@ -490,16 +498,6 @@ function addon.CreateAnimaPowerListFrame()
 	end
 
 	local lastIndex
-
-			table.sort(addon.sortpowers, function(source1, source2)
-			if source1 and source2 then 
-				if (addon.AnimaPowers[source1][2] ~= addon.AnimaPowers[source2][2]) then
-					return addon.AnimaPowers[source1][2] < addon.AnimaPowers[source2][2]
-				end
-
-				return  addon.AnimaPowers[source1][5] < addon.AnimaPowers[source2][5]
-			end
-		end)
 
 	for i, id in ipairs(addon.sortpowers) do
 	--for powerID, data in pairs(addon.AnimaPowers) do
@@ -572,9 +570,10 @@ function addon.initTourGuide()
 
 	CreateStatsFrame(f)
 	CreateUpgradeListFrame(f)
-	CreateRavinousPowerListFrame()
+	addon.CreateRavinousPowerListFrame()
 	CreateRavinousMobListFrame()
-	addon.CreateAnimaPowerListFrame()
+	C_Timer.After(01, function()
+	addon.CreateAnimaPowerListFrame() end)
 	addon.CreateRareButtons()
 	addon.CreateBossButtons()
 	addon.DisplayCreature(152253)

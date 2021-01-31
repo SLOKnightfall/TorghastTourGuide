@@ -27,8 +27,9 @@ L["Show Ravenous Anima Cell Tooltips"] = true
 L["Settings"]=true
 L["Options"]=true
 L["Always"] = true
-
-
+L["Reset Stats"] = true
+L["Clear Notes"] = true
+L["Clear Weights"] = true
 
 --Stats
 L["STATS"] = true

@@ -2,9 +2,8 @@ local addonName, addon = ...
 addon = LibStub("AceAddon-3.0"):GetAddon(addonName)
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
+local Weights_Notesdb
 
-local NotesDB
-local WeightsDB
 
 local function GetSpec()
 	local currentSpec = GetSpecialization()
@@ -14,24 +13,89 @@ end
 
 
 function addon.InitPowers()
-	local spec = GetSpec()
-	addon.Notesdb.profile[spec] = addon.Notesdb.profile[spec] or {}
-	NotesDB = addon.Notesdb.profile[spec]
-	addon.Weightsdb.profile[spec] = addon.Weightsdb.profile[spec] or {}
-	WeightsDB = addon.Weightsdb.profile[spec]
+		local name = UnitName("player")
+	local realmName = GetRealmName()
+	--local spec = GetSpec()
+	--addon.Notesdb.profile[spec] = addon.Notesdb.profile[spec] or {}
+	--NotesDB = addon.Notesdb.profile[spec]
+	--addon.Weightsdb.profile[spec] = addon.Weightsdb.profile[spec] or {}
+	--WeightsDB = addon.Weightsdb.profile[spec]
+
+	if not TorghastTourgiudeDB.Notes.profiles[name.. " - "..realmName] then return end
+
+	local currentSpec = GetSpecialization()
+	local NotesDB = TorghastTourgiudeDB.Notes.profiles[name.." - "..realmName]
+	local WeightsDB = TorghastTourgiudeDB.Weights.profiles[name.." - "..realmName]
+	local dualspec = addon.Weights_Notesdb:GetNamespace("LibDualSpec-1.0")
+
+	local currentProfile
+	for spec = 1, 4 do
+		local currentSpecID, currentSpecName = GetSpecializationInfo(spec)
+		if NotesDB and currentSpecID then
+			local profileName = currentSpecName.." - "..name.." - "..realmName
+			profileList = addon.Weights_Notesdb:GetProfiles()
+			--TorghastTourgiudeDB.Weights_Notesdb = TorghastTourgiudeDB.Weights_Notesdb or {}
+			--TorghastTourgiudeDB.Weights_Notesdb.profiles = TorghastTourgiudeDB.Weights_Notesdb.profiles or {}
+			--TorghastTourgiudeDB.Weights_Notesdb.profiles[profileName] = {}
+			addon.Weights_Notesdb:SetProfile(profileName)
+			dualspec.char[spec] = profileName
+	
+			local newProfile = addon.Weights_Notesdb.profile
+			--newProfile.note = {}
+			--newProfile.weight = {}
+
+			if NotesDB[currentSpecID] then 
+				for i, data in pairs(NotesDB[currentSpecID]) do
+					newProfile[i] = newProfile[i] or {}
+					newProfile[i].note = data
+				end
+			end
+			if WeightsDB[currentSpecID] then 
+				for i, data in pairs(WeightsDB[currentSpecID]) do
+					newProfile[i] = newProfile[i] or {}
+					newProfile[i].weight = data
+				end
+			end
+			--NotesDB = LibStub("AceDB-3.0"):New(name.."-"..relm.."-"..currentSpecName, NotesDB[spec])
+			--WeightsDB = LibStub("AceDB-3.0"):New(name.."-"..relm.."-"..currentSpecName, WeightsDB[spec])
+			if spec == currentSpec then
+				currentProfile = profileName
+			end
+		end
+
+
+
+	end
+	addon.Weights_Notesdb:SetProfile(currentProfile)
+	dualspec.char.enabled = true
+	TorghastTourgiudeDB.Notes.profiles[name.. " - "..realmName] = nil
+	TorghastTourgiudeDB.Weights.profiles[name.. " - "..realmName] = nil
 end
 
 
-function addon.GetNotes(powerID)
-	local spec = GetSpec()
-	local notes = addon.Notesdb.profile[spec][powerID] or ""
-	local weight = addon.Weightsdb.profile[spec][powerID] or ""
+function addon.GetNotes(spellID)
+	--print(addon.Weights_Notesdb:GetCurrentProfile())
+	local Weights_Notesdb = addon.Weights_Notesdb.profile
+	local notes = (Weights_Notesdb[spellID] and Weights_Notesdb[spellID].note) or ""
+	local weight = (Weights_Notesdb[spellID] and Weights_Notesdb[spellID].weight) or ""
 	return weight, notes
 end
+
+
+function addon.ResetDB(dbType)
+	local spec = GetSpec()
+	if dbType == "notes" then 
+		wipe(NotesDB)
+	elseif dbType == "weights" then 
+		wipe(WeightsDB)
+	end
+end
+
 
 local LISTWINDOW
 function addon.EditWeight(self, frame)
 	if LISTWINDOW then LISTWINDOW:Hide() end
+	local Weights_Notesdb = addon.Weights_Notesdb.profile
 
 	local f = AceGUI:Create("Window")
 	f:SetCallback("OnClose",function(widget) AceGUI:Release(widget) end)
@@ -43,6 +107,8 @@ function addon.EditWeight(self, frame)
 	LISTWINDOW = f
 
 	local spellID = frame.spellID
+	Weights_Notesdb[spellID] = Weights_Notesdb[spellID] or {}
+
 	_G["TTG_NoteWindow"] = f.frame
 	tinsert(UISpecialFrames, "TTG_NoteWindow")
 	local EditBox = AceGUI:Create("EditBox")
@@ -53,22 +119,28 @@ function addon.EditWeight(self, frame)
 	EditBox.button:ClearAllPoints()
 	EditBox.button:SetPoint("LEFT",EditBox.editbox, "RIGHT")
 	EditBox:SetLabel(L["Power Weight"])
-	EditBox:SetText(WeightsDB[spellID] or "")
-	EditBox:SetCallback("OnEnterPressed" , function() WeightsDB[spellID] = EditBox:GetText(); frame.weight.Text:SetText(WeightsDB[spellID]) end)
+	EditBox:SetText(Weights_Notesdb[spellID].weight or "")
+	EditBox:SetCallback("OnEnterPressed" , function() 
+		Weights_Notesdb[spellID] = Weights_Notesdb[spellID] or {}
+		Weights_Notesdb[spellID].weight = EditBox:GetText()
+		frame.weight.Text:SetText(Weights_Notesdb[spellID].weight)
+	end)
 	f:AddChild(EditBox)
 
 	local MultiLineEditBox = AceGUI:Create("MultiLineEditBox")
 	MultiLineEditBox:SetFullWidth(true)
 	MultiLineEditBox:SetLabel(L["Power Notes"])
+
 	MultiLineEditBox:SetCallback("OnEnterPressed" , function() 
-		NotesDB[spellID] = MultiLineEditBox:GetText(); 
+		Weights_Notesdb[spellID] = Weights_Notesdb[spellID] or {}
+		Weights_Notesdb[spellID].note = MultiLineEditBox:GetText(); 
 		if frame.notes then 
-			frame.notes.Text:SetText(NotesDB[spellID])
+			frame.notes.Text:SetText(Weights_Notesdb[spellID].note)
 		elseif frame.description then 
 			addon.CreateAnimaPowerListFrame()
 		end  
 	end)
-	MultiLineEditBox:SetText(NotesDB[spellID] or "")
+	MultiLineEditBox:SetText(Weights_Notesdb[spellID].weight or "")
 	f:AddChild(MultiLineEditBox)
 	
 	local Button = AceGUI:Create("Button")
@@ -78,8 +150,8 @@ function addon.EditWeight(self, frame)
 end
 
 
-
 function addon.PowerShow()
+	local Weights_Notesdb = addon.Weights_Notesdb.profile
 	for i, frame in ipairs(PlayerChoiceFrame.Options) do
 		local weight, notes
 		if not frame.weight then 
@@ -98,8 +170,8 @@ function addon.PowerShow()
 
 		local spellID = frame.spellID
 		if spellID then 
-			frame.weight.Text:SetText(WeightsDB[spellID] or "")
-			frame.notes.Text:SetText(NotesDB[spellID] or "")
+			frame.weight.Text:SetText(Weights_Notesdb[spellID].weight or "")
+			frame.notes.Text:SetText(Weights_Notesdb[spellID].note or "")
 		end
 	end
 end

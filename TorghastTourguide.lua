@@ -48,7 +48,7 @@ local options = {
 			type = "group",
 			inline = true,
 			order = 1,
-			hidden = true,
+			
 			args={
 				Options_Header = {
 					order = 1,
@@ -63,6 +63,21 @@ local options = {
 					type = "toggle",
 					width = 1.3,
 					arg = "IgnoreClassRestrictions",
+					hidden = true,
+				},
+
+				ResetStats = {
+					order = 2,
+					name = L["Reset Stats"],
+					type = "execute",
+					width = 1.3,
+					func = function() addon.Stats:ResetAll() end,
+				},
+				spacer1 = {
+					order = 2.1,
+					name = " ",
+					type = "description",
+					width = 1.3,
 				},
 			},
 		},
@@ -152,10 +167,19 @@ statsDefaults.profile.total = ResetCounts()
 
 local function Enable()
 	if isEnabled then return end
+
+	isEnabled = true
+
+	if frames.f then
+		frames.f:Show()
+		frames.b:Show()
+	else
+		addon.InitFrames()
+	end
+
 	addon:RegisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
 	addon:RegisterEvent("CURSOR_UPDATE", "EventHandler")
 	addon:RegisterEvent("BAG_UPDATE", "EventHandler")
-	addon:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
 
 	addon:RegisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
 	addon:RegisterEvent("PLAYER_DEAD", "EventHandler")
@@ -170,21 +194,9 @@ local function Enable()
 		addon.Statsdb.profile.current.CurentTime = GetTime()
 	end
 
-	if frames.f then
-		frames.f:Show()
-		frames.b:Show()
-	else
-		addon.InitFrames()
-	end
-	isEnabled = true
-
 	frames.f:RegisterUnitEvent("UNIT_AURA", "player");
 	frames.f:RegisterUnitEvent("UNIT_TARGET", "target");
-
 	frames.f:SetScript("OnEvent", function(...) addon.EventHandler(...) end)
-	--if not IsAddOnLoaded("Blizzard_PlayerChoiceUI") then 
-		-- LoadAddOn("Blizzard_PlayerChoiceUI")
-		--end
 
 	if PlayerChoiceFrame and not addon:IsHooked(PlayerChoiceFrame, "OnShow") then
 		addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
@@ -196,8 +208,6 @@ local function Disable()
 	addon:UnregisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
 	addon:UnregisterEvent("CURSOR_UPDATE", "EventHandler")
 	addon:UnregisterEvent("BAG_UPDATE", "EventHandler")
-	addon:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
-
 	addon:UnregisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
 
 	addon:UnregisterEvent("PLAYER_DEAD", "EventHandler")
@@ -208,8 +218,6 @@ local function Disable()
 	addon:UnregisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
 	addon:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", "EventHandler")
 	addon:UnregisterEvent("QUEST_TURNED_IN", "EventHandler")
-
-
 
 	addon.Statsdb.profile.total.Time = addon.Statsdb.profile.total.CurrentTime
 	if frames.f then
@@ -254,6 +262,8 @@ local ashenCache = {}
 local function ClearAshenCache()
 	ashenCache = {}
 end
+
+
 local grueFound = {}
 local PHANTASMA_ID_NUMBER = 1728
 local FREEING_SPELLID = 342127
@@ -283,11 +293,6 @@ function addon:EventHandler(event, arg1, ...)
 	elseif event == "ADDON_LOADED" and arg1 == "Blizzard_PlayerChoiceUI" and isEnabled then 
 		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end) end)
 
-	--elseif event == "ADDON_LOADED" and arg1 == "Blizzard_BindingUI" then
-	--	print("aas")
-		  --  QuickKeybindFrame.phantomExtraActionButton:ClearAllPoints()
-   -- QuickKeybindFrame.phantomExtraActionButton:SetPoint("RIGHT", -4, -4)
-
 	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
 		C_Timer.After(0.1, addon.PowerTooltips)
 	elseif event == "BAG_UPDATE" then
@@ -295,8 +300,10 @@ function addon:EventHandler(event, arg1, ...)
 		addon.UpdateItemCount()
 
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
-		addon.InitPowers()
+		--addon.InitPowers()
+		--addon.initTourGuide()
 
+		addon.RefreshConfig()
 	elseif event == "PLAYER_DEAD" then
 			addon.Stats.IncreaseCounter("Deaths")
 
@@ -360,6 +367,7 @@ function addon:EventHandler(event, arg1, ...)
 		elseif arg3 == OPEN_CHEST_SPELLID then 
 			addon.Stats.IncreaseCounter("Chests")
 		end
+
 	elseif event == "UNIT_AURA" then
 		addon.Stats:AnimaGain()
 
@@ -373,9 +381,9 @@ function addon:EventHandler(event, arg1, ...)
 			local guid = UnitGUID("target")
 			mobList[guid] = "boss"
 		end
+
 	elseif event ==  "QUEST_TURNED_IN" then
 		addon.Stats.IncreaseCounter("QuestsCompleted")
-
 
 	elseif(event == "SCENARIO_COMPLETED") then 
 			--print("Done")
@@ -383,30 +391,51 @@ function addon:EventHandler(event, arg1, ...)
 end
 
 
+function addon.RefreshConfig()
+	C_Timer.After(.5,function()
+		addon.CreateRavinousPowerListFrame()
+		addon.CreateAnimaPowerListFrame()
+	end)
+
+end
+
 ---Ace based addon initilization
 function addon:OnInitialize()
 	TorghastTourgiudeDB = TorghastTourgiudeDB or {}
 	TorghastTourgiudeDB.Options = TorghastTourgiudeDB.Options or {}
-	TorghastTourgiudeDB.Notes = TorghastTourgiudeDB.Notes or {}
-	TorghastTourgiudeDB.Weights = TorghastTourgiudeDB.Weights or {}
+	--TorghastTourgiudeDB.Notes = TorghastTourgiudeDB.Notes or {}
+	--TorghastTourgiudeDB.Weights = TorghastTourgiudeDB.Weights or {}
 	TorghastTourgiudeDB.Stats = TorghastTourgiudeDB.Stats or {}
+	TorghastTourgiudeDB.Weights_Notes = TorghastTourgiudeDB.Weights_Notes or {}
 	self.db = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Options, defaults, true)
-	self.Weightsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Weights, noteDefaults, false)
-	self.Notesdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Notes, noteDefaults, false)
+	--self.Weightsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Weights, noteDefaults, false)
+	--self.Notesdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Notes, noteDefaults, false)
 	self.Statsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Stats, statsDefaults, false)
-	--options.args.settings.args.options = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db)
+	self.Weights_Notesdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Weights_Notes, noteDefaults, false)
+
+	self.Weights_Notesdb.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+	self.Weights_Notesdb.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+	self.Weights_Notesdb.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+
+
 	Profile = self.db.profile
 	LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, addonName)
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, options)
+	--options.args.profiles  = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.Weightsdb)
 
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addonName, addonName)
+
+	options.args.profiles = LibStub('AceDBOptions-3.0'):GetOptionsTable(self.Weights_Notesdb)
+	options.args.profiles.name = "Weights & Notes"
+	  -- Add dual-spec support
+  	local LibDualSpec = LibStub('LibDualSpec-1.0')
+  	LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
+  	LibDualSpec:EnhanceOptions(options.args.profiles, self.Weights_Notesdb)
 	
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler" )
 	addon:RegisterEvent("ADDON_LOADED", "EventHandler" )
 	addon:RegisterEvent("JAILERS_TOWER_LEVEL_UPDATE", "EventHandler" )
-
-	addon:GeneratePowerList()
-
+	addon:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED", "EventHandler")
 end
 
 local RAVENOUS_CELL_ID = 170540
@@ -417,7 +446,11 @@ local PHANTASMIC_INFUSER_ID = 184652
 local ravName, cellName, reqName, obscuringName, infuserName
 
 function addon:OnEnable()
+	addon:GeneratePowerList()
+	addon.InitPowers()
+
 	addon.initTourGuide()
+	
 
 	local item = Item:CreateFromItemID(RAVENOUS_CELL_ID)
 	item:ContinueOnItemLoad(function()
@@ -443,7 +476,7 @@ function addon:OnEnable()
 	item5:ContinueOnItemLoad(function()
 	infuserName = item5:GetItemName() 
 	end)
-		addon.InitPowers()
+
 end
 
 
@@ -547,7 +580,7 @@ function addon.InitFrames()
 
 
 	f.infuserFrame = CreateFrame("Frame", nil, f)
-		f.infuserFrame:SetFrameStrata("HIGH")
+	f.infuserFrame:SetFrameStrata("HIGH")
 	f.infuserFrame:SetSize(30, 15)
 	f.infuserFrame:SetPoint("BOTTOMRIGHT", 40, 22)
 	f.infuserButton = CreateFrame("Button", nil, f.infuserFrame, "SecureActionButtonTemplate")

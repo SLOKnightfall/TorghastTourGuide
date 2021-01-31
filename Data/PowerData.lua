@@ -42,9 +42,19 @@ function addon:GeneratePowerList()
 			table.insert(addon.sortpowers, i ) 
 		end
 	end
-
 	addon.AnimaPowers = classList
-	--print(ct)
+	C_Timer.After(1, function()
+		table.sort(addon.sortpowers, function(source1, source2)
+			if source1 and source2 then 
+				--RARITY
+				if (addon.AnimaPowers[source1][2] ~= addon.AnimaPowers[source2][2]) then
+					return addon.AnimaPowers[source1][2] < addon.AnimaPowers[source2][2]
+				end
+				--NAME
+				return  addon.AnimaPowers[source1][5] < addon.AnimaPowers[source2][5]
+			end
+		end)
+	end)
 end
 
 addon.AnimaPowers ={
