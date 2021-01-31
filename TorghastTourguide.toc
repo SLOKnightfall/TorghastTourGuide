@@ -23,5 +23,6 @@ Libs\AceLocale-3.0\AceLocale-3.0.xml
 Locale\locale-enUS.lua
 
 TorghastTourguide.xml
+Data\MobData.lua
 Data\PowerData.lua
 Data\BossData.lua

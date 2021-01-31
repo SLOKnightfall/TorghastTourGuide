@@ -17,9 +17,14 @@ local frames = {}
 
 
 local function CreatePowerFrame(powerID, parent, name, index)
-	local spell = Spell:CreateFromSpellID(powerID)
 
-	local infoHeader = CreateFrame("FRAME", name..index, parent, "TorghastTourGuideInfoTemplate")
+	local spell = Spell:CreateFromSpellID(powerID)
+ 
+
+	local  infoHeader = parent[index]
+
+	if not infoHeader then infoHeader = CreateFrame("FRAME", name..index, parent, "TorghastTourGuideInfoTemplate") end
+
 	infoHeader:SetPoint("TOPLEFT", 25, -50)
 	infoHeader:SetPoint("TOPRIGHT", 25, -50)
 	infoHeader.button.icon1:Hide()
@@ -33,19 +38,47 @@ local function CreatePowerFrame(powerID, parent, name, index)
 	infoHeader:Show()
 
 	infoHeader.button.title:Show()
+	if powerID == 0 then 
+		infoHeader.button.title:SetText(L["No Data Available"])
+		infoHeader.description:SetText(L["No Data Available"])
+		infoHeader.description:SetWidth(infoHeader:GetWidth() - 30)
+		infoHeader:SetHeight(infoHeader.description:GetHeight() + 55)
+		infoHeader.abilitytext = L["No Data Available"]
+	else
+
+	local weightText, noteText = addon.GetNotes(powerID)
+	if noteText ~= "" then 
+		noteText = "\n\n"..L["Notes:"].."\n"..noteText
+
+	end
+
+		infoHeader.weight = CreateFrame("FRAME", nil, infoHeader, "TorghastTourGuidePowerTemplate")
+		infoHeader.weight:SetPoint("TOPRIGHT", infoHeader.button , "TOPLEFT", 25, 10)
+		infoHeader.weight:SetScale(.75, .75)
+		infoHeader.button.abilityIcon:SetPoint("LEFT", 5, 0)
+		infoHeader.spellID = powerID
+		infoHeader.weight.Text:SetText(weightText)
+		infoHeader.weight.tooltip = 
+		infoHeader.weight:SetScript("OnMouseDown", function(self) addon.EditWeight(self, infoHeader) end)
+		infoHeader.weight:SetScript("OnEnter", function(self) 	GameTooltip:SetOwner(self, "ANCHOR_CURSOR_RIGHT");
+									GameTooltip:SetText(L["Click to set weight & note"], nil, nil, nil, nil, true); end)
+		infoHeader.weight:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+
 	spell:ContinueOnSpellLoad(function()
 		local name = spell:GetSpellName()
 		local desc = spell:GetSpellDescription()
 		local texture = spell:GetSpellTexture()
 		infoHeader.button.abilityIcon:SetTexture(texture)
 		infoHeader.button.abilityIcon:Show()
+		--infoHeader.button.title:SetText(name.." - "..powerID)
 		infoHeader.button.title:SetText(name)
-		infoHeader.description:SetText(desc)
+		infoHeader.description:SetText(desc..noteText)
+		infoHeader.abilitytext = desc
 		infoHeader.description:SetWidth(infoHeader:GetWidth() - 30)
 		infoHeader:SetHeight(infoHeader.description:GetHeight() + 55)
 	end)
-
-
+end
 	infoHeader:Show()
 	return infoHeader
 end
@@ -439,6 +472,54 @@ local function CreateRavinousMobListFrame()
 end
 
 
+function addon.CreateAnimaPowerListFrame()
+	local f = frames.tg.info.animaPowerScroll.child
+	local index = 1
+
+	if not f.banner then 
+		f.banner = f:CreateTexture(nil, "OVERLAY")
+		f.banner:SetAtlas("bonusobjectives-title-bg")
+		f.banner:SetPoint("TOPLEFT", 25, -3)
+		f.banner:SetPoint("TOPRIGHT", 25, 3)
+		f.banner:SetHeight(30)
+
+		f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		f.desc:SetText(L["Anima Powers"])
+		f.desc:SetPoint("CENTER", f.banner, 0, 3)
+		f.desc:SetJustifyH("CENTER")
+	end
+
+	local lastIndex
+
+			table.sort(addon.sortpowers, function(source1, source2)
+			if source1 and source2 then 
+				if (addon.AnimaPowers[source1][2] ~= addon.AnimaPowers[source2][2]) then
+					return addon.AnimaPowers[source1][2] < addon.AnimaPowers[source2][2]
+				end
+
+				return  addon.AnimaPowers[source1][5] < addon.AnimaPowers[source2][5]
+			end
+		end)
+
+	for i, id in ipairs(addon.sortpowers) do
+	--for powerID, data in pairs(addon.AnimaPowers) do
+		local powerID = id
+		local data = addon.AnimaPowers[id]
+		f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPower", index)
+		local rarityColor = ITEM_QUALITY_COLORS[data[2]]
+		f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
+		f[index]:ClearAllPoints()
+		if index == 1 then 
+			f[index]:SetPoint("TOPLEFT", 35, -55)
+			f[index]:SetPoint("TOPRIGHT", 35, -55)
+		else
+			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
+			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
+		end
+		index = index + 1
+	end
+end
+
 TorghastTourGuideTabMixin = {}
 function TorghastTourGuideTabMixin:OnLoad()
 	local tab = self:GetID()
@@ -455,6 +536,8 @@ function TorghastTourGuideTabMixin:OnLoad()
 		self.tooltip = L["Bosses"]
 	elseif tab == 6 then 
 		self.tooltip = L["Bosses Ability"]
+		elseif tab == 7 then 
+		self.tooltip = L["Anima Powers"]
 	end
 end
 
@@ -491,6 +574,7 @@ function addon.initTourGuide()
 	CreateUpgradeListFrame(f)
 	CreateRavinousPowerListFrame()
 	CreateRavinousMobListFrame()
+	addon.CreateAnimaPowerListFrame()
 	addon.CreateRareButtons()
 	addon.CreateBossButtons()
 	addon.DisplayCreature(152253)
@@ -513,6 +597,7 @@ TTG_Tabs[3] = {frame = "ravPowerScroll", button = "ravenousTab"}
 TTG_Tabs[4] = {frame = "rareScroll", button = "rareTab"}
 TTG_Tabs[5] = {frame = "bossesScroll", button = "bossTab"}
 TTG_Tabs[6] = {frame = "detailsScroll", button = "bossDetailsTab"}
+TTG_Tabs[7] = {frame = "animaPowerScroll", button = "animaTab"}
 
 local creatureDisplayID
 local rareCreatureDisplayID
@@ -547,15 +632,10 @@ function addon.SetTab(tabType)
 		end
 	end
 
-	if tabType == 2 then
-		--info.upgrades:Show()
+	if  tabType == 7 then
+		info.ravMobScroll:Hide()
 		info.model:Hide()
-	else
-		--info.upgrades:Hide()
-		info.model:Show()
-	end
-
-	if tabType == 3 then
+	elseif tabType == 3 then
 		info.ravMobScroll:Show()
 		info.model:Hide()
 	else
@@ -563,33 +643,10 @@ function addon.SetTab(tabType)
 		info.model:Show()
 	end
 
-
-	if tabType == 4 then
-
-		--info.ravMobScroll:Show()
-		--info.model:Hide()
-	else
-		--info.ravMobScroll:Hide()
-		--info.model:Show()
-	end
-
-	if tabType == 5 or tabType == 6 then
-
-		--info[TTG_Tabs[6].button]:Show()
-	else
-		--info[TTG_Tabs[6].button]:Hide()
-	end
-
 	if tabType == 6 then
 		info.LinkButton:Show()
 	else
 		info.LinkButton:Hide()
-	end
-
-	if tabType == 1 then
-		--info.LinkButton:Show()
-	else
-		--info.LinkButton:Hide()
 	end
 
 	SetDefaultModel(tabType)
@@ -681,6 +738,11 @@ function addon.CreateRareButtons()
 	f.desc:SetText(L["Rares"])
 	f.desc:SetPoint("CENTER", f.banner, 0, 3)
 	f.desc:SetJustifyH("CENTER")
+
+	local note = f:CreateFontString(nil, "OVERLAY", "GameFontBlack")
+	note:SetPoint("TOPLEFT", f.banner, "BOTTOMLEFT" , -15, -8)
+	note:SetPoint("TOPRIGHT", f.banner,-15, 0)
+	note:SetText(L["Rare_Note"])
 	local rareIndex = 1
 	--local name, description, bossID, rootSectionID, link = EJ_GetEncounterInfoByIndex(bossIndex)
 	for rareID, data in pairs(addon.RareIDs) do
@@ -697,7 +759,7 @@ function addon.CreateRareButtons()
 				rareButton:UnlockHighlight()
 			else
 				rareButton:ClearAllPoints()
-				rareButton:SetPoint("TOPRIGHT", frames.tg.info.rareScroll.child, "TOPRIGHT", 10, -40)
+				rareButton:SetPoint("TOPRIGHT", frames.tg.info.rareScroll.child, "TOPRIGHT", 10, -70)
 				rareButton:LockHighlight()
 			end
 		end
@@ -714,21 +776,21 @@ function addon.CreateRareButtons()
 		local bossImage = data[1] or "Interface\\EncounterJournal\\UI-EJ-BOSS-Default"
 		SetPortraitTextureFromCreatureDisplayID(rareButton.creature, bossImage)
 
-	lastIndex = rareButton
-	local frameindex = {}
-	for index, powerID in pairs(data[2]) do
-		frameindex[index] = CreatePowerFrame(powerID, f, "TTTG_RarePowers"..rareIndex..powerID, index)
+		lastIndex = rareButton
+		local frameindex = {}
+		for index, powerID in pairs(data[2]) do
+			frameindex[index] = CreatePowerFrame(powerID, f, "TTTG_RarePowers"..rareIndex..powerID, index)
 
-		if index == 1 then 
-			frameindex[index]:SetPoint("TOPLEFT", rareButton, "BOTTOMLEFT", 0,-10)
+			if index == 1 then 
+				frameindex[index]:SetPoint("TOPLEFT", rareButton, "BOTTOMLEFT", 0,-10)
 
-		else
-			frameindex[index]:SetPoint("TOPLEFT", frameindex[index-1], "BOTTOMLEFT" )
+			else
+				frameindex[index]:SetPoint("TOPLEFT", frameindex[index-1], "BOTTOMLEFT" )
 
+			end
+			frameindex[index]:SetFrameLevel(rareButton:GetFrameLevel() +1)
+			lastIndex = frameindex[index]
 		end
-		frameindex[index]:SetFrameLevel(rareButton:GetFrameLevel() +1)
-		lastIndex = frameindex[index]
-	end
 
 		rareIndex = rareIndex + 1
 	end
@@ -812,7 +874,7 @@ function addon.SetUpTips(tipdata, anchor)
 		end
 
 		if (index == 1) then
-			infoBullet:SetPoint("TOPLEFT", parent.tips, "BOTTOMLEFT" , 4, -10 )
+			infoBullet:SetPoint("TOPLEFT", parent.tips, "BOTTOMLEFT" , 15, -10 )
 			infoBullet:SetPoint("TOPRIGHT", parent.tips, "BOTTOMRIGHT", -4, -10)
 
 		else

@@ -177,7 +177,7 @@ local function Enable()
 		addon.InitFrames()
 	end
 	isEnabled = true
-	addon.InitPowers()
+
 	frames.f:RegisterUnitEvent("UNIT_AURA", "player");
 	frames.f:RegisterUnitEvent("UNIT_TARGET", "target");
 
@@ -405,7 +405,8 @@ function addon:OnInitialize()
 	addon:RegisterEvent("ADDON_LOADED", "EventHandler" )
 	addon:RegisterEvent("JAILERS_TOWER_LEVEL_UPDATE", "EventHandler" )
 
-	
+	addon:GeneratePowerList()
+
 end
 
 local RAVENOUS_CELL_ID = 170540
@@ -442,6 +443,7 @@ function addon:OnEnable()
 	item5:ContinueOnItemLoad(function()
 	infuserName = item5:GetItemName() 
 	end)
+		addon.InitPowers()
 end
 
 

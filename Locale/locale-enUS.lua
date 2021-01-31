@@ -67,10 +67,15 @@ L["Rares"] = true
 L["Bosses"] = true
 L["Bosses Ability"] = true
 L["Stats"] = true
+ L["Anima Powers"] = true
+ L["No Data Available"] = true
+L["Notes:"] = true
+L["Weight:" ] = true
+L["Click to set weight & note"] = true
 
 
-	L["95004"] = "Venari"
-	L["152253"] = "The Tarragrue"
+L["95004"] = "Venari"
+L["152253"] = "The Tarragrue"
 
 --Rares
 L["152500"] = "Deadsoul Amalgam"
@@ -120,7 +125,7 @@ L["155251"] = "Elder Longbranch"
 --https://www.wowhead.com/guides/torghast-floor-boss-strategies-abilities-tips-tricks
 
 L["Rav_Note"] = "*If you already have a unique power then you will get Pouch of Phantasm instead*"
-
+L["Rare_Note"] = "*Possible Anima Power Drops. Does not include additional drops from events or upgrades*"
 
 L["All Wings"] = true
 L["151353"] = "Mawrat"

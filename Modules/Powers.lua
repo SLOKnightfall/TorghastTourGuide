@@ -22,8 +22,15 @@ function addon.InitPowers()
 end
 
 
+function addon.GetNotes(powerID)
+	local spec = GetSpec()
+	local notes = addon.Notesdb.profile[spec][powerID] or ""
+	local weight = addon.Weightsdb.profile[spec][powerID] or ""
+	return weight, notes
+end
+
 local LISTWINDOW
-function EditWeight(self, frame)
+function addon.EditWeight(self, frame)
 	if LISTWINDOW then LISTWINDOW:Hide() end
 
 	local f = AceGUI:Create("Window")
@@ -53,7 +60,14 @@ function EditWeight(self, frame)
 	local MultiLineEditBox = AceGUI:Create("MultiLineEditBox")
 	MultiLineEditBox:SetFullWidth(true)
 	MultiLineEditBox:SetLabel(L["Power Notes"])
-	MultiLineEditBox:SetCallback("OnEnterPressed" , function() NotesDB[spellID] = MultiLineEditBox:GetText(); frame.notes.Text:SetText(NotesDB[spellID])  end)
+	MultiLineEditBox:SetCallback("OnEnterPressed" , function() 
+		NotesDB[spellID] = MultiLineEditBox:GetText(); 
+		if frame.notes then 
+			frame.notes.Text:SetText(NotesDB[spellID])
+		elseif frame.description then 
+			addon.CreateAnimaPowerListFrame()
+		end  
+	end)
 	MultiLineEditBox:SetText(NotesDB[spellID] or "")
 	f:AddChild(MultiLineEditBox)
 	
@@ -70,12 +84,12 @@ function addon.PowerShow()
 		local weight, notes
 		if not frame.weight then 
 			local notes = CreateFrame("Frame", nil, frame, "TorghastTourGuideNoteTemplate")
-			notes:SetScript("OnMouseDown", function(self) EditWeight(self, frame) end)
+			notes:SetScript("OnMouseDown", function(self) addon.EditWeight(self, frame) end)
 
 			local weight = CreateFrame("Frame", nil, frame, "TorghastTourGuidePowerTemplate")
 			--	weight:SetScript("OnEnter", function(self) self:GetParent().MouseOverOverride:EnableMouse(false);  addon.ShowTooltip(self, "This Is a Note")  end)
 			--	weight:SetScript("OnLeave", function(self) GameTooltip:Hide(); self:GetParent().MouseOverOverride:EnableMouse(true); end)
-			weight:SetScript("OnMouseDown", function(self) EditWeight(self, frame) end)
+			--weight:SetScript("OnMouseDown", function(self) EditWeight(self, frame) end)
 			weight:SetFrameLevel(15)
 			frame.weight = weight
 			frame.notes = notes
