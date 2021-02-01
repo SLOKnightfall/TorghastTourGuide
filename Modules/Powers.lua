@@ -143,12 +143,12 @@ function addon.PowerShow()
 		local weight, notes
 		if not frame.weight then 
 			local notes = CreateFrame("Frame", nil, frame, "TorghastTourGuideNoteTemplate")
-			notes:SetScript("OnMouseDown", function(self) addon.EditWeight(self, frame) end)
+			--notes:SetScript("OnMouseDown", function(self) addon.EditWeight(self, frame) end)
 
 			local weight = CreateFrame("Frame", nil, frame, "TorghastTourGuidePowerTemplate")
 			--	weight:SetScript("OnEnter", function(self) self:GetParent().MouseOverOverride:EnableMouse(false);  addon.ShowTooltip(self, "This Is a Note")  end)
 			--	weight:SetScript("OnLeave", function(self) GameTooltip:Hide(); self:GetParent().MouseOverOverride:EnableMouse(true); end)
-			--weight:SetScript("OnMouseDown", function(self) EditWeight(self, frame) end)
+			weight:SetScript("OnMouseDown", function(self) addon.EditWeight(self, frame) end)
 			weight:SetFrameLevel(15)
 			frame.weight = weight
 			frame.notes = notes
@@ -156,9 +156,9 @@ function addon.PowerShow()
 		end
 
 		local spellID = frame.spellID
-		if spellID then 
-			frame.weight.Text:SetText(Weights_Notesdb[spellID].weight or "")
-			frame.notes.Text:SetText(Weights_Notesdb[spellID].note or "")
+		if spellID  then 
+			frame.weight.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].weight or "")
+			frame.notes.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].note or "")
 		end
 	end
 end
