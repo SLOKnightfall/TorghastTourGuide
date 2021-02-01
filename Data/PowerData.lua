@@ -20,8 +20,27 @@ local classMask = {
 	[12]= 2048, --DEMONHUNTER 
 }
 
+function addon.SortPowersList()
+		table.sort(addon.sortpowers, function(source1, source2)
+			if source1 and source2 then 
+				--RARITY
+				if (addon.AnimaPowers[source1][2] ~= addon.AnimaPowers[source2][2]) then
+					return addon.AnimaPowers[source1][2] < addon.AnimaPowers[source2][2]
+				end
+				--NAME
+
+				if not addon.AnimaPowers[source1][5] or not addon.AnimaPowers[source2][5] then return end
+				
+				return  addon.AnimaPowers[source1][5] < addon.AnimaPowers[source2][5]
+			end
+	end)
+end
+
+
+--local pending = {}
+
 addon.sortpowers = {}
-function addon:GeneratePowerList()
+local function GeneratePowerList()
 	local _, _, classIndex = UnitClass("player")
 	local classmask = classMask[classIndex]
 	local classList = {}
@@ -31,10 +50,12 @@ function addon:GeneratePowerList()
 		--if ((data[3] == 0) and (data[4] == 0))  then
 		if ((data[3] == classmask or data[3] == 0) and (data[4] == coventant or data[4] == 0))  then
 			local spell = Spell:CreateFromSpellID(i)
+			--pending[i] = true
 			spell:ContinueOnSpellLoad(function()
 				local name = spell:GetSpellName()
-				local Ldata = data
-				Ldata[5] = name
+				local id = spell:GetSpellID()
+				addon.AnimaPowers[id][5] = name
+				--pending[id] = nil
 			end)
 
 			classList[i] = data
@@ -45,19 +66,6 @@ function addon:GeneratePowerList()
 	addon.AnimaPowers = classList
 end
 
-
-function addon.SortPowers()
-	table.sort(addon.sortpowers, function(source1, source2)
-		if source1 and source2 then 
-			--RARITY
-			if (addon.AnimaPowers[source1][2] ~= addon.AnimaPowers[source2][2]) then
-				return addon.AnimaPowers[source1][2] < addon.AnimaPowers[source2][2]
-			end
-			--NAME
-			return  addon.AnimaPowers[source1][5] < addon.AnimaPowers[source2][5]
-		end
-	end)
-end
 
 addon.AnimaPowers ={
 	[329146]={986492,1,1,0}, --Soulwrought Studs
@@ -961,3 +969,6 @@ addon.AnimaPowers ={
 	[334005]={1380365,4,2048,3}, --Perpetual Sinstone
 	[331511]={632821,1,512,0}, --36 Pressure Point Technique
 }
+
+
+GeneratePowerList()

@@ -251,7 +251,6 @@ local ashen = {
 	[167987] = true,
 }
 
-
 local traps = {
 	[307023] = true, --soul-burst
 	[331321] = true,-- spike trap
@@ -271,6 +270,7 @@ local OPEN_CHEST_SPELLID = 320060
 local mobList = {}
 local currentFloor = 1
 local runType
+
 function addon:EventHandler(event, arg1, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		if IsInJailersTower() then 
@@ -392,7 +392,7 @@ end
 
 
 function addon.RefreshConfig()
-	C_Timer.After(1,function()
+	C_Timer.After(0.1,function()
 		addon.CreateRavinousPowerListFrame()
 		addon.CreateAnimaPowerListFrame()
 	end)
@@ -403,35 +403,31 @@ end
 function addon:OnInitialize()
 	TorghastTourgiudeDB = TorghastTourgiudeDB or {}
 	TorghastTourgiudeDB.Options = TorghastTourgiudeDB.Options or {}
-	--TorghastTourgiudeDB.Notes = TorghastTourgiudeDB.Notes or {}
-	--TorghastTourgiudeDB.Weights = TorghastTourgiudeDB.Weights or {}
 	TorghastTourgiudeDB.Stats = TorghastTourgiudeDB.Stats or {}
 	TorghastTourgiudeDB.Weights_Notes = TorghastTourgiudeDB.Weights_Notes or {}
+
 	self.db = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Options, defaults, true)
-	--self.Weightsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Weights, noteDefaults, false)
-	--self.Notesdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Notes, noteDefaults, false)
 	self.Statsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Stats, statsDefaults, false)
 	self.Weights_Notesdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Weights_Notes, noteDefaults, false)
-
 	self.Weights_Notesdb.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
 	self.Weights_Notesdb.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
 	self.Weights_Notesdb.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 
-
 	Profile = self.db.profile
 	LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, addonName)
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, options)
-	--options.args.profiles  = LibStub("AceDBOptions-3.0"):GetOptionsTable(self.Weightsdb)
 
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addonName, addonName)
 
 	options.args.profiles = LibStub('AceDBOptions-3.0'):GetOptionsTable(self.Weights_Notesdb)
 	options.args.profiles.name = "Weights & Notes"
+
 	  -- Add dual-spec support
   	local LibDualSpec = LibStub('LibDualSpec-1.0')
   	LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
   	LibDualSpec:EnhanceOptions(options.args.profiles, self.Weights_Notesdb)
-	
+
+ 
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler" )
 	addon:RegisterEvent("ADDON_LOADED", "EventHandler" )
 	addon:RegisterEvent("JAILERS_TOWER_LEVEL_UPDATE", "EventHandler" )
@@ -446,12 +442,9 @@ local PHANTASMIC_INFUSER_ID = 184652
 local ravName, cellName, reqName, obscuringName, infuserName
 
 function addon:OnEnable()
-	addon:GeneratePowerList()
-	addon.InitPowers()
-
+	addon.InitDB()
 	addon.initTourGuide()
 	
-
 	local item = Item:CreateFromItemID(RAVENOUS_CELL_ID)
 	item:ContinueOnItemLoad(function()
 		ravName = item:GetItemName() 

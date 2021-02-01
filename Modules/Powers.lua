@@ -12,8 +12,8 @@ local function GetSpec()
 end
 
 
-function addon.InitPowers()
-		local name = UnitName("player")
+function addon.InitDB()
+	local name = UnitName("player")
 	local realmName = GetRealmName()
 	--local spec = GetSpec()
 	--addon.Notesdb.profile[spec] = addon.Notesdb.profile[spec] or {}
@@ -44,13 +44,13 @@ function addon.InitPowers()
 			--newProfile.note = {}
 			--newProfile.weight = {}
 
-			if NotesDB and NotesDB[currentSpecID] then 
+			if NotesDB[currentSpecID] then 
 				for i, data in pairs(NotesDB[currentSpecID]) do
 					newProfile[i] = newProfile[i] or {}
 					newProfile[i].note = data
 				end
 			end
-			if WeightsDB and WeightsDB[currentSpecID] then 
+			if WeightsDB[currentSpecID] then 
 				for i, data in pairs(WeightsDB[currentSpecID]) do
 					newProfile[i] = newProfile[i] or {}
 					newProfile[i].weight = data
@@ -62,9 +62,6 @@ function addon.InitPowers()
 				currentProfile = profileName
 			end
 		end
-
-
-
 	end
 	addon.Weights_Notesdb:SetProfile(currentProfile)
 	dualspec.char.enabled = true
@@ -79,16 +76,6 @@ function addon.GetNotes(spellID)
 	local notes = (Weights_Notesdb[spellID] and Weights_Notesdb[spellID].note) or ""
 	local weight = (Weights_Notesdb[spellID] and Weights_Notesdb[spellID].weight) or ""
 	return weight, notes
-end
-
-
-function addon.ResetDB(dbType)
-	local spec = GetSpec()
-	if dbType == "notes" then 
-		wipe(NotesDB)
-	elseif dbType == "weights" then 
-		wipe(WeightsDB)
-	end
 end
 
 

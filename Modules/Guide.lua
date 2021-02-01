@@ -346,7 +346,6 @@ end
 
 
 function addon.CreateRavinousPowerListFrame()
-	if not frames.tg then return end
 	local f = frames.tg.info.ravPowerScroll.child
 	if not f.banner then 
 		f.banner = f:CreateTexture(nil, "OVERLAY")
@@ -483,7 +482,7 @@ end
 
 function addon.CreateAnimaPowerListFrame()
 	local f = frames.tg.info.animaPowerScroll.child
-	
+	local index = 1
 
 	if not f.banner then 
 		f.banner = f:CreateTexture(nil, "OVERLAY")
@@ -499,28 +498,24 @@ function addon.CreateAnimaPowerListFrame()
 	end
 
 	local lastIndex
-	C_Timer.After(1, function()addon.SortPowers()
-		local index = 1
-		local f = frames.tg.info.animaPowerScroll.child 
-		for i, id in ipairs(addon.sortpowers) do
-		--for powerID, data in pairs(addon.AnimaPowers) do
-			local powerID = id
 
-			local data = addon.AnimaPowers[id]
-			f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPower", index)
-			local rarityColor = ITEM_QUALITY_COLORS[data[2]]
-			f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
-			f[index]:ClearAllPoints()
-			if index == 1 then 
-				f[index]:SetPoint("TOPLEFT", 35, -55)
-				f[index]:SetPoint("TOPRIGHT", 35, -55)
-			else
-				f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
-				f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
-			end
-			index = index + 1
+	for i, id in ipairs(addon.sortpowers) do
+	--for powerID, data in pairs(addon.AnimaPowers) do
+		local powerID = id
+		local data = addon.AnimaPowers[id]
+		f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPower", index)
+		local rarityColor = ITEM_QUALITY_COLORS[data[2]]
+		f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
+		f[index]:ClearAllPoints()
+		if index == 1 then 
+			f[index]:SetPoint("TOPLEFT", 35, -55)
+			f[index]:SetPoint("TOPRIGHT", 35, -55)
+		else
+			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
+			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
 		end
-	end)
+		index = index + 1
+	end
 end
 
 TorghastTourGuideTabMixin = {}
@@ -568,6 +563,7 @@ function TorghastTourGuideScrollBarMixin:OnLoad()
 	self.trackBG:SetVertexColor(ENCOUNTER_JOURNAL_SCROLL_BAR_BACKGROUND_COLOR:GetRGBA());
 end
 
+
 function addon.initTourGuide()
 	local f = CreateFrame("Frame", "TorghastTourGuide", UIParent, "TorghastTourGuideTemplate")
 	frames.tg = f
@@ -577,8 +573,7 @@ function addon.initTourGuide()
 	CreateUpgradeListFrame(f)
 	addon.CreateRavinousPowerListFrame()
 	CreateRavinousMobListFrame()
-	C_Timer.After(01, function()
-	addon.CreateAnimaPowerListFrame() end)
+	addon.CreateAnimaPowerListFrame()
 	addon.CreateRareButtons()
 	addon.CreateBossButtons()
 	addon.DisplayCreature(152253)
@@ -588,6 +583,11 @@ function addon.initTourGuide()
 	f.info.LinkButton:SetScript("OnEnter", function(self) addon.ShowTooltip(self, L["WoWHead Links"]) end)
 	f.info.LinkButton:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
 	f.info.LinkButton:SetScript("OnClick", function(self) addon.ToggleLinkWindow() end)
+	f:SetScript("OnShow", function()
+		addon.SortPowersList()
+		addon.RefreshConfig()
+		f:SetScript("OnShow", function() end)
+	end)
 end
 	
 
