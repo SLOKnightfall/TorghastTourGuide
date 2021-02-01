@@ -14,6 +14,7 @@ addon = LibStub("AceAddon-3.0"):NewAddon(addon, addonName, "AceEvent-3.0", "AceC
 local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local frames = {} 
+addon.frames = frames
 local cellCounts = {0,0,0,0}
 addon.ravCount = 0
 local Profile
@@ -189,6 +190,9 @@ local function Enable()
 	addon:RegisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
 	addon:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED", "EventHandler")
 	addon:RegisterEvent("QUEST_TURNED_IN", "EventHandler")
+	addon:RegisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
+	addon:RegisterEvent("PLAYER_REGEN_DISABLED", "EventHandler")
+
 
 	if not addon.Statsdb.profile.current.CurentTime then 
 		addon.Statsdb.profile.current.CurentTime = GetTime()
@@ -218,6 +222,11 @@ local function Disable()
 	addon:UnregisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
 	addon:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", "EventHandler")
 	addon:UnregisterEvent("QUEST_TURNED_IN", "EventHandler")
+	addon:UnregisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
+	addon:UnregisterEvent("PLAYER_REGEN_DISABLED", "EventHandler")
+
+
+f:RegisterEvent("PLAYER_REGEN_ENABLED")
 
 	addon.Statsdb.profile.total.Time = addon.Statsdb.profile.total.CurrentTime
 	if frames.f then
@@ -386,7 +395,7 @@ function addon:EventHandler(event, arg1, ...)
 		addon.Stats.IncreaseCounter("QuestsCompleted")
 
 	elseif(event == "SCENARIO_COMPLETED") then 
-			--print("Done")
+
 	end		
 end
 
@@ -479,9 +488,43 @@ function addon.ShowTooltip(self, text)
 	GameTooltip:Show()
 end
 
+local function fixFrameView(command)
+	if command == "Show" then
+	elseif command == "Hide" then 
+	end
+end
+
+
+
+local TOP
+local LEFT
+function addon.PositionFrame()
+
+	local f = frames.f
+	if not f then return end
+	f:SetParent(UIParent)
+	f:ClearAllPoints()
+	f:SetPoint("TOPLEFT", ScenarioStageBlock, "TOPLEFT" )
+	local playerFrameBottom = f:GetBottom()
+	local playerFrameLeft = f:GetLeft()
+	f:ClearAllPoints()
+	f:SetPoint("BOTTOM",UIParent,"BOTTOM", 0, playerFrameBottom)
+	f:SetPoint("LEFT", UIParent,"LEFT", playerFrameLeft, 0)
+end
+
 
 function addon.InitFrames()
-	local b = CreateFrame("Button", nil, ScenarioStageBlock)
+
+local f = CreateFrame("Frame", nil, ScenarioStageBlock)
+local width = ScenarioStageBlock:GetWidth()
+local height = ScenarioStageBlock:GetHeight()
+f:SetSize(width, height)
+f:ClearAllPoints()
+f:SetPoint("TOPLEFT",ScenarioStageBlock, "TOPLEFT" )
+
+
+
+	local b = CreateFrame("Button", nil, f)
 	frames.b = b
 	b:SetSize(20, 20)
 	b:SetPoint("TOPLEFT", 0, 0)
@@ -496,13 +539,13 @@ function addon.InitFrames()
 	b:SetScript("OnEnter", function(self) addon.ShowTooltip(self, L["Toggle Guide"]) end)
 	b:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-	local f = CreateFrame("Frame", nil, ScenarioStageBlock)
+	--local f = CreateFrame("Frame", nil, ScenarioStageBlock)
 	frames.f = f
 
 	--f:SetSize(50, 20)
 	--f:SetPoint("TOPRIGHT", -20, -20)
-	f:SetPoint("TOPRIGHT")
-	f:SetPoint("BOTTOMLEFT")
+	--f:SetPoint("TOPRIGHT")
+	--f:SetPoint("BOTTOMLEFT")
 	f:SetFrameLevel(100)
 	f:Show()
 
@@ -624,6 +667,7 @@ function addon.UpdateItemCount()
 	if not frames.f then return end
 	local f = frames.f
 
+	if InCombatLockdown() then return end 
 	local ravCount, cellCount, reqCount, potionCount = unpack(GetItemCounts())
 	addon.ravCount = ravCount
 	if ravCount > 0 then 

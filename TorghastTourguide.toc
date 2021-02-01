@@ -4,7 +4,7 @@
 ## Author: SLOKnightfall
 ## Notes: Handy Info About Torghast
 ## SavedVariables: TorghastTourgiudeDB
-## OptionalDeps:
+## OptionalDeps:!KalielsTracker
 
 #Libraries
 Libs\LibStub\LibStub.lua
@@ -27,3 +27,5 @@ TorghastTourguide.xml
 Data\MobData.lua
 Data\PowerData.lua
 Data\BossData.lua
+
+Plugins\Kaliels.lua
