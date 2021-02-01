@@ -44,13 +44,13 @@ function addon.InitPowers()
 			--newProfile.note = {}
 			--newProfile.weight = {}
 
-			if NotesDB[currentSpecID] then 
+			if NotesDB and NotesDB[currentSpecID] then 
 				for i, data in pairs(NotesDB[currentSpecID]) do
 					newProfile[i] = newProfile[i] or {}
 					newProfile[i].note = data
 				end
 			end
-			if WeightsDB[currentSpecID] then 
+			if WeightsDB and WeightsDB[currentSpecID] then 
 				for i, data in pairs(WeightsDB[currentSpecID]) do
 					newProfile[i] = newProfile[i] or {}
 					newProfile[i].weight = data

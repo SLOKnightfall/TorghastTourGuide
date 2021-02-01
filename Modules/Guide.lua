@@ -346,6 +346,7 @@ end
 
 
 function addon.CreateRavinousPowerListFrame()
+	if not frames.tg then return end
 	local f = frames.tg.info.ravPowerScroll.child
 	if not f.banner then 
 		f.banner = f:CreateTexture(nil, "OVERLAY")
