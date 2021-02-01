@@ -225,9 +225,6 @@ local function Disable()
 	addon:UnregisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
 	addon:UnregisterEvent("PLAYER_REGEN_DISABLED", "EventHandler")
 
-
-f:RegisterEvent("PLAYER_REGEN_ENABLED")
-
 	addon.Statsdb.profile.total.Time = addon.Statsdb.profile.total.CurrentTime
 	if frames.f then
 		frames.f:Hide()

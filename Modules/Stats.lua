@@ -57,6 +57,7 @@ end
 
 function Stats:UpdateStats()
 	local f = addon.Stats.Frame
+	if not f then return end
 	local current = addon.Statsdb.profile.current
 	local total = addon.Statsdb.profile.total
 	FindTime()
