@@ -483,7 +483,7 @@ end
 
 function addon.CreateAnimaPowerListFrame()
 	local f = frames.tg.info.animaPowerScroll.child
-	local index = 1
+	
 
 	if not f.banner then 
 		f.banner = f:CreateTexture(nil, "OVERLAY")
@@ -499,24 +499,28 @@ function addon.CreateAnimaPowerListFrame()
 	end
 
 	local lastIndex
+	C_Timer.After(1, function()addon.SortPowers()
+		local index = 1
+		local f = frames.tg.info.animaPowerScroll.child 
+		for i, id in ipairs(addon.sortpowers) do
+		--for powerID, data in pairs(addon.AnimaPowers) do
+			local powerID = id
 
-	for i, id in ipairs(addon.sortpowers) do
-	--for powerID, data in pairs(addon.AnimaPowers) do
-		local powerID = id
-		local data = addon.AnimaPowers[id]
-		f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPower", index)
-		local rarityColor = ITEM_QUALITY_COLORS[data[2]]
-		f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
-		f[index]:ClearAllPoints()
-		if index == 1 then 
-			f[index]:SetPoint("TOPLEFT", 35, -55)
-			f[index]:SetPoint("TOPRIGHT", 35, -55)
-		else
-			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
-			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
+			local data = addon.AnimaPowers[id]
+			f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPower", index)
+			local rarityColor = ITEM_QUALITY_COLORS[data[2]]
+			f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
+			f[index]:ClearAllPoints()
+			if index == 1 then 
+				f[index]:SetPoint("TOPLEFT", 35, -55)
+				f[index]:SetPoint("TOPRIGHT", 35, -55)
+			else
+				f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
+				f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
+			end
+			index = index + 1
 		end
-		index = index + 1
-	end
+	end)
 end
 
 TorghastTourGuideTabMixin = {}

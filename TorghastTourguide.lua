@@ -392,7 +392,7 @@ end
 
 
 function addon.RefreshConfig()
-	C_Timer.After(.5,function()
+	C_Timer.After(1,function()
 		addon.CreateRavinousPowerListFrame()
 		addon.CreateAnimaPowerListFrame()
 	end)
