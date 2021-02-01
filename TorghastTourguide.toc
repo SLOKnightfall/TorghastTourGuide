@@ -4,7 +4,7 @@
 ## Author: SLOKnightfall
 ## Notes: Handy Info About Torghast
 ## SavedVariables: TorghastTourgiudeDB
-## OptionalDeps: Titan
+## OptionalDeps:
 
 #Libraries
 Libs\LibStub\LibStub.lua
