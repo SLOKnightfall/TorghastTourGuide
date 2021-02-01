@@ -21,7 +21,7 @@ function addon.InitDB()
 	--addon.Weightsdb.profile[spec] = addon.Weightsdb.profile[spec] or {}
 	--WeightsDB = addon.Weightsdb.profile[spec]
 
-	if not TorghastTourgiudeDB.Notes or (TorghastTourgiudeDB.Notes and not TorghastTourgiudeDB.Notes.profiles[name.. " - "..realmName]) then return end
+	if not TorghastTourgiudeDB.Notes or (TorghastTourgiudeDB.Notes and TorghastTourgiudeDB.Notes.profiles and not TorghastTourgiudeDB.Notes.profiles[name.. " - "..realmName]) then return end
 
 	local currentSpec = GetSpecialization()
 	local NotesDB = TorghastTourgiudeDB.Notes.profiles[name.." - "..realmName]
