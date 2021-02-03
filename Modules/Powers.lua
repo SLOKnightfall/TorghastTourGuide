@@ -21,7 +21,9 @@ function addon.InitDB()
 	--addon.Weightsdb.profile[spec] = addon.Weightsdb.profile[spec] or {}
 	--WeightsDB = addon.Weightsdb.profile[spec]
 
-	if not TorghastTourgiudeDB.Notes or (TorghastTourgiudeDB.Notes and TorghastTourgiudeDB.Notes.profiles and not TorghastTourgiudeDB.Notes.profiles[name.. " - "..realmName]) then return end
+	if (not TorghastTourgiudeDB.Notes or (TorghastTourgiudeDB.Notes and TorghastTourgiudeDB.Notes.profiles and not TorghastTourgiudeDB.Notes.profiles[name.. " - "..realmName]))  or
+	(not TorghastTourgiudeDB.Wieghts or (TorghastTourgiudeDB.Wieghts and TorghastTourgiudeDB.Wieghts.profiles and not TorghastTourgiudeDB.Wieghts.profiles[name.. " - "..realmName])) then return end
+
 
 	local currentSpec = GetSpecialization()
 	local NotesDB = TorghastTourgiudeDB.Notes.profiles[name.." - "..realmName]
@@ -31,26 +33,21 @@ function addon.InitDB()
 	local currentProfile
 	for spec = 1, 4 do
 		local currentSpecID, currentSpecName = GetSpecializationInfo(spec)
-		if NotesDB and currentSpecID then
+		if (NotesDB or WeightsDB)  and currentSpecID then
 			local profileName = currentSpecName.." - "..name.." - "..realmName
 			profileList = addon.Weights_Notesdb:GetProfiles()
-			--TorghastTourgiudeDB.Weights_Notesdb = TorghastTourgiudeDB.Weights_Notesdb or {}
-			--TorghastTourgiudeDB.Weights_Notesdb.profiles = TorghastTourgiudeDB.Weights_Notesdb.profiles or {}
-			--TorghastTourgiudeDB.Weights_Notesdb.profiles[profileName] = {}
 			addon.Weights_Notesdb:SetProfile(profileName)
 			dualspec.char[spec] = profileName
 	
 			local newProfile = addon.Weights_Notesdb.profile
-			--newProfile.note = {}
-			--newProfile.weight = {}
-
-			if NotesDB[currentSpecID] then 
+			if NotesDB and NotesDB[currentSpecID] then 
 				for i, data in pairs(NotesDB[currentSpecID]) do
 					newProfile[i] = newProfile[i] or {}
 					newProfile[i].note = data
 				end
 			end
-			if WeightsDB[currentSpecID] then 
+
+			if WeightsDB and WeightsDB[currentSpecID] then 
 				for i, data in pairs(WeightsDB[currentSpecID]) do
 					newProfile[i] = newProfile[i] or {}
 					newProfile[i].weight = data
@@ -63,10 +60,15 @@ function addon.InitDB()
 			end
 		end
 	end
+	
 	addon.Weights_Notesdb:SetProfile(currentProfile)
 	dualspec.char.enabled = true
-	TorghastTourgiudeDB.Notes.profiles[name.. " - "..realmName] = nil
-	TorghastTourgiudeDB.Weights.profiles[name.. " - "..realmName] = nil
+	if 	TorghastTourgiudeDB and TorghastTourgiudeDB.Notes then
+	 	TorghastTourgiudeDB.Notes.profiles[name.. " - "..realmName] = nil
+	end
+	if	TorghastTourgiudeDB and TorghastTourgiudeDB.Weights then
+		 TorghastTourgiudeDB.Weights.profiles[name.. " - "..realmName] = nil
+	end
 end
 
 
