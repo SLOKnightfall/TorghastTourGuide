@@ -19,6 +19,8 @@ local cellCounts = {0,0,0,0}
 addon.ravCount = 0
 local Profile
 local isEnabled = false
+local LSM = LibStub("LibSharedMedia-3.0")
+addon.fontStrings = {}
 
 addon.Stats = {}
 
@@ -26,6 +28,10 @@ addon.Stats = {}
 local optionHandler = {}
 function optionHandler:Setter(info, value)
 	Profile[info[#info]] = value
+
+	if info.arg == "font" then
+		addon:UpdateFonts()
+	end
 end
 
 
@@ -114,7 +120,58 @@ local options = {
 					width = "full",
 				},
 			},
-		},				
+		},
+		display_settings={
+			name = " ",
+			type = "group",
+			inline = true,
+			order = 4,
+			args={
+				Display_Header = {
+					order = 1,
+					name = L["Display Options"],
+					type = "header",
+					width = "full",
+				},
+				Font_Color = {
+					order = 2,
+					name = L["Font Color"],
+					type = "color",
+					width = .65,
+					hasAlpha = false,
+					get = function(info)
+						local color = addon.db.profile[info[#info]]
+						return color.r, color.g, color.b
+					end,
+					set = function(info, r, g, b, a)
+					local color = addon.db.profile[info[#info]]
+						color.r = r
+						color.g = g
+						color.b = b
+						addon:UpdateFonts()
+					end,
+				},
+				Font_Type = {
+					order = 3,
+					name = L["Select Font"],
+					 type = 'select',
+					 dialogControl = 'LSM30_Font', --Select your widget here
+					 values = LSM:HashTable("font"), -- pull in your font list from LSM
+					 arg = "font",
+				},
+
+				Font_Size = {
+					order = 4,
+						type = 'range',
+						name = L['Font Size'],
+						width = 'double',
+						min = 9,
+						max = 25,
+						step = 1,
+						arg = "font",
+				},
+			},
+		},			
 	},
 }
 
@@ -123,6 +180,9 @@ local options = {
 local defaults = {
 	profile = {
 		['*'] = true,
+		Font_Color = {["r"] = 0, ["g"]  =0, ["b"] = 0},
+	Font_Size = 12,
+	Font_Type ="FRITZQT",
 	}
 }
 
@@ -429,9 +489,9 @@ function addon:OnInitialize()
 	options.args.profiles.name = "Weights & Notes"
 
 	  -- Add dual-spec support
-  	local LibDualSpec = LibStub('LibDualSpec-1.0')
-  	LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
-  	LibDualSpec:EnhanceOptions(options.args.profiles, self.Weights_Notesdb)
+	local LibDualSpec = LibStub('LibDualSpec-1.0')
+	LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
+	LibDualSpec:EnhanceOptions(options.args.profiles, self.Weights_Notesdb)
 
  
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler" )

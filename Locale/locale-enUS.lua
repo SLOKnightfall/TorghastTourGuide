@@ -30,6 +30,11 @@ L["Always"] = true
 L["Reset Stats"] = true
 L["Clear Notes"] = true
 L["Clear Weights"] = true
+L["Display Options"] = true
+L["Select Font"] = true
+L["Font Size"] = true
+L["Font Color"] = true
+L["- Requires UI Reload"] = true
 
 --Stats
 L["STATS"] = true
