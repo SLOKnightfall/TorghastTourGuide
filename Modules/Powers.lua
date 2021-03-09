@@ -129,7 +129,7 @@ function addon.EditWeight(self, frame)
 			addon.CreateAnimaPowerListFrame()
 		end  
 	end)
-	MultiLineEditBox:SetText(Weights_Notesdb[spellID].weight or "")
+	MultiLineEditBox:SetText(Weights_Notesdb[spellID].note or "")
 	f:AddChild(MultiLineEditBox)
 	
 	local Button = AceGUI:Create("Button")

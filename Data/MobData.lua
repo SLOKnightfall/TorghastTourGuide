@@ -102,7 +102,6 @@ addon.mobs = {
 	[151816] = PowerNames["Deadsoul Hound Harness"], --Deadsoul Scavenger
 	[152644] = PowerNames["Purifier's Flame"], --Deadsoul Drifter
 	[151815] = PowerNames["Purifier's Flame"], --Deadsoul Echo
-	[151816] = PowerNames["Purifier's Flame"], --Deadsoul Scavenger
 	[151814] = PowerNames["Purifier's Flame"], --Deadsoul Shade
     [153879] = PowerNames["Purifier's Flame"], --Deadsoul Shadow
     [153885] = PowerNames["Purifier's Flame"], --Deadsoul Shambler
@@ -139,7 +138,7 @@ addon.ZoneList = {
 	{L["Soulforges"], {157584,157583,157572,157571,152708,153878,157634,150958,153874,},},
 	{L["Coldheart Interstitia"], {156212,165594,156157,156226,156213,156159,156219,},},
 	{L["Upper Reaches"], {152708,155790,155830,157810,155949,157809,155812,155824,155793,150958,153874,},},
-	{L["Mort'Regar"], {151816,152644,151815,151816,151814,153879,153885,153882,153552,162661,},},
+	{L["Mort'Regar"], {151816,152644,151815,151814,153879,153885,153882,153552,162661,},},
 	{L["Fae Invader"] ,{155225,155221,155216,155226,155215,155211,155219,},},
 	{L["Elementals"],{154128,154129,},},
 	{L["Prisoner"],{154011,154015,154014,154020,154018,154016,},},
