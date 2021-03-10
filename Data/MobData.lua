@@ -219,11 +219,12 @@ addon.RareIDs = {
 
 addon.Upgrades = {
 	[184620] = {347111, 63202},-- vessel-of-unfortunate-spirits
-	[184615] = {347107, 63202}, --extradimensional-pockets
+	[184615] = {347107, 63183}, --extradimensional-pockets
 	[184617] = {347108, 63193}, --bangle-of-seniority
 	[184621] = {347113, 63204}, --ritual-prism-of-fortune
 	[184619] = {347109, 63201}, --loupe-of-unusual-charm
 	[184618] = {347110, 63200}, --rank-insignia-acquisitionist
 	[180952] = {342815, 61144}, --Possibility Matrix
+	[184901] = {349397, 63523}, --broker-traversal-enhancer
 }
 --C_QuestLog.IsQuestFlaggedCompleted(61144)
