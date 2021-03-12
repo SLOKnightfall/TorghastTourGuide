@@ -505,37 +505,11 @@ local PLUNDERED_CELL_ID = 168207
 local REQUISITIONED_CELL_ID = 184662
 local OBSCURING_ESSENCE_POTION_ID = 176331
 local PHANTASMIC_INFUSER_ID = 184652
-local ravName, cellName, reqName, obscuringName, infuserName
+
 
 function addon:OnEnable()
 	addon.InitDB()
 	addon.initTourGuide()
-	
-	local item = Item:CreateFromItemID(RAVENOUS_CELL_ID)
-	item:ContinueOnItemLoad(function()
-		ravName = item:GetItemName() 
-	end)
-
-	local item2 = Item:CreateFromItemID(PLUNDERED_CELL_ID)
-	item2:ContinueOnItemLoad(function()
-		cellName = item2:GetItemName() 
-	end)
-
-	local item3 = Item:CreateFromItemID(REQUISITIONED_CELL_ID)
-	item3:ContinueOnItemLoad(function()
-		reqName = item3:GetItemName() 
-	end)
-
-	local item4 = Item:CreateFromItemID(OBSCURING_ESSENCE_POTION_ID)
-	item4:ContinueOnItemLoad(function()
-		obscuringName = item4:GetItemName() 
-	end)
-
-	local item5 = Item:CreateFromItemID(PHANTASMIC_INFUSER_ID)
-	item5:ContinueOnItemLoad(function()
-	infuserName = item5:GetItemName() 
-	end)
-
 end
 
 
@@ -609,12 +583,12 @@ f:SetPoint("TOPLEFT",ScenarioStageBlock, "TOPLEFT" )
 	local function AnimaCountTooltip(self, type)
 		local name = L["Anima Cell"]
 		if type == "rav" then 
-			name = ravName
+			name = L["Ravenous Anima Cell"]
 		elseif type == "potion" then
-			name = obscuringName
+			name = L["Obscuring Essence Potion"]
 
 		elseif type == "infuser" then
-			name = infuserName
+			name = L["Phantasmic Infuser"]
 		end
 
 		local text = (L["Click to use %s"]):format(name)
@@ -728,27 +702,27 @@ function addon.UpdateItemCount()
 	local ravCount, cellCount, reqCount, potionCount = unpack(GetItemCounts())
 	addon.ravCount = ravCount
 	if ravCount > 0 then 
-		f.ravButton:SetAttribute("item", ravName)
+		f.ravButton:SetAttribute("item", L["Ravenous Anima Cell"])
 	else 
 		f.ravButton:SetAttribute("item", nil)
 	end
 
 	if cellCount > 0 then
-		f.cellButton:SetAttribute("item", cellName)
+		f.cellButton:SetAttribute("item", L["Plundered Anima Cell"])
 	elseif reqCount > 0 then 
-		f.cellButton:SetAttribute("item", reqName)
+		f.cellButton:SetAttribute("item", L["Requisitioned Anima Cell"])
 	else
 		f.cellButton:SetAttribute("item", nil)
 	end
 
 	if potionCount > 0 then
-		f.potionButton:SetAttribute("item", obscuringName)
+		f.potionButton:SetAttribute("item", L["Obscuring Essence Potion"])
 	else
 		f.potionButton:SetAttribute("item", nil)
 	end
 
 	if hasInfuser then
-		f.infuserButton:SetAttribute("item", infuserName)
+		f.infuserButton:SetAttribute("item", L["Phantasmic Infuser"])
 		f.infuserFrame:Show()
 	else
 		f.infuserButton:SetAttribute("item", nil)

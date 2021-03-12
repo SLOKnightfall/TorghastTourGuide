@@ -98,6 +98,14 @@ addon.mobs = {
 	[150958] = PowerNames["Warden's Authority"], --Mawsworn Guard
 	[153874] = PowerNames["Warden's Authority"], --Mawsworn Sentry
 
+	[157003]=  PowerNames["Pouch of Phantasma"],--Imperial Duelist  Needs Verification
+	[157118]= PowerNames["Pouch of Phantasma"],--royal-advisor Needs Verification
+	[157099] = PowerNames["Pouch of Phantasma"],--imperial-censor Needs Verification
+	[157083] = PowerNames["Pouch of Phantasma"], --stonewing-ravager Needs Verification
+	[157002] = PowerNames["Pouch of Phantasma"], --/imperial-enforcer
+	[157109] = PowerNames["Pouch of Phantasma"], --vampire-bat
+	[157017] = PowerNames["Pouch of Phantasma"], --lithic-watcher
+
 --Mort'Regar
 	[151816] = PowerNames["Deadsoul Hound Harness"], --Deadsoul Scavenger
 	[152644] = PowerNames["Purifier's Flame"], --Deadsoul Drifter
@@ -185,6 +193,8 @@ local RarePowerNames = {
 	["Potent Acid Gland"] = 337928,
 	["Overgrowth Seedling"] = 338705,
 	["Ever-Beating Heart"] = 338733,
+	["Gruul's Shattered Toenial"] = 338072,
+	["Stoneflesh Figurine"] = 338062,
 }
 
 
@@ -210,6 +220,7 @@ addon.RareIDs = {
 	[156237] = {94919,{RarePowerNames["Fallen Armaments"], RarePowerNames["Dark Fortress"]}}, --Imperator Dara
 	[170385] = {94278,{RarePowerNames["Resonating Effigy"], RarePowerNames["Ephemeral Effigy"]}}, --Writhing Misery
 	[156142] = {98720,{RarePowerNames["Frostbite Wand"], RarePowerNames["Icy Heartcrust"]}}, --Seeker of Souls
+	[157145] = {91889,{RarePowerNames["Stoneflesh Figurine"], RarePowerNames["Gruul's Shattered Toenial"]}}--gravitas
 }
 
 

@@ -5,6 +5,12 @@ _G["BINDING_NAME_TOGGLE_TORGHASTTOURGUIDE"] = "Toggle Guide"
 _G["BINDING_HEADER_TORGHASTTOURGUIDE"] = addonName
 
 
+L["Ravenous Anima Cell"] = true
+L["Plundered Anima Cell"] = true
+L["Requisitioned Anima Cell"] = true
+L["Obscuring Essence Potion"] = true
+L["Phantasmic Infuser"] = true
+
 L["Click to use %s"] = true
 L["Anima Cell"] = true
 L["Dropped Anima Cell"] = true
@@ -106,6 +112,7 @@ L["156237"] = "Imperator Dara"
 L["169823"] = "Gorm Behemoth"
 L["170228"] = "Bone Husk"
 L["173136"] = "Blightsmasher"
+L["157145"] = "Gravitas"
 
 
 --Bosses
@@ -201,6 +208,16 @@ L["155824"] = "Lumbering Creation"
 L["155793"] = "Skeletal Remains"
 L["150958"] = "Mawsworn Guard"
 L["153874"] = "Mawsworn Sentry"
+L["157003"]=  "Imperial Duelist"
+L["157118"]= "Royal Advisor"
+L["157099"] = "Imperial Censor"
+L["157083"] = "Stonewing Ravager"
+L["157002"] = "Imperial Enforcer"
+L["157109"] = "Vampire Bat"
+L["157017"] = "Lithic Watcher"
+
+
+
 
 L["Mort'Regar"] = true
 L["151816"] = "Deadsoul Scavenger"
