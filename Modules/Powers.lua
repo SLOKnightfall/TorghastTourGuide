@@ -95,7 +95,8 @@ function addon.EditWeight(self, frame)
 	f:SetWidth(350)
 	LISTWINDOW = f
 
-	local spellID = frame.spellID
+--:GetLayoutChildren()[1].optionInfo.spellID
+	local spellID = frame.optionInfo.spellID
 	Weights_Notesdb[spellID] = Weights_Notesdb[spellID] or {}
 
 	_G["TTG_NoteWindow"] = f.frame
@@ -141,7 +142,9 @@ end
 
 function addon.PowerShow()
 	local Weights_Notesdb = addon.Weights_Notesdb.profile
-	for i, frame in ipairs(PlayerChoiceFrame.Options) do
+
+	local frames = PlayerChoiceFrame:GetChildren()
+	for i, frame in ipairs(PlayerChoiceFrame:GetLayoutChildren()) do
 		local weight, notes
 		if not frame.weight then 
 			local notes = CreateFrame("Frame", nil, frame, "TorghastTourGuideNoteTemplate")
@@ -157,10 +160,12 @@ function addon.PowerShow()
 			--addon:Hook(frame, "UpdateMouseOverStateOnOption", function(self) C_Timer.After(0.2, mouseover(self)) end, true)
 		end
 
-		local spellID = frame.spellID
+
+		local spellID = frame.optionInfo.spellID
 		if spellID  then 
 			frame.weight.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].weight or "")
 			frame.notes.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].note or "")
 		end
 	end
 end
+
