@@ -560,6 +560,50 @@ function addon.CreateAnimaPowerListFrame()
 	end
 end
 
+
+function addon.CreateTormentListFrame()
+	local f = frames.tg.info.tormentScroll.child
+	local index = 1
+
+	if not f.banner then 
+		f.banner = f:CreateTexture(nil, "OVERLAY")
+		f.banner:SetAtlas("bonusobjectives-title-bg")
+		f.banner:SetPoint("TOPLEFT", 25, -3)
+		f.banner:SetPoint("TOPRIGHT", 25, 3)
+		f.banner:SetHeight(30)
+
+		f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		f.desc:SetText(L["Torments"])
+		f.desc:SetPoint("CENTER", f.banner, 0, 3)
+		f.desc:SetJustifyH("CENTER")
+	end
+
+	local lastIndex
+
+	for name, spellID in pairs(addon.TormentNames) do
+	--for powerID, data in pairs(addon.AnimaPowers) do
+		local powerID = spellID
+		--local data = addon.AnimaPowers[id]
+		f[index] = CreatePowerFrame(powerID, f, "TTG_Torment", index)
+		f[index].weight:Hide()
+		--local rarityColor = ITEM_QUALITY_COLORS[data[2]]
+		--f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
+		f[index]:ClearAllPoints()
+		if index == 1 then 
+			f[index]:SetPoint("TOPLEFT", 35, -55)
+			f[index]:SetPoint("TOPRIGHT", 35, -55)
+		else
+			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
+			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
+		end
+		addon.SetUpOverview(spellID, index)
+		index = index + 1
+
+	end
+
+	--addon.SetUpTips(addon.TormentTips[spellID], frames.tg.info.tormentScroll.child.overviews[index -1])
+
+end
 TorghastTourGuideTabMixin = {}
 function TorghastTourGuideTabMixin:OnLoad()
 	local tab = self:GetID()
@@ -576,8 +620,11 @@ function TorghastTourGuideTabMixin:OnLoad()
 		self.tooltip = L["Bosses"]
 	elseif tab == 6 then 
 		self.tooltip = L["Bosses Ability"]
-		elseif tab == 7 then 
+	elseif tab == 7 then 
 		self.tooltip = L["Anima Powers"]
+
+	elseif tab == 8 then 
+		self.tooltip = L["Torments"]
 	end
 end
 
@@ -616,6 +663,7 @@ function addon.initTourGuide()
 	addon.CreateRavinousPowerListFrame()
 	CreateRavinousMobListFrame()
 	addon.CreateAnimaPowerListFrame()
+	addon.CreateTormentListFrame()
 	addon.CreateRareButtons()
 	addon.CreateBossButtons()
 	addon.DisplayCreature(152253)
@@ -646,7 +694,7 @@ TTG_Tabs[4] = {frame = "rareScroll", button = "rareTab"}
 TTG_Tabs[5] = {frame = "bossesScroll", button = "bossTab"}
 TTG_Tabs[6] = {frame = "detailsScroll", button = "bossDetailsTab"}
 TTG_Tabs[7] = {frame = "animaPowerScroll", button = "animaTab"}
-
+TTG_Tabs[8] = {frame = "tormentScroll", button = "TormentTab"}
 local creatureDisplayID
 local rareCreatureDisplayID
 local function SetDefaultModel(tabType)
@@ -685,6 +733,9 @@ function addon.SetTab(tabType)
 		info.model:Hide()
 	elseif tabType == 3 then
 		info.ravMobScroll:Show()
+		info.model:Hide()
+	elseif tabType == 8 then
+		info.ravMobScroll:Hide()
 		info.model:Hide()
 	else
 		info.ravMobScroll:Hide()

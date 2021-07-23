@@ -28,5 +28,5 @@ TorghastTourguide.xml
 Data\MobData.lua
 Data\PowerData.lua
 Data\BossData.lua
-
+Data\TormentData.lua
 Plugins\Kaliels.lua
