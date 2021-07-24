@@ -560,6 +560,55 @@ function addon.CreateAnimaPowerListFrame()
 	end
 end
 
+local function addBullets(parent, tipdata)
+	parent.bullets = parent.bullets or {}
+
+	for index, data in ipairs(parent.bullets) do
+		data:Hide()
+	end
+
+	for index, data in ipairs(tipdata) do
+		local infoBullet
+		if not parent.bullets[index] then
+			infoBullet = CreateFrame("Frame", nil, parent, "TorghastTourGuideOverviewBulletTemplate")
+			parent.bullets[index] = infoBullet
+		else
+			infoBullet = parent.bullets[index]
+			infoBullet:Show()
+		end
+
+
+		infoBullet.Text:SetPoint("TOPLEFT", 20, 0)
+		infoBullet.Text:SetPoint("TOPRIGHT", -20, 0)
+		infoBullet.Text:SetWordWrap(true)
+		infoBullet.Text:SetText(data)
+		local color = addon.db.profile.Font_Color
+		tinsert(addon.fontStrings, infoBullet.Text)
+
+		infoBullet.Text:SetHeight(200)
+	--	infoBullet:SetWidth(parent:GetWidth() - 13)
+		infoBullet.Text:SetWidth(parent:GetWidth() - 26)
+		infoBullet:SetHeight(infoBullet.Text:GetStringHeight() + 5)
+		local parentHeight = parent:GetHeight()
+		parent:SetHeight(parentHeight + infoBullet.Text:GetStringHeight() + 15)
+
+
+		if (index == 1) then
+			infoBullet:SetPoint("TOPLEFT", parent.description, "BOTTOMLEFT" , 0, -10 )
+			infoBullet:SetPoint("TOPRIGHT", parent.description, "BOTTOMRIGHT", -4, -10)
+
+		else
+			infoBullet:SetPoint("TOPLEFT", parent.bullets[index - 1], "BOTTOMLEFT", 0, -9)
+			infoBullet:SetPoint("TOPRIGHT", parent.bullets[index - 1], "BOTTOMRIGHT", 0, -9)
+		end
+
+
+		--infoBullet:SetPoint("TOPLEFT", parent.description, "BOTTOMLEFT" , 0, -10 )
+		--infoBullet:SetPoint("TOPRIGHT", parent.description, "BOTTOMRIGHT", -4, -10)
+		parent.descriptionBG:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 5)
+	end
+end
+
 
 function addon.CreateTormentListFrame()
 	local f = frames.tg.info.tormentScroll.child
@@ -580,28 +629,85 @@ function addon.CreateTormentListFrame()
 
 	local lastIndex
 
-	for name, spellID in pairs(addon.TormentNames) do
-	--for powerID, data in pairs(addon.AnimaPowers) do
-		local powerID = spellID
+	for index, spellData in ipairs(addon.TormentNames) do
+		local powerID 
+
+		for name, spellID in pairs(spellData) do
+			powerID = spellID
+		end
 		--local data = addon.AnimaPowers[id]
 		f[index] = CreatePowerFrame(powerID, f, "TTG_Torment", index)
 		f[index].weight:Hide()
 		--local rarityColor = ITEM_QUALITY_COLORS[data[2]]
 		--f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
+				addon.SetUpOverview(powerID, index)
+		addBullets(f[index], addon.TormentTips[powerID])
 		f[index]:ClearAllPoints()
 		if index == 1 then 
 			f[index]:SetPoint("TOPLEFT", 35, -55)
 			f[index]:SetPoint("TOPRIGHT", 35, -55)
 		else
-			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
-			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
+			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT", 0, -10)
+			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT", 0, -10)
 		end
-		addon.SetUpOverview(spellID, index)
+
+		--addon.SetUpTips(addon.TormentTips[spellID], frames.tg.info.detailsScroll.child.overviews[index -1])
+
 		index = index + 1
 
 	end
 
-	--addon.SetUpTips(addon.TormentTips[spellID], frames.tg.info.tormentScroll.child.overviews[index -1])
+
+end
+
+
+function addon.CreateBlessingListFrame()
+	local f = frames.tg.info.blessingsScroll.child
+	local index = 1
+
+	if not f.banner then 
+		f.banner = f:CreateTexture(nil, "OVERLAY")
+		f.banner:SetAtlas("bonusobjectives-title-bg")
+		f.banner:SetPoint("TOPLEFT", 25, -3)
+		f.banner:SetPoint("TOPRIGHT", 25, 3)
+		f.banner:SetHeight(30)
+
+		f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		f.desc:SetText(L["Blessings"])
+		f.desc:SetPoint("CENTER", f.banner, 0, 3)
+		f.desc:SetJustifyH("CENTER")
+	end
+
+	local lastIndex
+
+	for index, spellData in ipairs(addon.BlessingNames) do
+		local powerID
+		for name, spellID in pairs(spellData) do
+		 powerID = spellID
+
+		end
+		--local data = addon.AnimaPowers[id]
+		f[index] = CreatePowerFrame(powerID, f, "TTG_Blessings", index)
+		f[index].weight:Hide()
+		--local rarityColor = ITEM_QUALITY_COLORS[data[2]]
+		--f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
+		addon.SetUpOverview(powerID, index)
+		addBullets(f[index], addon.BlessingTips[powerID])
+		f[index]:ClearAllPoints()
+		if index == 1 then 
+			f[index]:SetPoint("TOPLEFT", 35, -55)
+			f[index]:SetPoint("TOPRIGHT", 35, -55)
+		else
+			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT", 0, -10)
+			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT", 0, -10)
+		end
+
+		--addon.SetUpTips(addon.TormentTips[spellID], frames.tg.info.detailsScroll.child.overviews[index -1])
+
+		index = index + 1
+
+	end
+
 
 end
 TorghastTourGuideTabMixin = {}
@@ -625,6 +731,9 @@ function TorghastTourGuideTabMixin:OnLoad()
 
 	elseif tab == 8 then 
 		self.tooltip = L["Torments"]
+			elseif tab == 9 then 
+		self.tooltip = L["Blessings"]
+
 	end
 end
 
@@ -663,6 +772,7 @@ function addon.initTourGuide()
 	addon.CreateRavinousPowerListFrame()
 	CreateRavinousMobListFrame()
 	addon.CreateAnimaPowerListFrame()
+	addon.CreateBlessingListFrame()
 	addon.CreateTormentListFrame()
 	addon.CreateRareButtons()
 	addon.CreateBossButtons()
@@ -695,6 +805,7 @@ TTG_Tabs[5] = {frame = "bossesScroll", button = "bossTab"}
 TTG_Tabs[6] = {frame = "detailsScroll", button = "bossDetailsTab"}
 TTG_Tabs[7] = {frame = "animaPowerScroll", button = "animaTab"}
 TTG_Tabs[8] = {frame = "tormentScroll", button = "TormentTab"}
+TTG_Tabs[9] = {frame = "blessingsScroll", button = "BlessingsTab"}
 local creatureDisplayID
 local rareCreatureDisplayID
 local function SetDefaultModel(tabType)
@@ -734,7 +845,7 @@ function addon.SetTab(tabType)
 	elseif tabType == 3 then
 		info.ravMobScroll:Show()
 		info.model:Hide()
-	elseif tabType == 8 then
+	elseif tabType == 8  or tabType ==9 then
 		info.ravMobScroll:Hide()
 		info.model:Hide()
 	else

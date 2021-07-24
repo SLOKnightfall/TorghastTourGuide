@@ -476,19 +476,19 @@
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
-								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\EncounterJournal\DungeonJournal">
+								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
 									<Anchors>
 										<Anchor point="RIGHT" x="-6" y="0"/>
 									</Anchors>
 									<Size x="48" y="43"/>
-									<TexCoords left="0.344727" right="0.391602" top="0.798828" bottom="0.882812"/>
+									<TexCoords left="0.73046875" right="0.82421875" top="0.61816406" bottom="0.66015625"/>
 								</Texture>
-								<Texture name="$parentSelect" parentKey="selected" file="Interface\EncounterJournal\DungeonJournal">
+								<Texture name="$parentSelect" parentKey="selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
 									<Anchors>
 										<Anchor point="RIGHT" x="-6" y="0"/>
 									</Anchors>
 									<Size x="48" y="43"/>
-									<TexCoords left="0.344727" right="0.391602" top="0.798828" bottom="0.882812"/>
+									<TexCoords left="0.73046875" right="0.82421875" top="0.61816406" bottom="0.66015625"/>
 								</Texture>
 							</Layer>
 						</Layers>
@@ -523,10 +523,115 @@
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
-
-					<Button name="$parentRavenousPowerTab" inherits="TorghastTourGuideTabTemplate" parentKey="ravenousTab" id="3">
+					<Button name="$parentBlessingsTab" inherits="TorghastTourGuideTabTemplate" parentKey="BlessingsTab" id="9" hidden = "false">
 						<Anchors>
 							<Anchor point="TOP" relativeTo="$parentUpgradesTab" relativePoint="BOTTOM" x="0" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\PVPFrame\Icons\prestige-icon-4-2">
+									<Anchors>
+										<Anchor point="RIGHT" x="-5" y="0"/>
+									</Anchors>
+									<Size x="45" y="45"/>
+
+								</Texture>
+								<Texture name="$parentSelect" parentKey="selected" file="Interface\PVPFrame\Icons\prestige-icon-4-2">
+									<Anchors>
+										<Anchor point="RIGHT" x="-5" y="0"/>
+									</Anchors>
+									<Size x="45" y="45"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parenBlessingsScrollFrame" useParentLevel="true" parentKey="blessingsScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
+						<Size x="785" y="425"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-05" y="5"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="TorghastTourGuideScrollBarTemplate"/>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child" setAllPoints = "true">
+								<Size x="710" y="425"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-500" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<Button name="$parentTormentTab" inherits="TorghastTourGuideTabTemplate" parentKey="TormentTab" id="8" hidden = "false">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentBlessingsTab" relativePoint="BOTTOM" x="0" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\Widgets\worldstateuitextures">
+									<Anchors>
+										<Anchor point="RIGHT" x="15" y="-11"/>
+									</Anchors>
+									<Size x="64" y="64"/>
+									<TexCoords left="0.259766" right="0.384766" top="0.00390625" bottom="0.253906"/>
+
+								</Texture>
+								<Texture name="$parentSelect" parentKey="selected" file="Interface\Widgets\worldstateuitextures">
+									<Anchors>
+										<Anchor point="RIGHT" x="15" y="-11"/>
+									</Anchors>
+									<Size x="64" y="64"/>
+									<TexCoords left="0.259766" right="0.384766" top="0.00390625" bottom="0.253906"/>
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parenTormentScrollFrame" useParentLevel="true" parentKey="tormentScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
+						<Size x="785" y="425"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-05" y="5"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="TorghastTourGuideScrollBarTemplate"/>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child" setAllPoints = "true">
+								<Size x="710" y="425"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-500" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
+					<Button name="$parentRavenousPowerTab" inherits="TorghastTourGuideTabTemplate" parentKey="ravenousTab" id="3">
+						<Anchors>
+							<Anchor point="TOP" relativeTo="$parentTormentTab" relativePoint="BOTTOM" x="0" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
@@ -737,23 +842,25 @@
 						</Scripts>
 					</Button>
 					<Button name="$parentBossDetailsTab" inherits="TorghastTourGuideTabTemplate" parentKey="bossDetailsTab" id="6" hidden = "false">
+						<Size x="53" y="47"/>
+
 						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentBossTab" relativePoint="BOTTOM" x="0" y="2"/>
+							<Anchor point="LEFT" relativeTo="$parentBossTab" relativePoint="RIGHT" x="-17" y="2"/>
 						</Anchors>
 						<Layers>
 							<Layer level="OVERLAY">
 								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
 									<Anchors>
-										<Anchor point="RIGHT" x="-6" y="0"/>
+										<Anchor point="RIGHT" x="-3" y="0"/>
 									</Anchors>
-									<Size x="48" y="43"/>
+									<Size x="38" y="33"/>
 									<TexCoords left="0.904296875" right="0.99609375" top="0.70703125" bottom="0.748046875"/>
 								</Texture>
 								<Texture name="$parentSelect" parentKey="selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
 									<Anchors>
-										<Anchor point="RIGHT" x="-6" y="0"/>
+										<Anchor point="RIGHT" x="-3" y="0"/>
 									</Anchors>
-									<Size x="48" y="43"/>
+									<Size x="38" y="33"/>
 									<TexCoords left="0.806640625" right="0.8984375" top="0.70703125" bottom="0.748046875"/>
 								</Texture>
 							</Layer>
@@ -761,59 +868,7 @@
 						<Scripts>
 						</Scripts>
 					</Button>
-					<Button name="$parentTormentTab" inherits="TorghastTourGuideTabTemplate" parentKey="TormentTab" id="8" hidden = "false">
-						<Anchors>
-							<Anchor point="TOP" relativeTo="$parentBossDetailsTab" relativePoint="BOTTOM" x="0" y="2"/>
-						</Anchors>
-						<Layers>
-							<Layer level="OVERLAY">
-								<Texture name="$parentUnselect" parentKey="unselected" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
-									<Anchors>
-										<Anchor point="RIGHT" x="-6" y="0"/>
-									</Anchors>
-									<Size x="48" y="43"/>
-									<TexCoords left="0.904296875" right="0.99609375" top="0.70703125" bottom="0.748046875"/>
-								</Texture>
-								<Texture name="$parentSelect" parentKey="selected" file="Interface\EncounterJournal\UI-EncounterJournalTextures">
-									<Anchors>
-										<Anchor point="RIGHT" x="-6" y="0"/>
-									</Anchors>
-									<Size x="48" y="43"/>
-									<TexCoords left="0.806640625" right="0.8984375" top="0.70703125" bottom="0.748046875"/>
-								</Texture>
-							</Layer>
-						</Layers>
-						<Scripts>
-						</Scripts>
-					</Button>
-					<ScrollFrame name="$parenTormentScrollFrame" useParentLevel="true" parentKey="tormentScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
-						<Size x="375" y="440"/>
-						<Anchors>
-							<Anchor point="BOTTOMLEFT" x="-05" y="5"/>
-						</Anchors>
-						<Frames>
-							<Slider name="$parentScrollBar" inherits="TorghastTourGuideScrollBarTemplate"/>
-						</Frames>
-						<ScrollChild>
-							<Frame name="$parentScrollChild" parentKey="child">
-								<Size x="320" y="372"/>
-								<Anchors>
-									<Anchor point="TOPLEFT" x="0" y="0"/>
-								</Anchors>
-								<Layers>
-									<Layer level="ARTWORK">
-										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
-											<Size x="0" y="0"/>
-											<Anchors>
-												<Anchor point="TOPLEFT" x="2" y="-8"/>
-											</Anchors>
-											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
-										</FontString>
-									</Layer>
-								</Layers>
-							</Frame>
-						</ScrollChild>
-					</ScrollFrame>
+
 					<ScrollFrame name="$parentBossesScrollFrame" useParentLevel="true" parentKey="bossesScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
 						<Size x="375" y="440"/>
 						<Anchors>
