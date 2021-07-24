@@ -626,10 +626,16 @@ function addon.CreateTormentListFrame()
 		f.desc:SetPoint("CENTER", f.banner, 0, 3)
 		f.desc:SetJustifyH("CENTER")
 	end
-
 	local lastIndex
 
-	for index, spellData in ipairs(addon.TormentNames) do
+	f[index] = CreatePowerFrame(0, f, "TTG_Torment", index)
+		f[index].button.title:SetText(L["Number of Torments Per Layer"])
+		f[index].description:SetText(L["Torment_Count"])
+				f[index]:SetHeight(f[index].description:GetHeight() + 55)
+
+
+	for i, spellData in ipairs(addon.TormentNames) do
+		local index = i + 1
 		local powerID 
 
 		for name, spellID in pairs(spellData) do
@@ -680,7 +686,8 @@ function addon.CreateBlessingListFrame()
 
 	local lastIndex
 
-	for index, spellData in ipairs(addon.BlessingNames) do
+	for i, spellData in ipairs(addon.BlessingNames) do
+		local indes = i + 1
 		local powerID
 		for name, spellID in pairs(spellData) do
 		 powerID = spellID
@@ -990,6 +997,10 @@ function addon.CreateRareButtons()
 		local frameindex = {}
 		for index, powerID in pairs(data[2]) do
 			frameindex[index] = CreatePowerFrame(powerID, f, "TTTG_RarePowers"..rareIndex..powerID, index)
+
+			if frameindex[index].weight then
+				frameindex[index].weight:Hide()
+			end
 
 			if index == 1 then 
 				frameindex[index]:SetPoint("TOPLEFT", rareButton, "BOTTOMLEFT", 0,-10)

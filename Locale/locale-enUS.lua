@@ -87,6 +87,9 @@ L["Click to set weight & note"] = true
 L["Torments"] = true
 L["Blessings"] = true
 
+L["Number of Torments Per Layer"] = true
+L["Torment_Count"] = "Layers 1-5:   0\nLayers 6-7:   1\nLayers 8-9:   2\nLayer 10:       3\nLayer 11:       4\nLayer 12:       5"
+
 L["95004"] = "Venari"
 L["152253"] = "The Tarragrue"
 
