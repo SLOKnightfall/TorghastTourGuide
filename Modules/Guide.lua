@@ -560,6 +560,7 @@ function addon.CreateAnimaPowerListFrame()
 	end
 end
 
+
 local function addBullets(parent, tipdata)
 	parent.bullets = parent.bullets or {}
 
@@ -577,7 +578,6 @@ local function addBullets(parent, tipdata)
 			infoBullet:Show()
 		end
 
-
 		infoBullet.Text:SetPoint("TOPLEFT", 20, 0)
 		infoBullet.Text:SetPoint("TOPRIGHT", -20, 0)
 		infoBullet.Text:SetWordWrap(true)
@@ -585,26 +585,32 @@ local function addBullets(parent, tipdata)
 		local color = addon.db.profile.Font_Color
 		tinsert(addon.fontStrings, infoBullet.Text)
 
-		infoBullet.Text:SetHeight(200)
+		infoBullet.Text:SetHeight(400)
 	--	infoBullet:SetWidth(parent:GetWidth() - 13)
 		infoBullet.Text:SetWidth(parent:GetWidth() - 26)
-		infoBullet:SetHeight(infoBullet.Text:GetStringHeight() + 5)
-		local parentHeight = parent:GetHeight()
-		parent:SetHeight(parentHeight + infoBullet.Text:GetStringHeight() + 15)
+		local textHeight = (math.ceil(infoBullet.Text:GetStringHeight() ))
+		if textHeight > 100 then 
+			textHeight = textHeight + 40
+		elseif textHeight > 40 then 
+			textHeight = textHeight + 30
+		else
+			textHeight = textHeight + 20
+		end
 
+		infoBullet.Text:SetHeight(textHeight)
+		infoBullet:SetHeight(math.ceil(textHeight) + 5)
+		local parentHeight = math.ceil(parent:GetHeight())
+		parent:SetHeight(math.ceil(parentHeight + textHeight))
 
 		if (index == 1) then
 			infoBullet:SetPoint("TOPLEFT", parent.description, "BOTTOMLEFT" , 0, -10 )
 			infoBullet:SetPoint("TOPRIGHT", parent.description, "BOTTOMRIGHT", -4, -10)
 
 		else
-			infoBullet:SetPoint("TOPLEFT", parent.bullets[index - 1], "BOTTOMLEFT", 0, -9)
-			infoBullet:SetPoint("TOPRIGHT", parent.bullets[index - 1], "BOTTOMRIGHT", 0, -9)
+			infoBullet:SetPoint("TOPLEFT", parent.bullets[index - 1], "BOTTOMLEFT", 0, 0)
+			infoBullet:SetPoint("TOPRIGHT", parent.bullets[index - 1], "BOTTOMRIGHT", 0, -0)
 		end
 
-
-		--infoBullet:SetPoint("TOPLEFT", parent.description, "BOTTOMLEFT" , 0, -10 )
-		--infoBullet:SetPoint("TOPRIGHT", parent.description, "BOTTOMRIGHT", -4, -10)
 		parent.descriptionBG:SetPoint("BOTTOMRIGHT", parent, "BOTTOMRIGHT", 0, 5)
 	end
 end
@@ -693,11 +699,8 @@ function addon.CreateBlessingListFrame()
 		 powerID = spellID
 
 		end
-		--local data = addon.AnimaPowers[id]
 		f[index] = CreatePowerFrame(powerID, f, "TTG_Blessings", index)
 		f[index].weight:Hide()
-		--local rarityColor = ITEM_QUALITY_COLORS[data[2]]
-		--f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
 		addon.SetUpOverview(powerID, index)
 		addBullets(f[index], addon.BlessingTips[powerID])
 		f[index]:ClearAllPoints()
@@ -708,15 +711,10 @@ function addon.CreateBlessingListFrame()
 			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT", 0, -10)
 			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT", 0, -10)
 		end
-
-		--addon.SetUpTips(addon.TormentTips[spellID], frames.tg.info.detailsScroll.child.overviews[index -1])
-
 		index = index + 1
-
 	end
-
-
 end
+
 TorghastTourGuideTabMixin = {}
 function TorghastTourGuideTabMixin:OnLoad()
 	local tab = self:GetID()
@@ -735,12 +733,12 @@ function TorghastTourGuideTabMixin:OnLoad()
 		self.tooltip = L["Bosses Ability"]
 	elseif tab == 7 then 
 		self.tooltip = L["Anima Powers"]
-
 	elseif tab == 8 then 
 		self.tooltip = L["Torments"]
-			elseif tab == 9 then 
+	elseif tab == 9 then 
 		self.tooltip = L["Blessings"]
-
+	elseif tab == 10 then 
+		self.tooltip = L["Box of Many Things"]
 	end
 end
 
@@ -770,7 +768,7 @@ end
 
 
 function addon.initTourGuide()
-	local f = CreateFrame("Frame", "TorghastTourGuide", UIParent, "TorghastTourGuideTemplate")
+	local f = TorghastTourGuide --CreateFrame("Frame", "TorghastTourGuide", UIParent, "TorghastTourGuideTemplate")
 	frames.tg = f
 	tinsert(UISpecialFrames,"TorghastTourGuide")
 
@@ -784,7 +782,7 @@ function addon.initTourGuide()
 	addon.CreateRareButtons()
 	addon.CreateBossButtons()
 	addon.DisplayCreature(152253)
-
+initBox(0,0)
 	addon:UpdateFonts()
 
 	addon.SetTab(1)
@@ -813,6 +811,7 @@ TTG_Tabs[6] = {frame = "detailsScroll", button = "bossDetailsTab"}
 TTG_Tabs[7] = {frame = "animaPowerScroll", button = "animaTab"}
 TTG_Tabs[8] = {frame = "tormentScroll", button = "TormentTab"}
 TTG_Tabs[9] = {frame = "blessingsScroll", button = "BlessingsTab"}
+TTG_Tabs[10] = {frame = "boxScroll", button = "boxTab"}
 local creatureDisplayID
 local rareCreatureDisplayID
 local function SetDefaultModel(tabType)
@@ -852,7 +851,7 @@ function addon.SetTab(tabType)
 	elseif tabType == 3 then
 		info.ravMobScroll:Show()
 		info.model:Hide()
-	elseif tabType == 8  or tabType ==9 then
+	elseif tabType == 8  or tabType ==9 or tabType == 10 then
 		info.ravMobScroll:Hide()
 		info.model:Hide()
 	else
@@ -864,6 +863,12 @@ function addon.SetTab(tabType)
 		info.LinkButton:Show()
 	else
 		info.LinkButton:Hide()
+	end
+
+		if tabType == 10 then
+		TTG_OrderHallTalentFrame:Show()
+	else
+		TTG_OrderHallTalentFrame:Hide()
 	end
 
 	SetDefaultModel(tabType)
@@ -1119,6 +1124,59 @@ function addon.SetUpTips(tipdata, anchor)
 end
 
 
+
+addon.BoxTips = {
+{L["Tier1_Tips1"], L["Tier1_Tips2"],L["Tier1_Tips3"]},
+{L["Tier2_Tips1"], L["Tier2_Tips2"],L["Tier2_Tips3"]},
+{L["Tier3_Tips1"], L["Tier3_Tips2"],},
+{L["Tier4_Tips1"], L["Tier4_Tips2"],L["Tier4_Tips3"]},
+{L["Tier5_Tips1"], L["Tier5_Tips2"],L["Tier5_Tips3"]},
+{L["Tier6_Tips1"], L["Tier6_Tips2"],},
+
+
+
+}
+
+
+
+function initBox()
+	local f = frames.tg.info.boxScroll.child
+	if not f.banner then 
+		f.banner = f:CreateTexture(nil, "OVERLAY")
+		f.banner:SetAtlas("bonusobjectives-title-bg")
+		f.banner:SetPoint("TOPLEFT", 25, -3)
+		f.banner:SetPoint("TOPRIGHT", 25, 3)
+		f.banner:SetHeight(30)
+
+		f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		f.desc:SetText(L["Box of Many Things"])
+		f.desc:SetPoint("CENTER", f.banner, 0, 3)
+		f.desc:SetJustifyH("CENTER")
+	end
+
+	for index, data in ipairs(addon.BoxTips) do
+		f[index] = CreatePowerFrame(0, f, "TTG_BoxInfo", index)
+		local frame = f[index]
+		frame.button.title:SetText(L["Layer %s:"]:format(index))
+		frame.description:SetText("")
+		addBullets(frame, data)
+		--frame.bullets[1]:ClearAllPoints()
+		frame.bullets[1]:SetPoint("TOPLEFT", frame.description, "TOPLEFT" , 0, -2 )
+		--frame.bullets[1]:SetPoint("TOPRIGHT", framedescription, "TOPRIGHT", -4, -5)
+
+		frame:ClearAllPoints()
+		if index == 1 then 
+			frame:SetPoint("TOPLEFT", 25, -50)
+			frame:SetPoint("TOPRIGHT", 25, -50)
+		else
+			frame:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT", 0, -10)
+			frame:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT", 0, -10)
+		end
+	end
+end
+
+
+
 function addon.ClearOverview()
 	if not frames.tg.info.detailsScroll.child.overviews then return end
 	for index, data in ipairs(frames.tg.info.detailsScroll.child.overviews) do
@@ -1237,3 +1295,4 @@ function addon:UpdateFonts()
    		--print(f:GetFont())
     end
 end
+

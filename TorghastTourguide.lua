@@ -734,3 +734,23 @@ function addon.UpdateItemCount()
 	f.cellCount:SetText(cellCount + reqCount)
 	f.potionCount:SetText(potionCount)
 end
+
+
+function x()
+local textureKitRegionFormatStrings = {
+	["BorderLeft"] = "%s-BorderLeft",
+	["BorderRight"] = "%s-BorderRight",
+	["BorderCenter"] = "%s-BorderCenter",
+	["BGLeft"] = "%s-BGLeft",
+	["BGRight"] = "%s-BGRight",
+	["BGCenter"] = "%s-BGCenter",
+	["Spark"] = "%s-Spark",
+	["BackgroundGlow"] = "%s-BackgroundGlow",
+	["GlowLeft"] = "%s-Glow-BorderLeft",
+	["GlowRight"] = "%s-Glow-BorderRight",
+	["GlowCenter"] = "%s-Glow-BorderCenter",
+}
+
+				SetupTextureKitOnRegions("jailerstower-scenario", TTG_ScenarioObjectiveBlock, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
+
+end
