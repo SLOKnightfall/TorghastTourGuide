@@ -1,0 +1,94 @@
+	<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+
+	<Script file="Tracker.lua"/>
+
+
+					<Frame name="TTG_ScenarioObjectiveBlock.WidgetContainer" hidden="false">
+						<Size x="192" y="10"/>
+					</Frame>
+					<Frame name="TTGScenarioStageBlock" hidden="true" parent="UIParent">
+															<Anchors>
+										<Anchor point="CENTER"/>
+									</Anchors>
+						<Size x="201" y="83"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="NormalBG" file="Interface\Addons\TorghastTourguide\Icons\x2" >
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+							</Layer>
+							<Layer level="BORDER">
+
+								<Texture parentKey="GlowTexture" atlas="ScenarioTrackerToast" useAtlasSize="true" alpha="0" alphaMode="ADD">
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+									<Animations>
+										<AnimationGroup parentKey="AlphaAnim">
+											<Alpha fromAlpha="0" toAlpha="1" duration="0.266" order="1"/>
+											<Alpha endDelay="0.2" fromAlpha="1" toAlpha="0" duration="0.333" order="2"/>
+										</AnimationGroup>
+									</Animations>
+								</Texture>
+							</Layer>
+							<Layer level="ARTWORK">
+								<FontString parentKey="Stage" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin" text="XXX">
+									<Size x="172" y="18"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="15" y="-10"/>
+									</Anchors>
+									<Color r="1" g="0.914" b="0.682"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="CompleteLabel" inherits="QuestTitleFont" text="STAGE_COMPLETE" hidden="false">
+									<Anchors>
+										<Anchor point="LEFT" x="15" y="3"/>
+									</Anchors>
+									<Color r="1" g="0.914" b="0.682"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "YYY">
+									<Size x="172" y="28"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+									</Anchors>
+									<Color r="1" g="0.831" b="0.380"/>
+								</FontString>
+							</Layer>
+						</Layers>
+						<Frames>
+							<Frame parentKey="WidgetContainer" hidden="false" inherits="UIWidgetContainerTemplate">
+								<KeyValues>
+									<KeyValue key="verticalAnchorPoint" value="TOPRIGHT" type="string"/>
+									<KeyValue key="verticalRelativePoint" value="TOPRIGHT" type="string"/>
+								</KeyValues>
+								<Anchors>
+									<Anchor point="TOPLEFT"/>
+								</Anchors>
+							</Frame>
+						</Frames>
+						<Scripts>
+							<OnLoad>
+							</OnLoad>
+							<OnEnter function="ScenarioObjectiveStageBlock_OnEnter"/>
+							<OnLeave>
+								GameTooltip:Hide();
+							</OnLeave>
+						</Scripts>
+					</Frame>
+
+
+	</Ui>

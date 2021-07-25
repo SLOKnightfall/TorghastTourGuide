@@ -739,6 +739,8 @@ function TorghastTourGuideTabMixin:OnLoad()
 		self.tooltip = L["Blessings"]
 	elseif tab == 10 then 
 		self.tooltip = L["Box of Many Things"]
+	elseif tab == 11 then 
+		self.tooltip = L["Torghast Scoring"]
 	end
 end
 
@@ -782,7 +784,8 @@ function addon.initTourGuide()
 	addon.CreateRareButtons()
 	addon.CreateBossButtons()
 	addon.DisplayCreature(152253)
-initBox(0,0)
+	addon.SetUpBoxFrame()
+	--addon.SetUpScoreFrame()
 	addon:UpdateFonts()
 
 	addon.SetTab(1)
@@ -812,6 +815,7 @@ TTG_Tabs[7] = {frame = "animaPowerScroll", button = "animaTab"}
 TTG_Tabs[8] = {frame = "tormentScroll", button = "TormentTab"}
 TTG_Tabs[9] = {frame = "blessingsScroll", button = "BlessingsTab"}
 TTG_Tabs[10] = {frame = "boxScroll", button = "boxTab"}
+TTG_Tabs[11] = {frame = "scoringScroll", button = "scoringTab"}
 local creatureDisplayID
 local rareCreatureDisplayID
 local function SetDefaultModel(tabType)
@@ -851,7 +855,7 @@ function addon.SetTab(tabType)
 	elseif tabType == 3 then
 		info.ravMobScroll:Show()
 		info.model:Hide()
-	elseif tabType == 8  or tabType ==9 or tabType == 10 then
+	elseif tabType == 8  or tabType ==9 or tabType == 10 or tabType== 11 then
 		info.ravMobScroll:Hide()
 		info.model:Hide()
 	else
@@ -1123,23 +1127,17 @@ function addon.SetUpTips(tipdata, anchor)
 	end
 end
 
-
-
-addon.BoxTips = {
-{L["Tier1_Tips1"], L["Tier1_Tips2"],L["Tier1_Tips3"]},
-{L["Tier2_Tips1"], L["Tier2_Tips2"],L["Tier2_Tips3"]},
-{L["Tier3_Tips1"], L["Tier3_Tips2"],},
-{L["Tier4_Tips1"], L["Tier4_Tips2"],L["Tier4_Tips3"]},
-{L["Tier5_Tips1"], L["Tier5_Tips2"],L["Tier5_Tips3"]},
-{L["Tier6_Tips1"], L["Tier6_Tips2"],},
-
-
-
+local BoxTips = {
+	{L["Tier1_Tips1"], L["Tier1_Tips2"],L["Tier1_Tips3"]},
+	{L["Tier2_Tips1"], L["Tier2_Tips2"],L["Tier2_Tips3"]},
+	{L["Tier3_Tips1"], L["Tier3_Tips2"],},
+	{L["Tier4_Tips1"], L["Tier4_Tips2"],L["Tier4_Tips3"]},
+	{L["Tier5_Tips1"], L["Tier5_Tips2"],L["Tier5_Tips3"]},
+	{L["Tier6_Tips1"], L["Tier6_Tips2"],},
 }
 
 
-
-function initBox()
+function addon.SetUpBoxFrame()
 	local f = frames.tg.info.boxScroll.child
 	if not f.banner then 
 		f.banner = f:CreateTexture(nil, "OVERLAY")
@@ -1154,7 +1152,7 @@ function initBox()
 		f.desc:SetJustifyH("CENTER")
 	end
 
-	for index, data in ipairs(addon.BoxTips) do
+	for index, data in ipairs(BoxTips) do
 		f[index] = CreatePowerFrame(0, f, "TTG_BoxInfo", index)
 		local frame = f[index]
 		frame.button.title:SetText(L["Layer %s:"]:format(index))
@@ -1162,7 +1160,6 @@ function initBox()
 		addBullets(frame, data)
 		--frame.bullets[1]:ClearAllPoints()
 		frame.bullets[1]:SetPoint("TOPLEFT", frame.description, "TOPLEFT" , 0, -2 )
-		--frame.bullets[1]:SetPoint("TOPRIGHT", framedescription, "TOPRIGHT", -4, -5)
 
 		frame:ClearAllPoints()
 		if index == 1 then 
@@ -1175,6 +1172,135 @@ function initBox()
 	end
 end
 
+
+
+local ScoreTable = {
+{"Completion","Earned by defeating enemies, freeing Soul Remnants, and destroying Ashen Phylacteries","Up to 100"},
+{"Time","Score based on if you are below or above the 'par time' for the Layer","Up to 50"},
+{"Empowered Bonus","Bonus Points gained from actions while Empowered","Based on Player Usage"},
+}
+    function addon:Levels(parent)
+        -- log(format("Historia levels"))
+        --  Define the container frame for the level frames (MC  = Middle container)
+        local Table_MC = CreateFrame("FRAME", nil , parent);
+        Table_MC:SetPoint("TOPLEFT" , parent, 0, 0)
+        Table_MC:SetPoint("BOTTOMRIGHT" ,parent, 0, 32)
+     -- Table_MC:SetPoint("BOTTOM" ,parent, 0, 32)
+      --  Table_MC:SetPoint("LEFT" ,parent, 32, 0)
+       -- Table_MC:SetPoint("RIGHT" ,parent, -32, 0)
+
+     ---Score Type	Description	Point Value
+        --  Define the frame for the first group of levels (ML1 = Middle Level one)            
+        local Table_ScoreType = CreateFrame("FRAME", nil, Table_MC);
+        Table_ScoreType:SetPoint("TOPLEFT" ,Table_MC, 5, -5)
+        Table_ScoreType:SetWidth(200)
+        Table_ScoreType:SetHeight(35)
+        --Table_ScoreType:SetPoint("BOTTOMRIGHT" ,Table_MC, "LEFT", 80, 0)
+       -- Table_ScoreType:SetPoint("LEFT" ,Table_MC, 0, 0)
+        --Table_ScoreType:SetPoint("RIGHT" ,Table_MC, "LEFT", 40, 0)
+
+                       
+        --  Define the frame for the first group of dates (MD1 = Middle Date one)              
+        local Table_Description = CreateFrame("FRAME", nil, Table_MC);
+        Table_Description:SetPoint("TOP" ,Table_MC, "TOP", 0, -5)
+        Table_Description:SetWidth(200)
+        Table_Description:SetHeight(35)
+
+
+        --Table_Description:SetPoint("TOPLEFT" ,Table_ScoreType, "TOPRIGHT", 0, -0)
+        --Table_Description:SetPoint("BOTTOMLEFT" ,Table_ScoreType,"LEFT", 200, 0)
+       -- Table_Description:SetPoint("BOTTOMLEFT" ,Table_MC, 36, 0)
+        --Table_Description:SetPoint("RIGHT" ,Table_MC, "LEFT", 200, 0)
+
+        --  Define the frame for the first group of dates (MD1 = Middle Date one)              
+        local Table_PointValue = CreateFrame("FRAME", nil, Table_MC);
+        --Table_PointValue:SetPoint("TOP" ,Table_MC, 0, -0)
+       -- Table_PointValue:SetPoint("BOTTOM" ,Table_MC, 0, 0)
+        --Table_PointValue:SetPoint("LEFT" ,Table_MC, 36, 0)
+        --Table_PointValue:SetPoint("RIGHT" ,Table_MC, "LEFT", 400, 0)
+        Table_PointValue:SetPoint("TOPRIGHT" ,Table_MC, -5, -05)
+        Table_PointValue:SetWidth(200)
+        Table_PointValue:SetHeight(35)
+                  
+                       
+        --  Define the header fontstring for the first group of levels (HLML1 = Historia Level ML1) 
+        local Table_ScoreType_FontString = Table_ScoreType:CreateFontString(nil, "ARTWORK", "GameFontWhite")
+        Table_ScoreType_FontString:SetPoint("TOP" ,Table_ScoreType, 0, 0)
+        Table_ScoreType_FontString:SetText(L["Score type"])
+
+        --  Define the header fontstring for the first group of dates (HLML1 = Historia Date ML1) 
+        local Table_Description_FontType = Table_Description:CreateFontString(nil, "ARTWORK", "GameFontWhite")
+        Table_Description_FontType:SetPoint("TOP" ,Table_Description, 0, 0)
+        Table_Description_FontType:SetText(L["Description"]) 
+
+        local TablePoints_FontType = Table_PointValue:CreateFontString(nil, "ARTWORK", "GameFontWhite")
+        TablePoints_FontType:SetPoint("TOP" ,Table_PointValue, 0, 0)
+        TablePoints_FontType:SetText(L["Point Value"])  
+        --  Set the levels and the date in the UI
+        for i, data in ipairs(ScoreTable) do
+        	local offset = -(i+1)*20
+        	if i == 1 then 
+        		offset = -25
+        	end
+
+            local HLML1L1 = Table_ScoreType:CreateFontString("HLML1L1", "ARTWORK", "GameFontWhite")
+                HLML1L1:SetPoint("TOP", Table_ScoreType, 0, offset)
+                --HLML1L1:SetText(tostring(HistoriaLocalDb.Level[i].level))
+                HLML1L1:SetText(data[1])
+            local HLML1D1 = Table_Description:CreateFontString("HLML1D1", "ARTWORK", "GameFontNormal")
+                HLML1D1:SetPoint("TOP" ,Table_Description, "TOP", 0, offset)
+                HLML1D1:SetWidth(350)
+                HLML1D1:SetWordWrap(true)  
+
+                ---HLML1D1:SetText(format(date("%a, %b %d %Y %H:%M", HistoriaLocalDb.Level[i].time)))  
+            HLML1D1:SetText(data[2]) 
+            local HLML1D3= Table_PointValue:CreateFontString("HLML1D3", "ARTWORK", "GameFontNormal")
+                HLML1D3:SetPoint("TOP" ,Table_PointValue, "TOP", 0, offset)
+                ---HLML1D1:SetText(format(date("%a, %b %d %Y %H:%M", HistoriaLocalDb.Level[i].time)))  
+            HLML1D3:SetText(data[3])   
+        end
+    end
+
+
+function addon.SetUpScoreFrame()
+	print("S")
+	local f = frames.tg.info.scoringScroll.child
+	if not f.banner then 
+		f.banner = f:CreateTexture(nil, "OVERLAY")
+		f.banner:SetAtlas("bonusobjectives-title-bg")
+		f.banner:SetPoint("TOPLEFT", 25, -3)
+		f.banner:SetPoint("TOPRIGHT", 25, 3)
+		f.banner:SetHeight(30)
+
+		f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		f.desc:SetText(L["Torghast Scoring"])
+		f.desc:SetPoint("CENTER", f.banner, 0, 3)
+		f.desc:SetJustifyH("CENTER")
+	end
+
+f[1] = CreatePowerFrame(0, f, "TTG_ScoringInfo", 1)
+f[1].button.title:SetText("")
+	addon:Levels(f[1])
+
+--[[	for index, data in ipairs(BoxTips) do
+		f[index] = CreatePowerFrame(0, f, "TTG_BoxInfo", index)
+		local frame = f[index]
+		frame.button.title:SetText(L["Layer %s:"]:format(index))
+		frame.description:SetText("")
+		addBullets(frame, data)
+		--frame.bullets[1]:ClearAllPoints()
+		frame.bullets[1]:SetPoint("TOPLEFT", frame.description, "TOPLEFT" , 0, -2 )
+
+		frame:ClearAllPoints()
+		if index == 1 then 
+			frame:SetPoint("TOPLEFT", 25, -50)
+			frame:SetPoint("TOPRIGHT", 25, -50)
+		else
+			frame:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT", 0, -10)
+			frame:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT", 0, -10)
+		end
+	end]]
+end
 
 
 function addon.ClearOverview()

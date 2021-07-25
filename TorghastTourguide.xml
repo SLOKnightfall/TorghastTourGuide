@@ -469,6 +469,60 @@
 							</Frame>
 						</ScrollChild>
 					</ScrollFrame>
+					<Button name="$parentScoringTab" inherits="TorghastTourGuideTabTemplate" parentKey="scoringTab" id="11" hidden="true">
+							<Size x="53" y="47"/>	
+						<Anchors>
+							<Anchor point="LEFT" relativeTo="$parentStatsTab" relativePoint="RIGHT" x="-17" y="2"/>
+						</Anchors>
+						<Layers>
+							<Layer level="OVERLAY">
+								<Texture name="$parentUnselect" parentKey="unselected" file="Interface/Jailerstower/TalentTreejailerstower">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="0"/>
+									</Anchors>
+									<Size x="30" y="30"/>
+									<TexCoords left="0.630859" right="0.75" top="0.00195312" bottom="0.121094"/>
+								</Texture>
+								<Texture name="$parentSelect" parentKey="selected" file="Interface/Jailerstower/TalentTreejailerstower">
+									<Anchors>
+										<Anchor point="RIGHT" x="-8" y="0"/>
+									</Anchors>
+									<Size x="30" y="30"/>
+									<TexCoords left="0.630859" right="0.75" top="0.00195312" bottom="0.121094"/>								
+								</Texture>
+							</Layer>
+						</Layers>
+						<Scripts>
+						</Scripts>
+					</Button>
+					<ScrollFrame name="$parentScoringScrollFrame" useParentLevel="true" parentKey="scoringScroll" inherits="UIPanelScrollFrameCodeTemplate" hidden="true">
+						<Size x="785" y="425"/>
+						<Anchors>
+							<Anchor point="BOTTOMRIGHT" x="-05" y="5"/>
+						</Anchors>
+						<Frames>
+							<Slider name="$parentScrollBar" inherits="TorghastTourGuideScrollBarTemplate"/>
+						</Frames>
+						<ScrollChild>
+							<Frame name="$parentScrollChild" parentKey="child" setAllPoints = "true">
+								<Size x="710" y="425"/>
+								<Anchors>
+									<Anchor point="BOTTOMRIGHT" x="-500" y="0"/>
+								</Anchors>
+								<Layers>
+									<Layer level="ARTWORK">
+										<FontString name="$parentDescription" inherits="GameFontBlack" justifyH="LEFT" parentKey="description">
+											<Size x="0" y="0"/>
+											<Anchors>
+												<Anchor point="TOPLEFT" x="2" y="-8"/>
+											</Anchors>
+											<Color r="0.25" g="0.1484375" b=".02" a="1"/>
+										</FontString>
+									</Layer>
+								</Layers>
+							</Frame>
+						</ScrollChild>
+					</ScrollFrame>
 
 					<Button name="$parentUpgradesTab" inherits="TorghastTourGuideTabTemplate" parentKey="upgradesTab" id="2">
 						<Anchors>

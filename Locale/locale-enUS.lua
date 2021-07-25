@@ -88,6 +88,12 @@ L["Torments"] = true
 L["Blessings"] = true
 L["Box of Many Things"] = true
 L["Layer %s:"] = true
+L["Torghast Scoring"] = true
+
+
+L["Score type"] = true
+L["Description"] = true
+L["Point Value"] = true
 
 L["Number of Torments Per Layer"] = true
 L["Torment_Count"] = "Layers 1-5:   0\nLayers 6-7:   1\nLayers 8-9:   2\nLayer 10:       3\nLayer 11:       4\nLayer 12:       5"
@@ -396,3 +402,6 @@ L["Tier5_Tips3"] = "Anima Plunderer can be a nice way to get a few extra powers 
 
 L["Tier6_Tips1"] = "Empowered Nova is a fantastically potent perk, as it should be for being one of the very last choices you can unlock. The amount of damage the Empowered Nova can do is very impressive, which makes it much easier to take advantage of your Empowered buff's 100% point bonus, as well as the haste, leech, and movement speed buffs. Definitely pick this perk up as soon as you have Row 6 unlocked."
 L["Tier6_Tips2"] = "Meddle with Fate, while kind of a nifty concept, can be a bit underwhelming. There is a high likelihood of receiving unimpressive Anima Powers, though it can offer you epic powers if you are lucky. Not a perk I would consider a high priority."
+
+
+L["Scoring_1"] = "The Scoring System is what will determine your progression in Torghast, as you will need to reach a minimum score to unlock the next higher layer. Upon defeating the Floor 5 boss in your Torghast run, the Score UI will appear to show how well you performed. \n\nYour scores now determine whether you can graduate to the next higher Layer in Torghast. Simply defeating the end boss is no longer enough to advance.\n\nAt the top of this UI is a series of five Gems. To illuminate each Gem, you must achieve minimum scores. You must earn a minimum of 160 points (4 gems) to advance to the next highest layer in Torghast.\n\n# of Gems	Minimum Score\n1	40\n2	80\n3	120\n4	160\n5 ('Flawless')	200"
