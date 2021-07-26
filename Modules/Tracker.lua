@@ -42,3 +42,16 @@ annihilator & executioner
 
 
 ]]
+
+function addon.CheckAnimaPowers(spellID)
+
+
+return true
+
+
+end
+
+
+function addon.CheckAnimaRarity(spellRarity)
+	return spellRarity >= Enum.PlayerChoiceRarity.Epic
+end

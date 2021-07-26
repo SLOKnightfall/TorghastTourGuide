@@ -264,6 +264,8 @@ local function Enable()
 
 	if PlayerChoiceFrame and not addon:IsHooked(PlayerChoiceFrame, "OnShow") then
 		addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
+		addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
+
 	end
 end
 
@@ -294,6 +296,8 @@ local function Disable()
 
 	if PlayerChoiceFrame and addon:IsHooked(PlayerChoiceFrame, "OnShow") then
 		addon:Unhook(PlayerChoiceFrame, "OnShow")
+		addon:Unhook(PlayerChoiceFrame, "OnHide")
+		addon.PowerHide()
 	end
 end
 	
@@ -357,8 +361,10 @@ function addon:EventHandler(event, arg1, ...)
 		end
 
 	elseif event == "ADDON_LOADED" and arg1 == "Blizzard_PlayerChoiceUI" and isEnabled then 
-		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end) end)
-
+		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
+									addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
+						end) 
+					
 	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
 		C_Timer.After(0.1, addon.PowerTooltips)
 	elseif event == "BAG_UPDATE" then

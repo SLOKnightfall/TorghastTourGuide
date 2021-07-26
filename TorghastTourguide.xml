@@ -10,9 +10,9 @@
 		<KeyValues>
 			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
 		</KeyValues>
-		<Size x="80" y="50"/>
+		<Size x="30" y="30"/>
 		<Anchors>
-			<Anchor point="CENTER" x="50" y="50" />
+			<Anchor point="CENTER" x="35" y="75" />
 		</Anchors>
 		<Layers>
 			<Layer level="ARTWORK">
@@ -20,19 +20,19 @@
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
-					<Size x="35" y="35"/>
+					<Size x="20" y="20"/>
 					<TexCoords left="0.650390625" right="0.705078125" top="0.03125" bottom="0.0576171875"/>
 				</Texture>
 			</Layer>
 			<Layer level="OVERLAY">
 				<Texture parentKey="iconRing" atlas="adventureguide-ring">
-					<Size x="47" y="47"/>
+					<Size x="30" y="30"/>
 					<Anchors>
 						<Anchor point="CENTER" />
 					</Anchors>
 				</Texture>
-				<FontString parentKey="Text" inherits="GameFontWhite" justifyH="CENTER" justifyV="CENTER" text="100">
-					<Size x="50" y="50"/>
+				<FontString parentKey="Text" inherits="GameFontWhiteTiny" justifyH="CENTER" justifyV="CENTER" text="100">
+					<Size x="25" y="25"/>
 					<Anchors>
 						<Anchor point="CENTER"/>
 					</Anchors>
@@ -60,6 +60,39 @@
 				</FontString>
 			</Layer>
 		</Layers>
+	</Frame>
+
+	<Frame name="TorghastTourAnimaSelectionTemplate" virtual="true" hidden="false">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="30" y="30"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="40" y="10" />
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="icon" atlas="PlayerDeadBlip">
+					<Size x="25" y="25"/>
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+								if self.tooltipText then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipTitle,1,1,1);
+					GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			</Scripts>
 	</Frame>
 
 	<Button name="TorghastTourGuideBossButtonTemplate" virtual="true" hidden="true">

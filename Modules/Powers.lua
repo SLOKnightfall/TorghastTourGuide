@@ -113,7 +113,7 @@ function addon.EditWeight(self, frame)
 	EditBox:SetCallback("OnEnterPressed" , function() 
 		Weights_Notesdb[spellID] = Weights_Notesdb[spellID] or {}
 		Weights_Notesdb[spellID].weight = EditBox:GetText()
-		frame.weight.Text:SetText(Weights_Notesdb[spellID].weight)
+		self.Text:SetText(Weights_Notesdb[spellID].weight)
 	end)
 	f:AddChild(EditBox)
 
@@ -140,32 +140,61 @@ function addon.EditWeight(self, frame)
 end
 
 
+local framePool = {}
 function addon.PowerShow()
 	local Weights_Notesdb = addon.Weights_Notesdb.profile
 
-	local frames = PlayerChoiceFrame:GetChildren()
+	local frames = PlayerChoiceFrame:GetChildren()[1]
 	for i, frame in ipairs(PlayerChoiceFrame:GetLayoutChildren()) do
 		local weight, notes
-		if not frame.weight then 
-			local notes = CreateFrame("Frame", nil, frame, "TorghastTourGuideNoteTemplate")
+		if not framePool[i] then 
+			local parentFrame = CreateFrame("Frame", nil, UIParent)
+			parentFrame.notes = CreateFrame("Frame", nil, parentFrame, "TorghastTourGuideNoteTemplate")
 			--notes:SetScript("OnMouseDown", function(self) addon.EditWeight(self, frame) end)
 
-			local weight = CreateFrame("Frame", nil, frame, "TorghastTourGuidePowerTemplate")
+			parentFrame.weight = CreateFrame("Frame", nil, parentFrame, "TorghastTourGuidePowerTemplate")
 			--	weight:SetScript("OnEnter", function(self) self:GetParent().MouseOverOverride:EnableMouse(false);  addon.ShowTooltip(self, "This Is a Note")  end)
 			--	weight:SetScript("OnLeave", function(self) GameTooltip:Hide(); self:GetParent().MouseOverOverride:EnableMouse(true); end)
-			weight:SetScript("OnMouseDown", function(self) addon.EditWeight(self, frame) end)
-			weight:SetFrameLevel(15)
-			frame.weight = weight
-			frame.notes = notes
-			--addon:Hook(frame, "UpdateMouseOverStateOnOption", function(self) C_Timer.After(0.2, mouseover(self)) end, true)
-		end
 
+			parentFrame.helper = CreateFrame("Frame", nil, parentFrame, "TorghastTourAnimaSelectionTemplate")
+			parentFrame.helper.icon:SetVertexColor(1,0,0);
+
+			parentFrame.weight:SetScript("OnMouseDown", function(self) addon.EditWeight(self, frame) end)
+			parentFrame.weight:SetFrameLevel(15)
+			framePool[i] = parentFrame
+			parentFrame:SetFrameStrata("DIALOG")
+			parentFrame:SetFrameLevel(frame.WidgetContainer:GetFrameLevel()+500)
+		else
+			framePool[i]:Show()
+		end
+		
+		framePool[i]:ClearAllPoints()
+		framePool[i]:SetPoint("TOPLEFT", frame, "TOPLEFT")
+		framePool[i]:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
 
 		local spellID = frame.optionInfo.spellID
+		local spellRarity = frame.optionInfo.rarity
 		if spellID  then 
-			frame.weight.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].weight or "")
-			frame.notes.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].note or "")
+			framePool[i].weight.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].weight or "")
+			framePool[i].notes.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].note or "")
+
+			local isEpic = addon.CheckAnimaRarity(spellRarity)
+			local isDupe = addon.CheckAnimaPowers(spellID)
+			if isEpic or isDupe then
+
+				framePool[i].helper.icon:Show()
+				framePool[i].helper.tooltipTitle = "Selecting Voids:"
+				framePool[i].helper.tooltipText = ("%s%s"):format((isEpic and "Pauper  +10pts\n") or "", (isDupe and "Highlander + 15pts") or"")
+			else
+				framePool[i].helper.icon:Hide()
+				framePool[i].helper.tooltipText = nil
+			end
 		end
 	end
 end
 
+function addon.PowerHide()
+	for i, frame in ipairs(framePool) do
+		frame:Hide()
+	end
+end

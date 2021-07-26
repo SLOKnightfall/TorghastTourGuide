@@ -25,7 +25,7 @@ Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 Locale\locale-enUS.lua
 
 TorghastTourguide.xml
-#Modules\Tracker.xml
+Modules\Tracker.xml
 Modules\Box.xml
 Data\MobData.lua
 Data\PowerData.lua
