@@ -98,6 +98,19 @@ L["Point Value"] = true
 L["Number of Torments Per Layer"] = true
 L["Torment_Count"] = "Layers 1-5:   0\nLayers 6-7:   1\nLayers 8-9:   2\nLayer 10:       3\nLayer 11:       4\nLayer 12:       5"
 
+
+
+
+
+L["Failed Bouns: %s"] = true
+L["Bonuses: %s"] = true
+L["Score:"] = true
+L["Completion: %s"] = true
+
+
+
+
+
 L["95004"] = "Venari"
 L["152253"] = "The Tarragrue"
 
@@ -405,3 +418,21 @@ L["Tier6_Tips2"] = "Meddle with Fate, while kind of a nifty concept, can be a bi
 
 
 L["Scoring_1"] = "The Scoring System is what will determine your progression in Torghast, as you will need to reach a minimum score to unlock the next higher layer. Upon defeating the Floor 5 boss in your Torghast run, the Score UI will appear to show how well you performed. \n\nYour scores now determine whether you can graduate to the next higher Layer in Torghast. Simply defeating the end boss is no longer enough to advance.\n\nAt the top of this UI is a series of five Gems. To illuminate each Gem, you must achieve minimum scores. You must earn a minimum of 160 points (4 gems) to advance to the next highest layer in Torghast.\n\n# of Gems	Minimum Score\n1	40\n2	80\n3	120\n4	160\n5 ('Flawless')	200"
+
+
+L["Annihilator_Desc"] = "Floor 5 boss killed in under 20 seconds"
+L["Collector_Desc"] = "Collect at least 30 Anima Powers"
+L["Daredevil_Desc"] = "Defeat 2 Elites within 10 seconds of each other"
+L["Executioner_Desc"] = "Floor 5 boss killed in under 40 seconds"
+L["Highlander_Desc"] = "No duplicate Anima Powers"
+L["Hoarder_Desc"] = "Defeat the floor 5 boss with at least %s Phantasma remaining"
+--(Note: Phantasma required will scale up per member of your party!)	10
+L["Hunter_Desc"] = "No elite enemies reached 4 stacks of Unnatural Power"
+L["Pauper_Desc"] = "No epic Anima Powers"
+L["Pillager_Desc"] = "90% of Ashen Phylacteries destroyed. Not currently tracked."
+L["Plunderer_Desc"] = "Opened treasure chests"
+L["Reinforced_Desc"] = "Collect at least 5 Obleron Armaments of the same type"
+L["Rescuer_Desc"] = "Assisted a denizen of Torghast"
+L["Robber_Desc"] = "Robbed a Broker (Requires Shoplifter blessing active OR usage of a Ravenous Anima Cell)"
+L["Savior_Desc"] = "All Soul Remnants freed. Not currently tracked." 
+L["Trapmaster_Desc"] = "No trap damage taken"

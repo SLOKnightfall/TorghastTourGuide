@@ -267,6 +267,7 @@ local function Enable()
 		addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
 
 	end
+	addon.InitScoreFrame()
 end
 
 
@@ -299,6 +300,8 @@ local function Disable()
 		addon:Unhook(PlayerChoiceFrame, "OnHide")
 		addon.PowerHide()
 	end
+	TTGScenarioStageBlock:Hide()
+
 end
 	
 
@@ -340,6 +343,16 @@ local OPEN_CHEST_SPELLID = 320060
 local mobList = {}
 local currentFloor = 1
 local runType
+local currentPhantasma = 0
+
+
+function addon:CurrentFloor()
+	return currentFloor
+end
+
+function addon:CurrentPhantasma()
+	return currentPhantasma
+end
 
 function addon:EventHandler(event, arg1, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
@@ -382,9 +395,11 @@ function addon:EventHandler(event, arg1, ...)
 	elseif event == "CURRENCY_DISPLAY_UPDATE" and arg1 == PHANTASMA_ID_NUMBER then 
 			local  quantity, quantityChange, quantityGainSource, quantityLostSource = ...
 			addon.Stats:SetPhantasma(quantityChange)
+			currentPhantasma = quantity
 
 	elseif event == "PLAYER_CHOICE_UPDATE" then
 			addon.Stats:AnimaGain()
+			addon.Tracker:CheckBouns()
 
 	elseif event == "NAME_PLATE_UNIT_ADDED" or event == "FORBIDDEN_NAME_PLATE_UNIT_ADDED"  then
 		if arg1 then
@@ -418,7 +433,7 @@ function addon:EventHandler(event, arg1, ...)
 			elseif 	mobList[destGUID]  and mobList[destGUID] == "boss" then
 				mobList[destGUID] = nil
 				addon.Stats.IncreaseCounter("Bosses")
-				if (currentFloor == 6 and runType ~= 0) or
+				if (currentFloor == 5 and runType ~= 0) or
 				  (currentFloor == 18 and runType == 0) then 
 					addon.Stats.IncreaseCounter("Bosses")
 				end
@@ -426,7 +441,7 @@ function addon:EventHandler(event, arg1, ...)
 		
 		elseif (subevent == "SPELL_DAMAGE")  and destGUID == playerGUID and traps[spellID] then 
 			addon.Stats.IncreaseCounter("TrapSprung")
-			
+			addon.Tracker:FlagFail("Trapmaster")
 		elseif (cid and ashen[cid])  and (sourceGUID == playerGUID or sourceGUID == petGUID) and not ashenCache[destGUID] then
 			ashenCache[destGUID] = true
 			addon.Stats.IncreaseCounter("JarsBroken")
@@ -442,6 +457,7 @@ function addon:EventHandler(event, arg1, ...)
 
 	elseif event == "UNIT_AURA" then
 		addon.Stats:AnimaGain()
+		addon.Tracker:CheckBouns()
 
 	elseif event ==  "UNIT_TARGET" then
 		local unitClass = UnitClassification("target")

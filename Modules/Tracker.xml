@@ -7,14 +7,15 @@
 					<Frame name="TTG_ScenarioObjectiveBlock.WidgetContainer" hidden="false">
 						<Size x="192" y="10"/>
 					</Frame>
-					<Frame name="TTGScenarioStageBlock" hidden="true" parent="UIParent">
-															<Anchors>
-										<Anchor point="CENTER"/>
-									</Anchors>
-						<Size x="201" y="83"/>
+
+					<Frame name="TTGScenarioStageBlock" hidden="false" parent="UIParent" moveable="true">
+						<Anchors>
+							<Anchor point="CENTER"/>
+						</Anchors>
+						<Size x="250" y="83"/>
 						<Layers>
 							<Layer level="BACKGROUND">
-								<Texture parentKey="NormalBG" file="Interface\Addons\TorghastTourguide\Icons\x2" >
+								<Texture parentKey="NormalBG" atlas="jailerstower-scenario-nodeaths-frame" useAtlasSize="true" >
 									<Anchors>
 										<Anchor point="TOPLEFT" x="0" y="0"/>
 									</Anchors>
@@ -35,10 +36,15 @@
 								</Texture>
 							</Layer>
 							<Layer level="ARTWORK">
-								<FontString parentKey="Stage" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT" mixin="ShrinkUntilTruncateFontStringMixin" text="XXX">
-									<Size x="172" y="18"/>
+								<Texture parentKey="DeathIcon" atlas="jailerstower-scenario-death" useAtlasSize="true" >
 									<Anchors>
-										<Anchor point="TOPLEFT" x="15" y="-10"/>
+										<Anchor point="BOTTOM" x="50" y="20"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="DeathCount" inherits="GameFontNormal" wordwrap="true" justifyH="LEFT"  text="1000">
+									<Size x="40" y="18"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.DeathIcon" relativePoint="TOPRIGHT" x="02" y="0"/>
 									</Anchors>
 									<Color r="1" g="0.914" b="0.682"/>
 									<Shadow>
@@ -48,9 +54,23 @@
 										<Color r="0" g="0" b="0"/>
 									</Shadow>
 								</FontString>
-								<FontString parentKey="CompleteLabel" inherits="QuestTitleFont" text="STAGE_COMPLETE" hidden="false">
+								<FontString parentKey="DeathPenalty" inherits="GameFontNormalSmall" wordwrap="true" justifyH="LEFT"  text="(-1000)">
+									<Size x="50" y="18"/>
 									<Anchors>
-										<Anchor point="LEFT" x="15" y="3"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.DeathCount" relativePoint="TOPRIGHT" x="-5" y="0"/>
+									</Anchors>
+									<Color r="1" g="0" b="0"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<FontString parentKey="Score" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT"  text="Score:">
+									<Size x="60" y="18"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" x="35" y="-7"/>
 									</Anchors>
 									<Color r="1" g="0.914" b="0.682"/>
 									<Shadow>
@@ -60,10 +80,74 @@
 										<Color r="0" g="0" b="0"/>
 									</Shadow>
 								</FontString>
-								<FontString parentKey="Name" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "YYY">
-									<Size x="172" y="28"/>
+								<FontString parentKey="ScoreTotal" inherits="QuestTitleFont" wordwrap="true" justifyH="LEFT"  text="200">
+									<Size x="65" y="18"/>
 									<Anchors>
-										<Anchor point="TOPLEFT" relativeKey="$parent.Stage" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Score" relativePoint="TOPRIGHT" x="-5" y="0"/>
+									</Anchors>
+									<Color r="1" g="0.914" b="0.682"/>
+									<Shadow>
+										<Offset>
+											<AbsDimension x="1" y="-1"/>
+										</Offset>
+										<Color r="0" g="0" b="0"/>
+									</Shadow>
+								</FontString>
+								<Texture parentKey="Gem1" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
+									<Size x="15" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.ScoreTotal" relativePoint="TOPRIGHT" x="-15" y="5"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Gem2" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
+									<Size x="15" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Gem1" relativePoint="TOPRIGHT" x="-5" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Gem3" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
+									<Size x="15" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Gem2" relativePoint="TOPRIGHT" x="-5" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Gem4" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
+									<Size x="15" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Gem3" relativePoint="TOPRIGHT" x="-5" y="0"/>
+									</Anchors>
+								</Texture>
+								<Texture parentKey="Gem5" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
+									<Size x="15" y="32"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Gem4" relativePoint="TOPRIGHT" x="-5" y="0"/>
+									</Anchors>
+								</Texture>
+								<FontString parentKey="Completion" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "Completion: 100">
+									<Size x="100" y="28"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Score" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+									</Anchors>
+									<Color r="1" g="0.831" b="0.380"/>
+								</FontString>
+								<FontString parentKey="Bonuses" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "Bonuses: 100">
+									<Size x="100" y="28"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Completion" relativePoint="TOPRIGHT" x="10" y="0"/>
+									</Anchors>
+									<Color r="1" g="0.831" b="0.380"/>
+								</FontString>
+								<FontString parentKey="Timer" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "00:00:00:00">
+									<Size x="75" y="28"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Score" relativePoint="BOTTOMLEFT" x="3" y="-23"/>
+									</Anchors>
+									<Color r="1" g="0.831" b="0.380"/>
+								</FontString>
+								<FontString parentKey="TimerBonus" inherits="GameFontNormalTiny" justifyH="LEFT" justifyV="TOP" spacing="2" text = "(30)">
+									<Size x="100" y="28"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.Timer" relativePoint="TOPRIGHT" x="7" y="0"/>
 									</Anchors>
 									<Color r="1" g="0.831" b="0.380"/>
 								</FontString>
@@ -89,6 +173,59 @@
 							</OnLeave>
 						</Scripts>
 					</Frame>
+					<Frame name="TTG_BonusList" hidden="false" parent="UIParent" moveable="true">
+						<Anchors>
+							<Anchor point="TOPLEFT" relativeTo= "TTGScenarioStageBlock" relativePoint="TOPRIGHT" x="0" y="0"/>
+						</Anchors>
+						<Size x="201" y="83"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="TopBG" atlas="jailerstower-animapowerlist-topbg" useAtlasSize="false" >
+									<Size x="170" y="81"/>
 
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+
+						
+								<Texture parentKey="BottomBG" atlas="jailerstower-animapowerlist-bottombg" useAtlasSize="false" >
+									<Size x="170" y="78"/>
+
+									<Anchors>
+										<Anchor point="BOTTOMLEFT" x="0" y="-10"/>
+									</Anchors>
+								</Texture>
+									<Texture parentKey="MiddleBG" file="Interface/Jailerstower/Scenariopowerlistjailerstower">
+
+									<TexCoords left="0.000976562" right="0.206055" top="0.544922" bottom="0.597266"/>
+									<Anchors>
+										<Anchor point="TOPLEFT" relativeKey="$parent.TopBG" relativePoint="BOTTOMLEFT" x="0" y="0"/>
+										<Anchor point="BOTTOMRIGHT" relativeKey="$parent.BottomBG" relativePoint="TOPRIGHT" x="0" y="0"/>
+
+									</Anchors>
+								</Texture>
+							</Layer>
+						</Layers>
+					</Frame>
+					<Frame name="TTG_Timer" hidden="false" parent="UIParent" moveable="true" >
+						<Anchors>
+							<Anchor point="TOPRIGHT" relativeTo= "TTGScenarioStageBlock" relativePoint="TOPLEFT" x="0" y="0"/>
+						</Anchors>
+						<Size x="201" y="83"/>
+						<Layers>
+							<Layer level="BACKGROUND">
+								<Texture parentKey="TopBG" atlas="jailerstower-animapowerlist-medium" useAtlasSize="false" >
+									<Size x="110" y="50"/>
+
+									<Anchors>
+										<Anchor point="TOPLEFT" x="0" y="0"/>
+									</Anchors>
+								</Texture>
+
+	
+							</Layer>
+						</Layers>
+					</Frame>
 
 	</Ui>
