@@ -42,6 +42,16 @@ L["Font Size"] = true
 L["Font Color"] = true
 L["- Requires UI Reload"] = true
 
+L["Show Score Frame"] = true
+L["Reset Score Location"] = true
+L["Left"] = true
+L["Right"] = true
+L["Bottom"] = true
+L["Position of Score Frame"] = true
+L["Position of Bonus List"] = true
+L["Auto Hide Bonus List"] = true
+L["Auto Hide Bonus List In Combat"] = true
+
 --Stats
 L["STATS"] = true
 L["TOTALS:"] = true

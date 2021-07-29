@@ -43,8 +43,32 @@ annihilator & executioner
 
 ]]
 
-TTG_ScoreMixin = {}
 
+TTG_BonusListMixin = {}
+function TTG_BonusListMixin:OnShow()
+	if addon.db.profile.BonusAutoHideTime then
+		C_Timer.After(addon.db.profile.BonusAutoHideTimeValue, function(self) TTG_BonusList:Hide() end)
+	end
+
+end
+
+
+TTG_GemMixin = {}
+function TTG_GemMixin:OnEnter()
+	local id = self:GetID()
+	local score = 40 * id
+	addon.ShowTooltip(self,(">=%spts"):format(score))
+end
+
+function TTG_GemMixin:SetState(toggle)
+	if toggle then 
+		self.icon:SetAtlas("jailerstower-score-gem-icon")
+	else
+		self.icon:SetAtlas("jailerstower-score-disabled-gem-icon")
+	end
+end
+
+TTG_ScoreMixin = {}
 function TTG_ScoreMixin:OnEnter()
 end
 
@@ -55,9 +79,6 @@ function TTG_ScoreMixin:OnClick()
 		TTG_BonusList:Show()
 	end
 end
-
-	
-
 
 
 -- speed optimizations (mostly so update functions are faster)
@@ -79,6 +100,8 @@ local SEC_TO_MINUTE_FACTOR = 1/60;
 local SEC_TO_HOUR_FACTOR = SEC_TO_MINUTE_FACTOR*SEC_TO_MINUTE_FACTOR;
 
 
+
+--338907/refuge-of-the-damned
 
 TTG_TimerMixin = {}
 
@@ -111,6 +134,22 @@ function TTG_TimerMixin:Start()
 	self.playing = true;
 	self:SetScript("OnUpdate", 	self.OnUpdate  );
 end
+
+
+
+function TTG_TimerMixin:ScoreStart()
+	TTG_ScoreFrame.Timer.playing = true;
+	TTG_ScoreFrame.Timer:SetScript("OnUpdate", function(self, elapsed) 
+			--print(elapsed)
+		TTG_ScoreFrame.Timer.timer = TTG_ScoreFrame.Timer.timer + elapsed;
+		addon.Statsdb.profile.current.scoreTimer = TTG_ScoreFrame.Timer.timer
+		TTG_ScoreFrame.Timer:Update(elapsed);
+		--currentStats.scoreTimer = TTG_ScoreFrame.Timer 
+	 end)
+end
+
+
+
 
 function s()
 	TTG_Timer:Start()
@@ -152,7 +191,7 @@ function TTG_TimerMixin:CheckBouns()
 			addon.Tracker:FlagFail("Annihilator")
 		end
 
-		if addon:CurrentPhantasma() > 500 then 
+		if addon:CurrentPhantasma() > GetHoarderTotal() then 
 			addon.Tracker:FlagBonus("Hoarder")
 		end
 
@@ -162,21 +201,21 @@ end
 
 local MAW_BUFF_MAX_DISPLAY = 44;
 local bounses = {
-	["Annihilator"] = {nil,20},
-	["Collector"] = {nil,10},
-	["Daredevil"] = {nil,10, true},
-	["Executioner"] = {nil,10},
-	["Highlander"] = {true,15},
-	["Hoarder"] = {nil,10},
-	["Hunter"] = {nil,15,true},
-	["Pauper"] = {true,10},
-	["Pillager"] = {nil,5, true}, --cant track
-	["Plunderer"] = {nil,5},  --Use stats tracker
-	["Reinforced"] = {nil,10},
-	["Rescuer"] = {nil,10},  --check for quest compl;ete
-	["Robber"] = {nil,5},  --check for killing mob or for drop
-	["Savior"] = {nil,10, true}, --Cant Track
-	["Trapmaster"] = {true,10},--Use trap damage tracker 
+	["Annihilator"] = {nil, 20},
+	["Collector"] = {nil, 10},
+	["Daredevil"] = {nil, 10, true},
+	["Executioner"] = {nil, 10},
+	["Highlander"] = {true, 15},
+	["Hoarder"] = {nil, 10},
+	["Hunter"] = {nil, 15, true},
+	["Pauper"] = {true, 10},
+	["Pillager"] = {nil ,5, true}, --cant track
+	["Plunderer"] = {nil, 5},  --Use stats tracker
+	["Reinforced"] = {nil, 10},
+	["Rescuer"] = {nil, 10},  --check for quest compl;ete
+	["Robber"] = {nil, 5},  --check for killing mob or for drop
+	["Savior"] = {nil, 10, true}, --Cant Track
+	["Trapmaster"] = {true, 10},--Use trap damage tracker 
 }
 
 local bonusList = {
@@ -279,7 +318,7 @@ end
 local function checkBonusStatus(bonusName)
 	return bounses[bonusName][1]-- ~= false
 end
-
+addon.checkBonusStatus = checkBonusStatus
 
 
 local function GetHoarderTotal()
@@ -295,7 +334,7 @@ function addon.Tracker:CombatBonusChecks()
 	end
 
 --TODO:  Figure group scaleing
-	if addon:CurrentFloor() == 5 and addon:CurrentPhantasma() > 500 then 
+	if addon:CurrentFloor() == 5 and addon:CurrentPhantasma() > GetHoarderTotal() then 
 		addon.Tracker:FlagBonus("Hoarder")
 	end
 	
@@ -303,8 +342,30 @@ function addon.Tracker:CombatBonusChecks()
 end
 
 
+
+local BuffName
+local RefugeOfTheDammedBuffID = 338907
+function v()
+	if not BuffName then
+		local spell = Spell:CreateFromSpellID(RefugeOfTheDammedBuffID)
+		spell:ContinueOnSpellLoad(function()
+			BuffName = spell:GetSpellName()
+		end)
+	end
+		
+		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", BuffName);
+		--print(maw_spellID)
+
+
+end
 function addon.Tracker:CheckBouns()
 	local totalPowers = 0
+	if not BuffName then
+		local spell = Spell:CreateFromSpellID(RefugeOfTheDammedBuffID)
+		spell:ContinueOnSpellLoad(function()
+			BuffName = spell:GetSpellName()
+		end)
+	end
 	for i=1, MAW_BUFF_MAX_DISPLAY do
 		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", i, "MAW");
 		totalPowers = totalPowers + (count or 0)
@@ -350,9 +411,9 @@ function addon.Tracker:CheckBouns()
 		addon.Tracker:FlagBonus("Collector")
 	end
 
-	if addon:CurrentPhantasma() > 500 then 
+	if addon:CurrentPhantasma() > GetHoarderTotal() then 
 		addon.Tracker:FlagBonus("Hoarder")
-	elseif addon:CurrentPhantasma() < 500 then 
+	elseif addon:CurrentPhantasma() < GetHoarderTotal() then 
 		addon.Tracker:FlagFail("Hoarder", true)
 	end
 
@@ -405,19 +466,29 @@ end
 
 
 function addon.InitScoreFrame()
-	TTG_ScoreFrame:Show()
+	if addon.db.profile.ShowScore then 
+		TTG_ScoreFrame:Show()
+	else
+		TTG_ScoreFrame:Hide()
+		return
+	end
+	
 
 	local currentStats = addon.Statsdb.profile.current.scoreTimer
 	TTG_ScoreFrame.Timer.timer = 0 + addon.Statsdb.profile.current.scoreTimer
-	TTG_ScoreFrame.Timer.playing = true;
+--[[	TTG_ScoreFrame.Timer.playing = true;
 		TTG_ScoreFrame:SetScript("OnUpdate", function(self, elapsed) 
 				--print(elapsed)
 			TTG_ScoreFrame.Timer.timer = TTG_ScoreFrame.Timer.timer + elapsed;
 			addon.Statsdb.profile.current.scoreTimer = TTG_ScoreFrame.Timer.timer
 			TTG_ScoreFrame.Timer:Update(elapsed);
 			--currentStats.scoreTimer = TTG_ScoreFrame.Timer 
-		 end)
+		 end)]]
+	TTG_ScoreFrame.Timer:Update()
 	addon.UpdataeScoreFrame()
+	addon.UpdateBonusList()
+	addon:ResetBonusLocation()
+
 end
 
 
@@ -445,31 +516,12 @@ function addon.UpdataeScoreFrame()
 	--TTG_ScoreFrame.Timer:Reset()
 	TTG_ScoreFrame.TimerBonus:SetText("("..currentStats.timeBonus..")")
 
-	if total >= 40 then
-		TTG_ScoreFrame.Gem1:SetAtlas("jailerstower-score-gem-icon")
-	else
-		TTG_ScoreFrame.Gem1:SetAtlas("jailerstower-score-disabled-gem-icon")
-	end
-	if total >= 80 then
-		TTG_ScoreFrame.Gem2:SetAtlas("jailerstower-score-gem-icon")
-	else
-		TTG_ScoreFrame.Gem2:SetAtlas("jailerstower-score-disabled-gem-icon")
-	end
-		if total >= 120 then
-		TTG_ScoreFrame.Gem3:SetAtlas("jailerstower-score-gem-icon")
-	else
-		TTG_ScoreFrame.Gem3:SetAtlas("jailerstower-score-disabled-gem-icon")
-	end
-		if total >= 160 then
-		TTG_ScoreFrame.Gem4:SetAtlas("jailerstower-score-gem-icon")
-	else
-		TTG_ScoreFrame.Gem4:SetAtlas("jailerstower-score-disabled-gem-icon")
-	end
-		if total >= 200 then
-		TTG_ScoreFrame.Gem5:SetAtlas("jailerstower-score-gem-icon")
-	else
-		TTG_ScoreFrame.Gem5:SetAtlas("jailerstower-score-disabled-gem-icon")
-	end
+
+	TTG_ScoreFrame.Gem1:SetState(total >= 40)
+	TTG_ScoreFrame.Gem2:SetState(total >= 80)
+	TTG_ScoreFrame.Gem3:SetState(total >= 120)
+	TTG_ScoreFrame.Gem4:SetState(total >= 160)
+	TTG_ScoreFrame.Gem5:SetState(total >= 200)
 end
 
 
@@ -539,6 +591,33 @@ function addon.UpdateBonusList()
 	TTG_BonusList.BottomBG:SetPoint("BOTTOMLEFT", TTG_BonusList.name[#bonusList], "BOTTOMLEFT", -15, -15)
 end
 
+function addon:ResetScoreLocation()
+	local position = addon.db.profile.ScorePosition
+	TTG_ScoreFrame:ClearAllPoints()
+	if position == "LEFT" then
+
+		TTG_ScoreFrame:SetPoint("TOPRIGHT" , ScenarioStageBlock, "TOPLEFT", 10, 0 )
+	else
+		TTG_ScoreFrame:SetPoint("TOPLEFT" , ScenarioStageBlock, "TOPRIGHT", 40, 0 )
+
+
+	end
+end
+
+function addon:ResetBonusLocation()
+	local position = addon.db.profile.BonusPosition
+	TTG_BonusList:ClearAllPoints()
+	if position == "LEFT" then
+		TTG_BonusList:SetPoint("TOPRIGHT" , TTG_ScoreFrame, "TOPLEFT", 25,5 )
+	elseif position == "RIGHT" then
+		TTG_BonusList:SetPoint("TOPLEFT" , TTG_ScoreFrame, "TOPRIGHT", 0, 5)
+	else
+		TTG_BonusList:SetPoint("TOPLEFT" , TTG_ScoreFrame, "BOTTOMLEFT", 0, 0 )
+	end
+end
+
+--addon:ResetScoreLocation()
+--ScenarioStageBlock
 
 --EventToastManagerFrame.currentDisplayingToast.WidgetContainer:GetChildren()
 

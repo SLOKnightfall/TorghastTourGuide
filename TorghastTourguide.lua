@@ -31,9 +31,17 @@ function optionHandler:Setter(info, value)
 
 	if info.arg == "font" then
 		addon:UpdateFonts()
+	elseif info.arg == "position" then 
+	elseif info.arg == "toggleScore" then
+		if value then 
+			TTG_ScoreFrame:Show()
+		else
+			TTG_ScoreFrame:Hide()
+		end
+	elseif info.arg == "resetBonus" then
+		addon:ResetBonusLocation()
 	end
 end
-
 
 function optionHandler:Getter(info)
 	return Profile[info[#info]]
@@ -48,132 +56,213 @@ local options = {
 	set = "Setter",
 	type = 'group',
 	childGroups = "tab",
-	inline = true,
+	guiInline  = false,
 	args = {
-		general_settings={
-			name = " ",
+		stuff={
+			name = "Options",
 			type = "group",
 			inline = true,
 			order = 1,
 			
 			args={
-				Options_Header = {
-					order = 1,
-					name = L["General Options"],
-					type = "header",
-					width = "full",
-				},
-				
-				IgnoreClassRestrictions = {
-					order = 1.2,
-					name = "ff",--L["Ignore Class Restriction Filter"],
-					type = "toggle",
-					width = 1.3,
-					arg = "IgnoreClassRestrictions",
-					hidden = true,
-				},
-
-				ResetStats = {
-					order = 2,
-					name = L["Reset Stats"],
-					type = "execute",
-					width = 1.3,
-					func = function() addon.Stats:ResetAll() end,
-				},
-				spacer1 = {
-					order = 2.1,
+				general_settings={
 					name = " ",
-					type = "description",
-					width = 1.3,
-				},
-			},
-		},
-		tooltip_settings={
-			name = " ",
-			type = "group",
-			inline = true,
-			order = 3,
-			args={
-				Tooltip_Header = {
+					type = "group",
+					inline = true,
 					order = 1,
-					name = L["Tooltip Options"],
-					type = "header",
-					width = "full",
-				},
-				ShowRavenousTooltips = {
-					order = 2,
-					name = L["Show Ravenous Anima Cell Tooltips"],
-					type = "toggle",
-					width = 1.5,
-				},
-				ShowRavenousTooltips_Always = {
-					order = 3,
-					name = L["Always"],
-					type = "toggle",
-					width = 1,
-					disabled = function() return not addon.db.profile.ShowRavenousTooltips end
-				},
-				ShowRareTooltips = {
-					order = 4,
-					name = L["Show Rare Ability Drop Tooltips"],
-					type = "toggle",
-					width = "full",
-				},
-			},
-		},
-		display_settings={
-			name = " ",
-			type = "group",
-			inline = true,
-			order = 4,
-			args={
-				Display_Header = {
-					order = 1,
-					name = L["Display Options"],
-					type = "header",
-					width = "full",
-				},
-				Font_Color = {
-					order = 2,
-					name = L["Font Color"],
-					type = "color",
-					width = .65,
-					hasAlpha = false,
-					get = function(info)
-						local color = addon.db.profile[info[#info]]
-						return color.r, color.g, color.b
-					end,
-					set = function(info, r, g, b, a)
-					local color = addon.db.profile[info[#info]]
-						color.r = r
-						color.g = g
-						color.b = b
-						addon:UpdateFonts()
-					end,
-				},
-				Font_Type = {
-					order = 3,
-					name = L["Select Font"],
-					 type = 'select',
-					 dialogControl = 'LSM30_Font', --Select your widget here
-					 values = LSM:HashTable("font"), -- pull in your font list from LSM
-					 arg = "font",
-				},
+					
+					args={
+						Options_Header = {
+							order = 1,
+							name = L["General Options"],
+							type = "header",
+							width = "full",
+						},
+						
+						IgnoreClassRestrictions = {
+							order = 1.2,
+							name = "ff",--L["Ignore Class Restriction Filter"],
+							type = "toggle",
+							width = 1.3,
+							arg = "IgnoreClassRestrictions",
+							hidden = true,
+						},
 
-				Font_Size = {
-					order = 4,
-						type = 'range',
-						name = L['Font Size'],
-						width = 'double',
-						min = 9,
-						max = 25,
-						step = 1,
-						arg = "font",
+						ResetStats = {
+							order = 2,
+							name = L["Reset Stats"],
+							type = "execute",
+							width = 1.3,
+							func = function() addon.Stats:ResetAll() end,
+						},
+						spacer1 = {
+							order = 2.1,
+							name = " ",
+							type = "description",
+							width = 1.6,
+						},
+						ShowScore = {
+							order = 3,
+							name = L["Show Score Frame"],
+							type = "toggle",
+							width = 1.1,
+							arg = "toggleScore",
+						},
+						ScorePosition = {
+							order = 3.1,
+							name = L["Position of Score Frame"],
+							type = 'select',
+							values = {["LEFT"] = L["Left"], ["RIGHT" ]= L["Right"], }, -- pull in your font list from LSM
+							arg = "position",
+							width = 1.0,
+							--func = function() addon:SetScoreLocation() end,
+
+						},
+						spacer2 = {
+							order = 3.2,
+							name = " ",
+							type = "description",
+							width = .2,
+						},
+						ResetScoreLoctiaon = {
+							order = 3.3,
+							name = L["Reset Score Location"],
+							type = "execute",
+							width = 1,
+							func = function() addon:ResetScoreLocation() end,
+						},
+
+					BonusAutoHideTime = {
+							order = 4,
+							name = L["Auto Hide Bonus List"],
+							type = "toggle",
+							width = 1.1,
+							--func = function() addon:ResetBonusLocation() end,
+						},
+					BonusAutoHideCombat = {
+							order = 4.1,
+							name = L["Auto Hide Bonus List In Combat"],
+							type = "toggle",
+							width = 1.3,
+							--func = function() addon:ResetBonusLocation() end,
+						},
+					BonusPosition = {
+							order = 4.2,
+							name = L["Position of Bonus List"],
+							type = 'select',
+							values = {["LEFT"] = L["Left"], ["RIGHT" ] = L["Right"], ["BOTTOM" ] = L["Bottom"] }, -- pull in your font list from LSM
+							arg = "resetBonus",
+							width = 1.0,
+							--func = function() addon:ResetBonusLocation() end,
+						},
+
+
+
+
+
+							--BonusAutoHideTime = false,
+					--BonusAutoHideTimeValue = 15,
+					--BonusAutoHideCombat = false
+					},
 				},
+				tooltip_settings={
+					name = " ",
+					type = "group",
+					inline = true,
+					order = 3,
+					args={
+						Tooltip_Header = {
+							order = 1,
+							name = L["Tooltip Options"],
+							type = "header",
+							width = "full",
+						},
+						ShowRavenousTooltips = {
+							order = 2,
+							name = L["Show Ravenous Anima Cell Tooltips"],
+							type = "toggle",
+							width = 1.5,
+						},
+						ShowRavenousTooltips_Always = {
+							order = 3,
+							name = L["Always"],
+							type = "toggle",
+							width = 1,
+							disabled = function() return not addon.db.profile.ShowRavenousTooltips end
+						},
+						ShowRareTooltips = {
+							order = 4,
+							name = L["Show Rare Ability Drop Tooltips"],
+							type = "toggle",
+							width = "full",
+						},
+					},
+				},
+				display_settings={
+					name = " ",
+					type = "group",
+					inline = true,
+					order = 4,
+					args={
+						Display_Header = {
+							order = 1,
+							name = L["Display Options"],
+							type = "header",
+							width = "full",
+						},
+						Font_Color = {
+							order = 2,
+							name = L["Font Color"],
+							type = "color",
+							width = .65,
+							hasAlpha = false,
+							get = function(info)
+								local color = addon.db.profile[info[#info]]
+								return color.r, color.g, color.b
+							end,
+							set = function(info, r, g, b, a)
+							local color = addon.db.profile[info[#info]]
+								color.r = r
+								color.g = g
+								color.b = b
+								addon:UpdateFonts()
+							end,
+						},
+						Font_Type = {
+							order = 3,
+							name = L["Select Font"],
+							 type = 'select',
+							 dialogControl = 'LSM30_Font', --Select your widget here
+							 values = LSM:HashTable("font"), -- pull in your font list from LSM
+							 arg = "font",
+						},
+
+						Font_Size = {
+							order = 4,
+								type = 'range',
+								name = L['Font Size'],
+								width = 'double',
+								min = 9,
+								max = 25,
+								step = 1,
+								arg = "font",
+						},
+					},
+				},			
 			},
-		},			
+		},
+		profile={
+			name = "Weights",
+			type = "group",
+			inline = true,
+			order = 2,
+			args = {}
+			}
+
 	},
 }
+
+
 
 
 --ACE Profile Saved Variables Defaults
@@ -183,6 +272,11 @@ local defaults = {
 		Font_Color = {["r"] = 0, ["g"]  =0, ["b"] = 0},
 	Font_Size = 12,
 	Font_Type ="FRITZQT",
+	ScorePosition = "LEFT",
+	BonusPosition = "BOTTOM",
+	BonusAutoHideTime = false,
+	BonusAutoHideTimeValue = 15,
+	BonusAutoHideCombat = false,
 	}
 }
 
@@ -359,7 +453,7 @@ local mobList = {}
 local currentFloor = 1
 local runType
 local currentPhantasma = 0
-
+local JAILERS_CHAINS_DEBUFF = 338906
 
 function addon:CurrentFloor()
 	return currentFloor
@@ -386,6 +480,9 @@ function addon:EventHandler(event, arg1, ...)
 		TTG_CombatTimer:Show()
 		TTG_CombatTimer:Reset()
 		TTG_CombatTimer:Start()
+		if addon.db.profile.BonusAutoHideCombat then
+			 TTG_BonusList:Hide()
+		end
 
 	elseif event == "JAILERS_TOWER_LEVEL_UPDATE" then
 		local level = arg1
@@ -464,10 +561,16 @@ function addon:EventHandler(event, arg1, ...)
 					addon.Stats.IncreaseCounter("Bosses")
 				end
 			end
-		
+		elseif (subevent == "SPELL_AURA_APPLIED")  and destGUID == playerGUID and JAILERS_CHAINS_DEBUFF == spellID then 
+			TTG_ScoreFrame.Timer:ScoreStart()
+
+		elseif (subevent == "SPELL_AURA_REMOVED")  and destGUID == playerGUID and JAILERS_CHAINS_DEBUFF == spellID then
+			TTG_ScoreFrame.Timer:Stop()
+
 		elseif (subevent == "SPELL_DAMAGE")  and destGUID == playerGUID and traps[spellID] then 
 			addon.Stats.IncreaseCounter("TrapSprung")
 			addon.Tracker:FlagFail("Trapmaster")
+
 		elseif (cid and ashen[cid])  and (sourceGUID == playerGUID or sourceGUID == petGUID) and not ashenCache[destGUID] then
 			ashenCache[destGUID] = true
 			addon.Stats.IncreaseCounter("JarsBroken")
@@ -538,14 +641,14 @@ function addon:OnInitialize()
 
 	self.optionsFrame = LibStub("AceConfigDialog-3.0"):AddToBlizOptions(addonName, addonName)
 
-	options.args.profiles = LibStub('AceDBOptions-3.0'):GetOptionsTable(self.Weights_Notesdb)
-	options.args.profiles.name = "Weights & Notes"
+	options.args.profile.args.profiles = LibStub('AceDBOptions-3.0'):GetOptionsTable(self.Weights_Notesdb)
+	options.args.profile.args.profiles.name = "Weights & Notes"
 
 	  -- Add dual-spec support
 	local LibDualSpec = LibStub('LibDualSpec-1.0')
-	LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
-	LibDualSpec:EnhanceOptions(options.args.profiles, self.Weights_Notesdb)
-
+	--LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
+	--LibDualSpec:EnhanceOptions(options.args.profile, self.Weights_Notesdb)
+--
  
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler" )
 	addon:RegisterEvent("ADDON_LOADED", "EventHandler" )

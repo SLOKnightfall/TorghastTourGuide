@@ -4,13 +4,33 @@
 	<Script file="Tracker.lua"/>
 
 
+
+	<Frame name="TTG_GemTemplate" hidden="false" mixin="TTG_GemMixin" virtual = "true">
+		<Size x="15" y="32"/>
+		<Layers>
+			<Layer level="BACKGROUND">
+				<Texture parentKey="icon" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
+					<Size x="15" y="32"/>
+					<Anchors>
+						<Anchor point="CENTER"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter method="OnEnter"/>
+			<OnLeave function="GameTooltip_Hide"/>
+		</Scripts>
+	</Frame>
+
+
 	<Frame name="TTG_ScenarioObjectiveBlock.WidgetContainer" hidden="false">
 		<Size x="192" y="10"/>
 	</Frame>
 
 	<Frame name="TTG_ScoreFrame" hidden="false" parent="UIParent" enableMouse="true" movable="true" mixin="TTG_ScoreMixin" frameStrata = "HIGH">
 		<Anchors>
-			<Anchor point="CENTER"/>
+			<Anchor point="TOPLEFT" relativeTo="ScenarioStageBlock" relativePoint="TOPRIGHT" x="-10" y="0"/>
 		</Anchors>
 		<Size x="250" y="83"/>
 		<Layers>
@@ -92,36 +112,6 @@
 						<Color r="0" g="0" b="0"/>
 					</Shadow>
 				</FontString>
-				<Texture parentKey="Gem1" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ScoreTotal" relativePoint="TOPRIGHT" x="-15" y="5"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Gem2" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Gem1" relativePoint="TOPRIGHT" x="-5" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Gem3" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Gem2" relativePoint="TOPRIGHT" x="-5" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Gem4" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Gem3" relativePoint="TOPRIGHT" x="-5" y="0"/>
-					</Anchors>
-				</Texture>
-				<Texture parentKey="Gem5" atlas="jailerstower-score-gem-icon" useAtlasSize="false" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Gem4" relativePoint="TOPRIGHT" x="-5" y="0"/>
-					</Anchors>
-				</Texture>
 				<FontString parentKey="Completion" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "Completion: 100">
 					<Size x="100" y="28"/>
 					<Anchors>
@@ -154,6 +144,36 @@
 			</Layer>
 		</Layers>
 		<Frames>
+			<Frame parentKey="Gem1" inherits = "TTG_GemTemplate" id="1">
+					<Size x="15" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.ScoreTotal" relativePoint="TOPRIGHT" x="-15" y="5"/>
+					</Anchors>
+				</Frame>
+			<Frame parentKey="Gem2" inherits = "TTG_GemTemplate" id="2" >
+					<Size x="15" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Gem1" relativePoint="TOPRIGHT" x="-5" y="0"/>
+					</Anchors>
+				</Frame>
+			<Frame parentKey="Gem3" inherits = "TTG_GemTemplate" id="3" >
+					<Size x="15" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Gem2" relativePoint="TOPRIGHT" x="-5" y="0"/>
+					</Anchors>
+				</Frame>
+			<Frame parentKey="Gem4" inherits = "TTG_GemTemplate" id="4" >
+					<Size x="15" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Gem3" relativePoint="TOPRIGHT" x="-5" y="0"/>
+					</Anchors>
+				</Frame>
+			<Frame parentKey="Gem5" inherits = "TTG_GemTemplate" id="5" >
+					<Size x="15" y="32"/>
+					<Anchors>
+						<Anchor point="TOPLEFT" relativeKey="$parent.Gem4" relativePoint="TOPRIGHT" x="-5" y="0"/>
+					</Anchors>
+				</Frame>
 			<Frame parentKey="Timer" mixin="TTG_TimerMixin" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Score" relativePoint="BOTTOMLEFT" x="3" y="-20"/>
@@ -227,7 +247,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="TTG_BonusList" hidden="true" parent="UIParent" moveable="true">
+	<Frame name="TTG_BonusList" hidden="true" parent="UIParent" moveable="true" mixin = "TTG_BonusListMixin">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo= "TTG_ScoreFrame" relativePoint="TOPRIGHT" x="0" y="0"/>
 		</Anchors>
@@ -261,6 +281,9 @@
 				</Texture>
 			</Layer>
 		</Layers>
+		<Scripts>
+			<OnShow method="OnShow"/>
+		</Scripts>
 	</Frame>
 
 	<Frame name="TTG_CombatTimer" hidden="true" parent="UIParent" enableMouse="true" movable="true" mixin="TTG_TimerMixin" >
