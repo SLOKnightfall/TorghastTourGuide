@@ -220,7 +220,12 @@ addon.RareIDs = {
 	[156237] = {94919,{RarePowerNames["Fallen Armaments"], RarePowerNames["Dark Fortress"]}}, --Imperator Dara
 	[170385] = {94278,{RarePowerNames["Resonating Effigy"], RarePowerNames["Ephemeral Effigy"]}}, --Writhing Misery
 	[156142] = {98720,{RarePowerNames["Frostbite Wand"], RarePowerNames["Icy Heartcrust"]}}, --Seeker of Souls
-	[157145] = {91889,{RarePowerNames["Stoneflesh Figurine"], RarePowerNames["Gruul's Shattered Toenial"]}}--gravitas
+	[157145] = {91889,{RarePowerNames["Stoneflesh Figurine"], RarePowerNames["Gruul's Shattered Toenial"]}},--gravitas
+
+	[179135] = {100090,{}},--Sath'zuul
+	[179136] = {99098,{}},--karthazel
+	[179133] = {99101,{}},--Vil'thras
+	[179434] = {98519,{}},	--mawsworn-doubtcaller
 }
 
 

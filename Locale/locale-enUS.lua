@@ -103,6 +103,7 @@ L["Torment_Count"] = "Layers 1-5:   0\nLayers 6-7:   1\nLayers 8-9:   2\nLayer 1
 
 
 L["Failed Bouns: %s"] = true
+L["Gained Bouns: %s"] = true
 L["Bonuses: %s"] = true
 L["Score:"] = true
 L["Completion: %s"] = true
@@ -138,6 +139,10 @@ L["169823"] = "Gorm Behemoth"
 L["170228"] = "Bone Husk"
 L["173136"] = "Blightsmasher"
 L["157145"] = "Gravitas"
+L["179135"] = "Sath'zuul"
+L["179136"] = "Karthazel"
+L["179133"] = "Vil'thras"
+L["179434"] = "Mawsworn Doubtcaller"
 
 
 --Bosses

@@ -212,6 +212,10 @@ local function ResetCounts()
 			Chests = 0,
 			QuestsCompleted = 0,
 			RunsCompleted = 0,
+			vendorsKilled = 0,
+			scoreTimer = 0,
+			currentPhantasma = 0,
+			timeBonus = 30,
 		}
 
 	return defaults
@@ -300,7 +304,15 @@ local function Disable()
 		addon:Unhook(PlayerChoiceFrame, "OnHide")
 		addon.PowerHide()
 	end
-	TTGScenarioStageBlock:Hide()
+
+	C_Timer.After(0, function() 
+		TTG_ScoreFrame.Timer:Stop()
+		addon.Statsdb.profile.current.scoreTimer = 0
+
+		TTG_ScoreFrame:Hide()
+		TTG_BonusList:Hide()
+		TTG_CombatTimer:Hide()
+ 	end)
 
 end
 	
@@ -336,6 +348,9 @@ local function ClearAshenCache()
 end
 
 
+
+local broker_venott = 170257
+local broker_veken = 152594
 local grueFound = {}
 local PHANTASMA_ID_NUMBER = 1728
 local FREEING_SPELLID = 342127
@@ -351,7 +366,7 @@ function addon:CurrentFloor()
 end
 
 function addon:CurrentPhantasma()
-	return currentPhantasma
+	return 	addon.Statsdb.profile.current.currentPhantasma
 end
 
 function addon:EventHandler(event, arg1, ...)
@@ -361,6 +376,16 @@ function addon:EventHandler(event, arg1, ...)
 		else
 			Disable()
 		end
+
+	elseif event == "PLAYER_REGEN_ENABLED" then
+		TTG_CombatTimer:Stop()
+		TTG_CombatTimer:CheckBouns()
+		C_Timer.After(10, function() TTG_CombatTimer:Hide() end)
+
+	elseif event == "PLAYER_REGEN_DISABLED" then
+		TTG_CombatTimer:Show()
+		TTG_CombatTimer:Reset()
+		TTG_CombatTimer:Start()
 
 	elseif event == "JAILERS_TOWER_LEVEL_UPDATE" then
 		local level = arg1
@@ -387,32 +412,31 @@ function addon:EventHandler(event, arg1, ...)
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
 		--addon.InitPowers()
 		--addon.initTourGuide()
-
 		addon.RefreshConfig()
+
 	elseif event == "PLAYER_DEAD" then
 			addon.Stats.IncreaseCounter("Deaths")
-
+			addon.Tracker:CheckBouns()
 	elseif event == "CURRENCY_DISPLAY_UPDATE" and arg1 == PHANTASMA_ID_NUMBER then 
 			local  quantity, quantityChange, quantityGainSource, quantityLostSource = ...
 			addon.Stats:SetPhantasma(quantityChange)
-			currentPhantasma = quantity
+			addon.Statsdb.profile.current.currentPhantasma = quantity
 
 	elseif event == "PLAYER_CHOICE_UPDATE" then
 			addon.Stats:AnimaGain()
 			addon.Tracker:CheckBouns()
-
 	elseif event == "NAME_PLATE_UNIT_ADDED" or event == "FORBIDDEN_NAME_PLATE_UNIT_ADDED"  then
-		if arg1 then
-			local guid = UnitGUID(arg1)
-			if not guid then return end
-			local cid = self:GetCIDFromGUID(guid)
-			if cid == 152253 and not grueFound[guid] then
-				grueFound[guid] = true
-				
-				--PlaySoundFile("Interface\\AddOns\\DBM-CHallenges\\Shadowlands\\Stars.mp3", "Master")
-			addon.Stats.IncreaseCounter("Grue")
-			end
-		end
+		--[[if arg1 then
+							local guid = UnitGUID(arg1)
+							if not guid then return end
+							local cid = self:GetCIDFromGUID(guid)
+							if cid == 152253 and not grueFound[guid] then
+								grueFound[guid] = true
+								
+								--PlaySoundFile("Interface\\AddOns\\DBM-CHallenges\\Shadowlands\\Stars.mp3", "Master")
+							addon.Stats.IncreaseCounter("Grue")
+							end
+						end]]
 
 	elseif event == "COMBAT_LOG_EVENT_UNFILTERED" then
 		local _, subevent, _, sourceGUID, sourceName, _, _, destGUID, destName, _, _, spellID = CombatLogGetCurrentEventInfo()
@@ -427,6 +451,8 @@ function addon:EventHandler(event, arg1, ...)
 			addon.Stats.IncreaseCounter("MobsKilled")
 			if (cid == 151353) then 
 				addon.Stats.IncreaseCounter("Mawrats")
+			elseif cid == broker_venott or cid == broker_veken then
+				addon.Tracker:FlagBonus("Robber")
 			elseif 	mobList[destGUID]  and mobList[destGUID] == "rare" then
 				mobList[destGUID] = nil
 				addon.Stats.IncreaseCounter("Rares")
@@ -451,8 +477,10 @@ function addon:EventHandler(event, arg1, ...)
 		local arg2, arg3 = ...
 		if arg1 == "player" and arg3 == FREEING_SPELLID then 
 			addon.Stats.IncreaseCounter("SoulsSaved")
+			addon.Tracker:CheckBouns()
 		elseif arg3 == OPEN_CHEST_SPELLID then 
 			addon.Stats.IncreaseCounter("Chests")
+			addon.Tracker:CheckBouns()
 		end
 
 	elseif event == "UNIT_AURA" then
@@ -468,13 +496,16 @@ function addon:EventHandler(event, arg1, ...)
 		elseif unitClass == "elite" and level >=62 then 
 			local guid = UnitGUID("target")
 			mobList[guid] = "boss"
+		elseif unitClass == "elite" then
+			
 		end
 
 	elseif event ==  "QUEST_TURNED_IN" then
 		addon.Stats.IncreaseCounter("QuestsCompleted")
+		addon.Tracker:CheckBouns()
 
 	elseif(event == "SCENARIO_COMPLETED") then 
-
+		TTG_ScoreFrame.Timer:Stop()
 	end		
 end
 
@@ -574,8 +605,6 @@ local height = ScenarioStageBlock:GetHeight()
 f:SetSize(width, height)
 f:ClearAllPoints()
 f:SetPoint("TOPLEFT",ScenarioStageBlock, "TOPLEFT" )
-
-
 
 	local b = CreateFrame("Button", nil, f)
 	frames.b = b

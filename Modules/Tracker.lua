@@ -43,39 +43,132 @@ annihilator & executioner
 
 ]]
 
+TTG_ScoreMixin = {}
+
+function TTG_ScoreMixin:OnEnter()
+end
+
+function TTG_ScoreMixin:OnClick()
+	if TTG_BonusList:IsShown() then
+		TTG_BonusList:Hide()
+	else
+		TTG_BonusList:Show()
+	end
+end
+
+	
+
+
+
+-- speed optimizations (mostly so update functions are faster)
+local _G = getfenv(0);
+local date = _G.date;
+local abs = _G.abs;
+local min = _G.min;
+local max = _G.max;
+local floor = _G.floor;
+local mod = _G.mod;
+local tonumber = _G.tonumber;
+local gsub = _G.gsub;
+local GetCVar = _G.GetCVar;
+local SetCVar = _G.SetCVar;
+local GetGameTime = _G.GetGameTime;
+
+-- private data
+local SEC_TO_MINUTE_FACTOR = 1/60;
+local SEC_TO_HOUR_FACTOR = SEC_TO_MINUTE_FACTOR*SEC_TO_MINUTE_FACTOR;
+
+
+
 TTG_TimerMixin = {}
 
 local combatTimer = 0
-function TTG_TimerMixin:Show()
+function TTG_TimerMixin:OnLoad(isCombat)
+	self:RegisterForDrag("LeftButton")
+	self:Reset()
+	self.isCombat = isCombat
 end
 
-function TTG_TimerMixin:Hide()
+
+function TTG_TimerMixin:OnHide()
+	self:Reset(true)
 end
 
-function TTG_TimerMixin:Reset()
+function TTG_TimerMixin:Reset(combat)
+	if self.isCombat then 
+		combatTimer = 0
+	end
+
+	--TTG_ScoreFrame.Timer
+	self.playing = false;
+	self.timer = 0
+	self:SetScript("OnUpdate", nil);
+	self:Update();
 end
+
 
 function TTG_TimerMixin:Start()
+	self.playing = true;
+	self:SetScript("OnUpdate", 	self.OnUpdate  );
+end
+
+function s()
+	TTG_Timer:Start()
 end
 
 function TTG_TimerMixin:Stop()
+	--TTG_ScoreFrame.Timer
+	self.playing = false;
+	self:SetScript("OnUpdate", nil);
 end
 
 function TTG_TimerMixin:Update()
+	local timer = self.timer;
+	local hour = min(floor(timer*SEC_TO_HOUR_FACTOR), 99);
+	local minute = mod(timer*SEC_TO_MINUTE_FACTOR, 60);
+	local second = mod(timer, 60);
+	self.StopwatchTickerHour:SetFormattedText(STOPWATCH_TIME_UNIT, hour);
+	self.StopwatchTickerMinute:SetFormattedText(STOPWATCH_TIME_UNIT, minute);
+	self.StopwatchTickerSecond:SetFormattedText(STOPWATCH_TIME_UNIT, second);
 end
 
+function TTG_TimerMixin:OnUpdate(elapsed)
+	self.timer = self.timer + elapsed;
+	self:Update();
+end
+
+function TTG_TimerMixin:IsPlaying()
+	return self.playing;
+end
+
+function TTG_TimerMixin:CheckBouns()
+	if not self.isCombat then return end
+
+	--Boss Bonuses
+	if addon:CurrentFloor() == 5 then 
+		if self.timer > 40 then
+			addon.Tracker:FlagFail("Executioner")
+		elseif self.timer > 20 then
+			addon.Tracker:FlagFail("Annihilator")
+		end
+
+		if addon:CurrentPhantasma() > 500 then 
+			addon.Tracker:FlagBonus("Hoarder")
+		end
+
+
+	end
+end
 
 local MAW_BUFF_MAX_DISPLAY = 44;
-
-
 local bounses = {
 	["Annihilator"] = {nil,20},
 	["Collector"] = {nil,10},
-	["Daredevil"] = {nil,10},
+	["Daredevil"] = {nil,10, true},
 	["Executioner"] = {nil,10},
 	["Highlander"] = {true,15},
 	["Hoarder"] = {nil,10},
-	["Hunter"] = {nil,15},
+	["Hunter"] = {nil,15,true},
 	["Pauper"] = {true,10},
 	["Pillager"] = {nil,5, true}, --cant track
 	["Plunderer"] = {nil,5},  --Use stats tracker
@@ -148,6 +241,12 @@ local YELLOW_FONT_COLOR = YELLOW_FONT_COLOR:GenerateHexColorMarkup()
 
 
 
+local function updateAll()
+	addon.UpdateBonusList()
+	addon.UpdataeScoreFrame()
+end
+
+
 
 
 function addon.CheckAnimaRarity(spellRarity)
@@ -155,14 +254,14 @@ function addon.CheckAnimaRarity(spellRarity)
 end
 
 
-function addon.Tracker:FlagFail(bonusName)
-	if bounses[bonusName] then 
+function addon.Tracker:FlagFail(bonusName, silent)
+	if bounses[bonusName] and not silent then 
 		print(RED_FONT_COLOR..(L["Failed Bouns: %s"]):format(bonusName))
 	end
 
 	bounses[bonusName][1] = false
 	bounses[bonusName][2] = 0
-	initBonusList()
+	--updateAll()
 end
 
 
@@ -173,12 +272,12 @@ function addon.Tracker:FlagBonus(bonusName)
 	end
 
 	bounses[bonusName][1] = true
-	initBonusList()
+	--updateAll()
 end
 
 
 local function checkBonusStatus(bonusName)
-	return bounses[bonusName][1] ~= false
+	return bounses[bonusName][1]-- ~= false
 end
 
 
@@ -189,7 +288,6 @@ local function GetHoarderTotal()
 end
 
 function addon.Tracker:CombatBonusChecks()
-
 	if combatTimer > 40 then
 		addon.Tracker:FlagFail("Executioner")
 	elseif combatTimer > 20 then
@@ -200,19 +298,31 @@ function addon.Tracker:CombatBonusChecks()
 	if addon:CurrentFloor() == 5 and addon:CurrentPhantasma() > 500 then 
 		addon.Tracker:FlagBonus("Hoarder")
 	end
-
+	
+	updateAll()
 end
+
 
 function addon.Tracker:CheckBouns()
 	local totalPowers = 0
 	for i=1, MAW_BUFF_MAX_DISPLAY do
 		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", i, "MAW");
 		totalPowers = totalPowers + (count or 0)
-		if icon and spellID == maw_spellID then
+		if icon and maw_spellID then
+
 			if checkBonusStatus("Highlander") and count > 1 then
 				addon.Tracker:FlagFail("Highlander")
 			end
 		end
+		--if count >= 5 then print (maw_spellID)\
+
+		if icon and maw_spellID == 294138 then
+--print("ob")
+			if checkBonusStatus("Reinforced") and count >= 5 then
+				addon.Tracker:FlagFail("Reinforced")
+			end
+		end
+
 
 		if icon and maw_spellID and bounses.Pauper then
 			local spellRarity = C_Spell.GetMawPowerBorderAtlasBySpellID(maw_spellID)
@@ -233,14 +343,32 @@ function addon.Tracker:CheckBouns()
 	end
 
 	if not checkBonusStatus("Plunderer")  and currentStats.Chests > 0 then
-		addon.Tracker:FlagFail("Plunderer")
+		addon.Tracker:FlagBonus("Plunderer")
 	end
 
 	if not checkBonusStatus("Collector")  and totalPowers >= 20 then
 		addon.Tracker:FlagBonus("Collector")
 	end
 
-	addon.InitScoreFrame()
+	if addon:CurrentPhantasma() > 500 then 
+		addon.Tracker:FlagBonus("Hoarder")
+	elseif addon:CurrentPhantasma() < 500 then 
+		addon.Tracker:FlagFail("Hoarder", true)
+	end
+
+local timer = TTG_ScoreFrame.Timer.timer
+local minutes = floor(mod(timer*SEC_TO_MINUTE_FACTOR, 60))
+local hour = min(floor(timer*SEC_TO_HOUR_FACTOR), 99);
+
+if hour >= 1 then 
+	currentStats.timeBonus = 0
+elseif minutes > 30 then 
+	currentStats.timeBonus = 30 - (minutes - 30)
+else
+	currentStats.timeBonus = 30
+end
+
+	updateAll()
 end
 
 
@@ -253,31 +381,10 @@ Robber	Robbed a Broker (Requires Shoplifter blessing active OR usage of a Raveno
 ]]--
 
 
-function bb()
-	for i, name in ipairs(bonusList) do
-		if (bounses[name]) then
-			
-			--print(bounses[name])
-			local status = bounses[name][1]
-			local pts = bounses[name][2]
-			local color = YELLOW_FONT_COLOR
-			if status == true then
-				color = GREEN_FONT_COLOR
-			elseif status == false then 
-				color = RED_FONT_COLOR
-			end
 
-
-			print(color..name)
-		else
-			print(name)
-		end
-	end
-
-end
 
 local function checkBonusStatus(bonusName)
-	return bounses[bonusName][1] ~= false
+	return bounses[bonusName][1] --~= false
 end
 
 function addon.Tracker:GetBounsScore()
@@ -296,61 +403,80 @@ function addon.Tracker:GetBounsScore()
 	return bonus
 end
 
+
 function addon.InitScoreFrame()
+	TTG_ScoreFrame:Show()
+
+	local currentStats = addon.Statsdb.profile.current.scoreTimer
+	TTG_ScoreFrame.Timer.timer = 0 + addon.Statsdb.profile.current.scoreTimer
+	TTG_ScoreFrame.Timer.playing = true;
+		TTG_ScoreFrame:SetScript("OnUpdate", function(self, elapsed) 
+				--print(elapsed)
+			TTG_ScoreFrame.Timer.timer = TTG_ScoreFrame.Timer.timer + elapsed;
+			addon.Statsdb.profile.current.scoreTimer = TTG_ScoreFrame.Timer.timer
+			TTG_ScoreFrame.Timer:Update(elapsed);
+			--currentStats.scoreTimer = TTG_ScoreFrame.Timer 
+		 end)
+	addon.UpdataeScoreFrame()
+end
+
+
+function addon.UpdataeScoreFrame()
 	local currentStats = addon.Statsdb.profile.current
+	--addon.Tracker:CheckBouns()
 	local deaths = currentStats.Deaths
 	local DeathPenalty = deaths * -20
 	local bonus = addon.Tracker:GetBounsScore()
 	local completion = 100
-	local total = completion + bonus + DeathPenalty
-	--TTGScenarioStageBlock:Show()
-	TTGScenarioStageBlock.DeathCount:SetText(deaths)
+	local timeBonus = currentStats.timeBonus
+	--print(timeBonus)
+	local total = completion + bonus + DeathPenalty + timeBonus
+	--TTG_ScoreFrame:Show()
+	TTG_ScoreFrame.DeathCount:SetText(deaths)
 	if deaths > 0 then 
-		TTGScenarioStageBlock.DeathPenalty:SetText(("(%s)"):format(DeathPenalty))
+		TTG_ScoreFrame.DeathPenalty:SetText(("(%s)"):format(DeathPenalty))
 	else
-		TTGScenarioStageBlock.DeathPenalty:SetText("")
+		TTG_ScoreFrame.DeathPenalty:SetText("")
 	end
-	TTGScenarioStageBlock.Score:SetText(L["Score:"])
-	TTGScenarioStageBlock.ScoreTotal:SetText(total)
-	TTGScenarioStageBlock.Completion:SetText((L["Completion: %s"]):format(completion))
-	TTGScenarioStageBlock.Bonuses:SetText( (L["Bonuses: %s"]):format(bonus) )
-	TTGScenarioStageBlock.Timer:SetText("00:00:00:00")
-	TTGScenarioStageBlock.TimerBonus:SetText("~50")
-	initBonusList()
+	TTG_ScoreFrame.Score:SetText(L["Score:"])
+	TTG_ScoreFrame.ScoreTotal:SetText(total)
+	TTG_ScoreFrame.Completion:SetText((L["Completion: %s"]):format(completion))
+	TTG_ScoreFrame.Bonuses:SetText( (L["Bonuses: %s"]):format(bonus) )
+	--TTG_ScoreFrame.Timer:Reset()
+	TTG_ScoreFrame.TimerBonus:SetText("("..currentStats.timeBonus..")")
 
 	if total >= 40 then
-		TTGScenarioStageBlock.Gem1:Show()
+		TTG_ScoreFrame.Gem1:SetAtlas("jailerstower-score-gem-icon")
 	else
-		TTGScenarioStageBlock.Gem1:Hide()
+		TTG_ScoreFrame.Gem1:SetAtlas("jailerstower-score-disabled-gem-icon")
 	end
 	if total >= 80 then
-		TTGScenarioStageBlock.Gem2:Show()
+		TTG_ScoreFrame.Gem2:SetAtlas("jailerstower-score-gem-icon")
 	else
-		TTGScenarioStageBlock.Gem2:Hide()
+		TTG_ScoreFrame.Gem2:SetAtlas("jailerstower-score-disabled-gem-icon")
 	end
 		if total >= 120 then
-		TTGScenarioStageBlock.Gem3:Show()
+		TTG_ScoreFrame.Gem3:SetAtlas("jailerstower-score-gem-icon")
 	else
-		TTGScenarioStageBlock.Gem3:Hide()
+		TTG_ScoreFrame.Gem3:SetAtlas("jailerstower-score-disabled-gem-icon")
 	end
 		if total >= 160 then
-		TTGScenarioStageBlock.Gem4:Show()
+		TTG_ScoreFrame.Gem4:SetAtlas("jailerstower-score-gem-icon")
 	else
-		TTGScenarioStageBlock.Gem4:Hide()
+		TTG_ScoreFrame.Gem4:SetAtlas("jailerstower-score-disabled-gem-icon")
 	end
 		if total >= 200 then
-		TTGScenarioStageBlock.Gem5:Show()
+		TTG_ScoreFrame.Gem5:SetAtlas("jailerstower-score-gem-icon")
 	else
-		TTGScenarioStageBlock.Gem5:Hide()
+		TTG_ScoreFrame.Gem5:SetAtlas("jailerstower-score-disabled-gem-icon")
 	end
 end
 
 
-
-function initBonusList()
+function addon.UpdateBonusList()
 	TTG_BonusList.name = TTG_BonusList.name or {}
 	TTG_BonusList.points = TTG_BonusList.points or {}
-		TTG_BonusList.overlay = TTG_BonusList.overlay or {}
+	TTG_BonusList.overlay = TTG_BonusList.overlay or {}
 
 	for i, name in ipairs(bonusList) do
 		if (bounses[name]) then
@@ -414,6 +540,6 @@ function initBonusList()
 end
 
 
+--EventToastManagerFrame.currentDisplayingToast.WidgetContainer:GetChildren()
 
-
-
+--function EventToastManagerFrame::DisplayToast(true) 
