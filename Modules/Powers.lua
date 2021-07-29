@@ -180,7 +180,7 @@ function addon.PowerShow()
 
 			local isEpic = addon.CheckAnimaRarity(spellRarity)
 			local isDupe = addon.CheckAnimaPowers(spellID)
-			if (addon:checkBonusStatus("Pauper") and isEpic) or (addon:checkBonusStatus("Highlander") and  isDupe) then
+			if (addon.checkBonusStatus("Pauper") and isEpic) or (addon.checkBonusStatus("Highlander") and  isDupe) then
 
 				framePool[i].helper.icon:Show()
 				framePool[i].helper.tooltipTitle = "Selecting Voids:"

@@ -24,6 +24,58 @@ addon.fontStrings = {}
 
 addon.Stats = {}
 
+
+TTG_MiniMap = LibStub("LibDBIcon-1.0")
+local HotSpotState = false
+
+
+--Registers for LDB addons
+local TTGLDB = LibStub("LibDataBroker-1.1"):NewDataObject("TTGMapMini", {
+	type = "data source",
+	text = "TorghastTourguide",
+	icon = "Interface\\Addons\\TorghastTourguide\\Icons\\icon",
+	OnClick = function(self, button, down) 
+		if (button == "RightButton") then
+			LibStub("AceConfigDialog-3.0"):Open("TorghastTourguide")
+		elseif (button == "LeftButton") then
+			TorghastTourGuide_Toggle()
+		end
+	end,})
+
+
+--Minimap/LDB Tooltip Creation
+function TTGLDB:OnTooltipShow()
+	--self:AddLine(L["OMEGAMAP_MINI_LEFT"])
+	--self:AddLine(L["OMEGAMAP_MINI_MID"])
+	--self:AddLine(L["OMEGAMAP_MINI_RIGHT"])
+end
+
+function TTGLDB:OnEnter()
+	GameTooltip:SetOwner(self, "ANCHOR_NONE")
+	GameTooltip:SetPoint("TOPLEFT", self, "BOTTOMLEFT")
+	GameTooltip:ClearLines()
+	--OmegaMapLDB.OnTooltipShow(GameTooltip)
+	GameTooltip:Show()
+end
+
+function TTGLDB:OnLeave()
+	GameTooltip:Hide()
+end
+
+function TTGLDB:Toggle(value)
+		if value then
+			TTG_MiniMap:Show("TTGMapMini")
+			Profile.MMDB.hide = false;
+			Profile.showMiniMapIcon = true;
+		else
+			TTG_MiniMap:Hide("TTGMapMini")
+
+	Profile.MMDB.hide = true;
+Profile.showMiniMapIcon = false;
+end
+		end		
+
+
 --ACE3 Option Handlers
 local optionHandler = {}
 function optionHandler:Setter(info, value)
@@ -40,6 +92,9 @@ function optionHandler:Setter(info, value)
 		end
 	elseif info.arg == "resetBonus" then
 		addon:ResetBonusLocation()
+	elseif info.arg == "minimap" then
+
+		TTGLDB:Toggle(value)
 	end
 end
 
@@ -78,7 +133,7 @@ local options = {
 							type = "header",
 							width = "full",
 						},
-						
+
 						IgnoreClassRestrictions = {
 							order = 1.2,
 							name = "ff",--L["Ignore Class Restriction Filter"],
@@ -86,6 +141,15 @@ local options = {
 							width = 1.3,
 							arg = "IgnoreClassRestrictions",
 							hidden = true,
+						},
+						showMiniMapIcon = {
+							order = 1.4,
+							name = L["Show Minimap Icon"],
+							type = "toggle",
+							width = "full",
+							arg = "minimap",
+
+							--func = function() addon.Stats:ResetAll() end,
 						},
 
 						ResetStats = {
@@ -105,7 +169,7 @@ local options = {
 							order = 3,
 							name = L["Show Score Frame"],
 							type = "toggle",
-							width = 1.1,
+							width = .9,
 							arg = "toggleScore",
 						},
 						ScorePosition = {
@@ -116,13 +180,12 @@ local options = {
 							arg = "position",
 							width = 1.0,
 							--func = function() addon:SetScoreLocation() end,
-
 						},
 						spacer2 = {
 							order = 3.2,
 							name = " ",
 							type = "description",
-							width = .2,
+							width = .1
 						},
 						ResetScoreLoctiaon = {
 							order = 3.3,
@@ -136,7 +199,7 @@ local options = {
 							order = 4,
 							name = L["Auto Hide Bonus List"],
 							type = "toggle",
-							width = 1.1,
+							width = .9,
 							--func = function() addon:ResetBonusLocation() end,
 						},
 					BonusAutoHideCombat = {
@@ -152,17 +215,9 @@ local options = {
 							type = 'select',
 							values = {["LEFT"] = L["Left"], ["RIGHT" ] = L["Right"], ["BOTTOM" ] = L["Bottom"] }, -- pull in your font list from LSM
 							arg = "resetBonus",
-							width = 1.0,
+							width = .8,
 							--func = function() addon:ResetBonusLocation() end,
 						},
-
-
-
-
-
-							--BonusAutoHideTime = false,
-					--BonusAutoHideTimeValue = 15,
-					--BonusAutoHideCombat = false
 					},
 				},
 				tooltip_settings={
@@ -277,6 +332,10 @@ local defaults = {
 	BonusAutoHideTime = false,
 	BonusAutoHideTimeValue = 15,
 	BonusAutoHideCombat = false,
+			MMDB = { hide = false,
+				--minimap = {},
+			},
+
 	}
 }
 
@@ -322,7 +381,6 @@ local statsDefaults = {
 }
 statsDefaults.profile.current = ResetCounts()
 statsDefaults.profile.total = ResetCounts()
-
 
 local function Enable()
 	if isEnabled then return end
@@ -646,9 +704,12 @@ function addon:OnInitialize()
 
 	  -- Add dual-spec support
 	local LibDualSpec = LibStub('LibDualSpec-1.0')
-	--LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
-	--LibDualSpec:EnhanceOptions(options.args.profile, self.Weights_Notesdb)
---
+	LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
+	LibDualSpec:EnhanceOptions(options.args.profile.args.profiles, self.Weights_Notesdb)
+
+	TTG_MiniMap:Register("TTGMapMini", TTGLDB, Profile.MMDB)
+
+
  
 	addon:RegisterEvent("PLAYER_ENTERING_WORLD", "EventHandler" )
 	addon:RegisterEvent("ADDON_LOADED", "EventHandler" )

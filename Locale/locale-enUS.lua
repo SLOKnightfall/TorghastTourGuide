@@ -51,6 +51,7 @@ L["Position of Score Frame"] = true
 L["Position of Bonus List"] = true
 L["Auto Hide Bonus List"] = true
 L["Auto Hide Bonus List In Combat"] = true
+L["Show Minimap Icon"] = true
 
 --Stats
 L["STATS"] = true
