@@ -61,7 +61,7 @@
 					</Anchors>
 				</Texture>
 				<FontString parentKey="DeathCount" inherits="GameFontNormal" wordwrap="true" justifyH="LEFT"  text="1000">
-					<Size x="40" y="18"/>
+					<Size x="25" y="18"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.DeathIcon" relativePoint="TOPRIGHT" x="02" y="0"/>
 					</Anchors>
@@ -112,17 +112,11 @@
 						<Color r="0" g="0" b="0"/>
 					</Shadow>
 				</FontString>
-				<FontString parentKey="Completion" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "Completion: 100">
-					<Size x="100" y="28"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Score" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
-					</Anchors>
-					<Color r="1" g="0.831" b="0.380"/>
-				</FontString>
+				
 				<FontString parentKey="Bonuses" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "Bonuses: 100">
 					<Size x="100" y="28"/>
 					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Completion" relativePoint="TOPRIGHT" x="10" y="0"/>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Score" relativePoint="BOTTOMLEFT" x="110" y="-4"/>
 					</Anchors>
 					<Color r="1" g="0.831" b="0.380"/>
 				</FontString>
@@ -134,51 +128,74 @@
 					<Color r="1" g="0.831" b="0.380"/>
 				</FontString>
 				<FontString parentKey="TimerBonus" inherits="GameFontNormalTiny" justifyH="LEFT" justifyV="TOP" spacing="2" text = "(30)">
-					<Size x="100" y="28"/>
+					<Size x="20" y="15"/>
 					<Anchors>
 						<Anchor point="TOPLEFT" relativeKey="$parent.Timer" relativePoint="TOPRIGHT" x="7" y="0"/>
 					</Anchors>
 					<Color r="1" g="0.831" b="0.380"/>
 				</FontString>
-
 			</Layer>
 		</Layers>
 		<Frames>
 			<Frame parentKey="Gem1" inherits = "TTG_GemTemplate" id="1">
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.ScoreTotal" relativePoint="TOPRIGHT" x="-15" y="5"/>
-					</Anchors>
-				</Frame>
+				<Size x="15" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.ScoreTotal" relativePoint="TOPRIGHT" x="-15" y="5"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="Gem2" inherits = "TTG_GemTemplate" id="2" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Gem1" relativePoint="TOPRIGHT" x="-5" y="0"/>
-					</Anchors>
-				</Frame>
+				<Size x="15" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Gem1" relativePoint="TOPRIGHT" x="-5" y="0"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="Gem3" inherits = "TTG_GemTemplate" id="3" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Gem2" relativePoint="TOPRIGHT" x="-5" y="0"/>
-					</Anchors>
-				</Frame>
+				<Size x="15" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Gem2" relativePoint="TOPRIGHT" x="-5" y="0"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="Gem4" inherits = "TTG_GemTemplate" id="4" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Gem3" relativePoint="TOPRIGHT" x="-5" y="0"/>
-					</Anchors>
-				</Frame>
+				<Size x="15" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Gem3" relativePoint="TOPRIGHT" x="-5" y="0"/>
+				</Anchors>
+			</Frame>
 			<Frame parentKey="Gem5" inherits = "TTG_GemTemplate" id="5" >
-					<Size x="15" y="32"/>
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeKey="$parent.Gem4" relativePoint="TOPRIGHT" x="-5" y="0"/>
-					</Anchors>
-				</Frame>
+				<Size x="15" y="32"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeKey="$parent.Gem4" relativePoint="TOPRIGHT" x="-5" y="0"/>
+				</Anchors>
+			</Frame>
+			<Frame parentKey="Completion" mixin = "TTG_FrameMixin">
+				<Size x="100" y="15"/>
+				<Anchors>
+				<Anchor point="TOPLEFT" relativeKey="$parent.Score" relativePoint="BOTTOMLEFT" x="0" y="-4"/>
+				</Anchors>
+				<Layers>
+					<Layer level="ARTWORK">
+						<FontString parentKey="text" inherits="GameFontNormal" justifyH="LEFT" justifyV="TOP" spacing="2" text = "Completion: 100">
+							<Size x="100" y="15"/>
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+							</Anchors>
+							<Color r="1" g="0.831" b="0.380"/>
+						</FontString>
+					</Layer>
+				</Layers>
+				<Scripts>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
+				</Scripts>
+			</Frame>
+
+
+
 			<Frame parentKey="Timer" mixin="TTG_TimerMixin" >
 				<Anchors>
 					<Anchor point="TOPLEFT" relativeKey="$parent.Score" relativePoint="BOTTOMLEFT" x="3" y="-20"/>
 				</Anchors>
-				<Size x="75" y="28"/>
+				<Size x="75" y="15"/>
 				<Layers>
 					<Layer level="BACKGROUND">
 						<FontString parentKey="StopwatchTickerHour" inherits="GameFontNormal" justifyH="CENTER" text = "00">
@@ -211,10 +228,18 @@
 							</Anchors>
 							<Color r="1" g="0.831" b="0.380"/>
 						</FontString>
+							<FontString parentKey="par" inherits="GameFontNormalTiny" justifyH="CENTER" text = "Par: 0:00:00">
+							<Anchors>
+						<Anchor point="TOPLEFT" x="5" y="-17"/>
+							</Anchors>
+							<Color r="1" g="0.831" b="0.380"/>
+						</FontString>
 					</Layer>
 				</Layers>
 				<Scripts>
 					<OnLoad method="OnLoad"/>
+					<OnEnter method="OnEnter"/>
+					<OnLeave method="OnLeave"/>
 				</Scripts>
 			</Frame>
 			<Button parentKey="Toggle"  mixin="TTG_ScoreMixin"  >

@@ -18,30 +18,23 @@ addon.Tracker = {}
 
 --local current = addon.Statsdb.profile.current
 
---[[Annihilator	Floor 5 boss killed in under 20 seconds	20 --Check floor 5. start timer on combat start.  Check time when combat ends
-Collector	Collect at least 30 Anima Powers	10  --Check animia power count
-Daredevil	Defeat 2 Elites within 10 seconds of each other	10
-Executioner	Floor 5 boss killed in under 40 seconds	10 -- Check floor 5. start timer on combat start.  Check time when combat ends
-Highlander	No duplicate Anima Powers	15
-Hoarder	Defeat the floor 5 boss with at least 500 Phantasma remaining
-(Note: Phantasma required will scale up per member of your party!)	10
-Hunter	No elite enemies reached 4 stacks of Unnatural Power	15
-Pauper	No epic Anima Powers	10
-Pillager	90% of Ashen Phylacteries destroyed	5 --cant track
-Plunderer	Opened treasure chests	5  --Use stats tracker
-Reinforced	Collect at least 5 Obleron Armaments of the same type	10
-Rescuer	Assisted a denizen of Torghast	10  --check for quest compl;ete
-Robber	Robbed a Broker (Requires Shoplifter blessing active OR usage of a Ravenous Anima Cell)	5  --check for killing mob or for drop
-Savior	All Soul Remnants freed	10  -Cant Track
-Trapmaster	No trap damage taken  --Use trap damage tracker 
+
+TTG_FrameMixin = {}
+function TTG_FrameMixin:OnEnter()
+	local current = addon.Statsdb.profile.current
+	local completion = current.FloorCompletion
+	local text = ""
+	for i, data in pairs(completion) do
+			--GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
+		text = text..("%s %s: %s\n"):format(L["Floor"], i, data)
+	end
+	addon.ShowTooltip(self,text)
+end
 
 
-
-annihilator & executioner  
-
-
-
-]]
+function TTG_FrameMixin:OnLeave()
+	GameTooltip_Hide()
+end
 
 
 TTG_BonusListMixin = {}
@@ -104,6 +97,22 @@ local SEC_TO_HOUR_FACTOR = SEC_TO_MINUTE_FACTOR*SEC_TO_MINUTE_FACTOR;
 --338907/refuge-of-the-damned
 
 TTG_TimerMixin = {}
+function TTG_TimerMixin:OnEnter()
+	local current = addon.Statsdb.profile.current
+	local par = current.FloorPar
+	local floor_time = current.FloorTime
+	local text = ""
+		for i, data in pairs(floor_time) do
+			--GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
+		text = text..("%s %s: %s (%s)\n"):format(L["Floor"], i, data, par[i])
+	end
+			addon.ShowTooltip(self,text)
+
+end
+
+function TTG_TimerMixin:OnLeave()
+	GameTooltip_Hide()
+end
 
 local combatTimer = 0
 function TTG_TimerMixin:OnLoad(isCombat)
@@ -136,7 +145,6 @@ function TTG_TimerMixin:Start()
 end
 
 
-
 function TTG_TimerMixin:ScoreStart()
 	TTG_ScoreFrame.Timer.playing = true;
 	TTG_ScoreFrame.Timer:SetScript("OnUpdate", function(self, elapsed) 
@@ -146,13 +154,6 @@ function TTG_TimerMixin:ScoreStart()
 		TTG_ScoreFrame.Timer:Update(elapsed);
 		--currentStats.scoreTimer = TTG_ScoreFrame.Timer 
 	 end)
-end
-
-
-
-
-function s()
-	TTG_Timer:Start()
 end
 
 function TTG_TimerMixin:Stop()
@@ -180,6 +181,11 @@ function TTG_TimerMixin:IsPlaying()
 	return self.playing;
 end
 
+local function GetHoarderTotal()
+	local total = 500 * GetNumGroupMembers()
+	return total
+end
+
 function TTG_TimerMixin:CheckBouns()
 	if not self.isCombat then return end
 
@@ -200,25 +206,50 @@ function TTG_TimerMixin:CheckBouns()
 end
 
 local MAW_BUFF_MAX_DISPLAY = 44;
-local bounses = {
-	["Annihilator"] = {nil, 20},
-	["Collector"] = {nil, 10},
-	["Daredevil"] = {nil, 10, true},
-	["Executioner"] = {nil, 10},
-	["Highlander"] = {true, 15},
-	["Hoarder"] = {nil, 10},
-	["Hunter"] = {nil, 15, true},
-	["Pauper"] = {true, 10},
-	["Pillager"] = {nil ,5, true}, --cant track
-	["Plunderer"] = {nil, 5},  --Use stats tracker
-	["Reinforced"] = {nil, 10},
-	["Rescuer"] = {nil, 10},  --check for quest compl;ete
-	["Robber"] = {nil, 5},  --check for killing mob or for drop
-	["Savior"] = {nil, 10, true}, --Cant Track
-	["Trapmaster"] = {true, 10},--Use trap damage tracker 
-}
+
+
+--3387 lives?
+--3373 	Deaths:  
+--3369 Speed Demon - Completed within 60% of par time
+--3370 	Speedy:  	Completed within par time
+
+
+
+
+local function getBonusDefault()
+	local list =	{
+		["Empowered"] = {3392, true, 0},
+		["Completion"] = {3366, true, 100},
+		["Annihilator"] = {3383, nil, 20},
+		["Collector"] = {3386, nil, 10},
+		["Daredevil"] = {3380, nil, 10,},--true},
+		["Executioner"] = {3382, nil, 10},
+		["Highlander"] = {3375, true, 15},
+		["Hoarder"] = {3384, nil, 10},
+		["Hunter"] = {3371, nil, 15, },--true},
+		["Pauper"] = {3376, true, 10},
+		["Pillager"] = {3372, nil ,5,},--true}, --cant track
+		["Plunderer"] = {3381, nil, 5},  --Use stats tracker
+		["Reinforced"] = {3385, nil, 10},
+		["Rescuer"] = {3379, nil, 10},  --check for quest compl;ete
+		["Robber"] = {3378, nil, 5},  --check for killing mob or for drop
+		["Savior"] = {3374, nil, 10,},--true}, --Cant Track
+		["Trapmaster"] = {3377, true, 10}, --Use trap damage tracker 
+	}
+	 
+	 return list
+end
+
+local bounses = getBonusDefault()
+function addon:ResetBonuses()
+	bounses =  getBonusDefault()
+	local current = addon.Statsdb.profile.current
+
+end
+
 
 local bonusList = {
+"Empowered",
 "Annihilator",
 "Collector",
 "Daredevil",
@@ -298,8 +329,8 @@ function addon.Tracker:FlagFail(bonusName, silent)
 		print(RED_FONT_COLOR..(L["Failed Bouns: %s"]):format(bonusName))
 	end
 
-	bounses[bonusName][1] = false
-	bounses[bonusName][2] = 0
+	bounses[bonusName][2] = false
+	bounses[bonusName][3] = 0
 	--updateAll()
 end
 
@@ -310,21 +341,18 @@ function addon.Tracker:FlagBonus(bonusName)
 		print(GREEN_FONT_COLOR..(L["Gained Bouns: %s"]):format(bonusName))
 	end
 
-	bounses[bonusName][1] = true
+	bounses[bonusName][2] = true
 	--updateAll()
 end
 
 
 local function checkBonusStatus(bonusName)
-	return bounses[bonusName][1]-- ~= false
+	return bounses[bonusName][2]-- ~= false
 end
 addon.checkBonusStatus = checkBonusStatus
 
 
-local function GetHoarderTotal()
-	local total = 500 * GetNumGroupMembers()
-	return total
-end
+
 
 function addon.Tracker:CombatBonusChecks()
 	if combatTimer > 40 then
@@ -358,6 +386,9 @@ function v()
 
 
 end
+
+
+local armaments = {[294592] = true, [294609]= true, [294597]= true, [294578]= true, [294602]= true, [293025]= true}
 function addon.Tracker:CheckBouns()
 	local totalPowers = 0
 	if not BuffName then
@@ -369,21 +400,18 @@ function addon.Tracker:CheckBouns()
 	for i=1, MAW_BUFF_MAX_DISPLAY do
 		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", i, "MAW");
 		totalPowers = totalPowers + (count or 0)
-		if icon and maw_spellID then
+		if icon and maw_spellID and not armaments[maw_spellID]  then
 
 			if checkBonusStatus("Highlander") and count > 1 then
 				addon.Tracker:FlagFail("Highlander")
 			end
 		end
-		--if count >= 5 then print (maw_spellID)\
 
-		if icon and maw_spellID == 294138 then
---print("ob")
+		if icon and maw_spellID and armaments[maw_spellID]  then
 			if checkBonusStatus("Reinforced") and count >= 5 then
 				addon.Tracker:FlagFail("Reinforced")
 			end
 		end
-
 
 		if icon and maw_spellID and bounses.Pauper then
 			local spellRarity = C_Spell.GetMawPowerBorderAtlasBySpellID(maw_spellID)
@@ -392,7 +420,6 @@ function addon.Tracker:CheckBouns()
 			end
 		end
 	end
-
 
 	local currentStats = addon.Statsdb.profile.current
 	if checkBonusStatus("Trapmaster")  and currentStats.TrapSprung > 0 then
@@ -412,22 +439,20 @@ function addon.Tracker:CheckBouns()
 	end
 
 	if addon:CurrentPhantasma() > GetHoarderTotal() then 
-		addon.Tracker:FlagBonus("Hoarder")
+		--addon.Tracker:FlagBonus("Hoarder")
 	elseif addon:CurrentPhantasma() < GetHoarderTotal() then 
-		addon.Tracker:FlagFail("Hoarder", true)
+		--addon.Tracker:FlagFail("Hoarder", true)
 	end
 
-local timer = TTG_ScoreFrame.Timer.timer
-local minutes = floor(mod(timer*SEC_TO_MINUTE_FACTOR, 60))
-local hour = min(floor(timer*SEC_TO_HOUR_FACTOR), 99);
-
-if hour >= 1 then 
-	currentStats.timeBonus = 0
-elseif minutes > 30 then 
-	currentStats.timeBonus = 30 - (minutes - 30)
-else
-	currentStats.timeBonus = 30
-end
+	local current = addon.Statsdb.profile.current
+	local current_Time = TTG_ScoreFrame.Timer.timer
+	local current_Par = current.TotalPar
+	if tonumber(current_Par) ~= 0 then
+		local bonus = max(floor((current_Par/current_Time)*30), 50)
+		currentStats.timeBonus = bonus
+	else
+		currentStats.timeBonus = 30
+	end
 
 	updateAll()
 end
@@ -441,20 +466,32 @@ Reinforced	Collect at least 5 Obleron Armaments of the same type	10
 Robber	Robbed a Broker (Requires Shoplifter blessing active OR usage of a Ravenous Anima Cell)	5  --check for killing mob or for drop
 ]]--
 
+local function getDeaths()
+	local Info = UIWidgetManager:GetWidgetTypeInfo(21).visInfoDataFunction(3373);
+	if Info and Info.entries then 
+	  local deaths = Info.entries[2].text
+		--local floor_time = TimeInfo.entries[3].text
+		return deaths
+	else
+		return 0
+	end
 
+end
 
 
 local function checkBonusStatus(bonusName)
-	return bounses[bonusName][1] --~= false
+	return bounses[bonusName][2] --~= false
 end
 
 function addon.Tracker:GetBounsScore()
 	local bonus = 0
+	addon.GetWidgetBonuses()
+
 	for i, name in ipairs(bonusList) do
 		if (bounses[name]) then		
 			--print(bounses[name])
-			local status = bounses[name][1]
-			local pts = bounses[name][2]
+			local status = bounses[name][2]
+			local pts = bounses[name][3]
 			if status == true then
 				bonus = bonus + pts
 			end
@@ -485,6 +522,7 @@ function addon.InitScoreFrame()
 			--currentStats.scoreTimer = TTG_ScoreFrame.Timer 
 		 end)]]
 	TTG_ScoreFrame.Timer:Update()
+
 	addon.UpdataeScoreFrame()
 	addon.UpdateBonusList()
 	addon:ResetBonusLocation()
@@ -495,11 +533,12 @@ end
 function addon.UpdataeScoreFrame()
 	local currentStats = addon.Statsdb.profile.current
 	--addon.Tracker:CheckBouns()
-	local deaths = currentStats.Deaths
+	--GetTimeBonus()
+	local deaths = tonumber(getDeaths())
 	local DeathPenalty = deaths * -20
 	local bonus = addon.Tracker:GetBounsScore()
-	local completion = 100
-	local timeBonus = currentStats.timeBonus
+	local completion = bounses["Completion"][3]
+	local timeBonus = currentStats.timeBonus    --- Actual bonus is partime/actualtime*30
 	--print(timeBonus)
 	local total = completion + bonus + DeathPenalty + timeBonus
 	--TTG_ScoreFrame:Show()
@@ -511,10 +550,10 @@ function addon.UpdataeScoreFrame()
 	end
 	TTG_ScoreFrame.Score:SetText(L["Score:"])
 	TTG_ScoreFrame.ScoreTotal:SetText(total)
-	TTG_ScoreFrame.Completion:SetText((L["Completion: %s"]):format(completion))
+	TTG_ScoreFrame.Completion.text:SetText((L["Completion: %s"]):format(completion))
 	TTG_ScoreFrame.Bonuses:SetText( (L["Bonuses: %s"]):format(bonus) )
 	--TTG_ScoreFrame.Timer:Reset()
-	TTG_ScoreFrame.TimerBonus:SetText("("..currentStats.timeBonus..")")
+	TTG_ScoreFrame.TimerBonus:SetText("("..timeBonus..")")
 
 
 	TTG_ScoreFrame.Gem1:SetState(total >= 40)
@@ -529,11 +568,12 @@ function addon.UpdateBonusList()
 	TTG_BonusList.name = TTG_BonusList.name or {}
 	TTG_BonusList.points = TTG_BonusList.points or {}
 	TTG_BonusList.overlay = TTG_BonusList.overlay or {}
+	--addon.GetWidgetBonuses()
 
 	for i, name in ipairs(bonusList) do
 		if (bounses[name]) then
-			local status = bounses[name][1]
-			local pts = bounses[name][2]
+			local status = bounses[name][2]
+			local pts = bounses[name][3]
 			local bonusName = TTG_BonusList.name[i]
 			local bonusPoints = TTG_BonusList.points[i]
 			local overlay = TTG_BonusList.overlay[i]
@@ -578,7 +618,7 @@ function addon.UpdateBonusList()
 			end
 
 			local outputName = name
-			if bounses[name][3] then
+			if bounses[name][4] then
 				outputName = name.."*"
 				color = ORANGE_FONT_COLOR
 			end
@@ -616,9 +656,192 @@ function addon:ResetBonusLocation()
 	end
 end
 
+
+
+--{3366, 3392} 
+	function addon.GetWidgetBonuses()
+	local widgetTypeInfo = UIWidgetManager:GetWidgetTypeInfo(21);
+	local current = addon.Statsdb.profile.current  
+	current.FloorCompletion = current.FloorCompletion or {}
+	local FloorCompletion = current.FloorCompletion
+
+	--print(widgetInfo.widgetID)
+		for name, data in pairs(bounses) do
+			local ids = data[1]
+			local Info = widgetTypeInfo.visInfoDataFunction(ids);
+
+			if Info and Info.entries then 
+				--[[if name == "Completion" then
+													local totals = 0
+													local counter = 1
+													for i, data in pairs(FloorCompletion) do
+														local comp = string.gsub(data, "%%", "")
+														--print(comp)
+														totals = totals + comp
+														counter = counter + 1
+													end
+													--print(totals)
+													totals = (counter* 100)/ totals
+													data[3] = floor(totals)
+								
+												else]]
+					--name = Info.entries[1].text
+					local score = Info.entries[3].text
+					local tooltip = Info.tooltip
+					L[name.."_Desc"] = tooltip
+
+					score = string.gsub(score, "+", "")
+					score = tonumber(score)
+
+					data[3] = score
+					data[2] = score > 0
+				--end
+				--return 	score
+			end
+		end
+	end
+function a()
+addon.GetWidgetBonuses()
+end
 --addon:ResetScoreLocation()
 --ScenarioStageBlock
 
 --EventToastManagerFrame.currentDisplayingToast.WidgetContainer:GetChildren()
 
 --function EventToastManagerFrame::DisplayToast(true) 
+--EventToastManagerFrame.currentDisplayingToast.SubTitle
+--/run for i,d in ipairs(EventToastManagerFrame.currentDisplayingToast.SubTitle) do print(i) end
+
+
+-- set 503 - completion summary
+	--set 520 - floor 4 summary
+	--set 519 - floor 3 summary
+		--set 518 - floor 2 summary
+			--set 509  - floor 1 summary
+function z()
+local widgetSetID=521
+	local widgetType = 21
+	local widgetID = 3392
+
+	local setWidgets = C_UIWidgetManager.GetAllWidgetsBySetID(509);
+	for _, widgetInfo in ipairs(setWidgets) do
+		if widgetInfo.widgetType == 21 then 
+
+		local widgetTypeInfo = UIWidgetManager:GetWidgetTypeInfo(widgetInfo.widgetType);
+
+--print(widgetInfo.widgetID)
+local name, score, tooltip
+		 Info = widgetTypeInfo.visInfoDataFunction(widgetInfo.widgetID);
+		 if Info and Info.entries then 
+		  name = Info.entries[1].text
+		  score = Info.entries[3].text
+		  tooltip = Info.tooltip
+
+		elseif Info then
+		 name = Info.text
+		  score = ""
+		  tooltip = Info.widgetTag
+
+		end
+		print(widgetInfo.widgetID)
+		print(name)
+		 print(score)
+		 print(tooltip)
+		
+	end
+	end
+end
+
+
+--Deaths 3373
+
+local TimeID = {3394,3404,3405,3406}
+local CompletionID = {3393, 3396,3397,3398}
+
+function addon.GetFloorSummary()
+--3396 Floor Completion
+-- 3404 floor time
+	local current = addon.Statsdb.profile.current
+
+	current.FloorPar =  {}
+	current.FloorTime =  {}
+	current.TotalPar =  0
+
+	current.FloorCompletion =  {}
+
+	local cur_floor = 1--addon:CurrentFloor() - 1
+	local CombinedTime = 0 
+	--FloorTime
+	for i, id in ipairs(TimeID) do
+		cur_floor = i
+		local TimeInfo = UIWidgetManager:GetWidgetTypeInfo(21).visInfoDataFunction(id);
+		if TimeInfo and TimeInfo.entries then 
+		  --name = Info.entries[1].text
+			local floor_time = TimeInfo.entries[3].text
+			current.FloorTime[cur_floor] = floor_time
+			local floor_par = TimeInfo.tooltip
+			local time_hr, time_min, time_sec = strsplit(":", floor_time)
+			local totalTime = (time_hr *360 ) + (time_min *60) + time_sec
+
+			--current.TotalPar = 0
+
+			CombinedTime = CombinedTime + totalTime
+
+
+
+			local _,par_time = strsplit(":", floor_par, 2)
+			current.FloorPar[cur_floor] = par_time
+
+			local par_hr, par_min, par_sec = strsplit(":", par_time)
+
+			local totalPar = (par_hr *360 ) + (par_min *60) + par_sec
+
+			--current.TotalPar = 0
+
+			current.TotalPar = current.TotalPar + totalPar
+
+			--local bonus = 
+
+			--print(current.TotalPar)
+			local hour = min(floor(current.TotalPar*SEC_TO_HOUR_FACTOR), 99);
+			local minute = floor(mod(current.TotalPar*SEC_TO_MINUTE_FACTOR, 60));
+			local second = floor(mod(current.TotalPar, 60));
+
+			TTG_ScoreFrame.Timer.par:SetText(("Par: %s:%s:%s"):format(hour,minute, second))
+
+			local CompletionInfo = UIWidgetManager:GetWidgetTypeInfo(21).visInfoDataFunction(CompletionID[i]);
+			if CompletionInfo and CompletionInfo.entries then 
+				local floor_completion = CompletionInfo.entries[3].text
+				current.FloorCompletion[cur_floor] = floor_completion
+			end
+		end
+	end
+end
+
+function ss()
+addon.GetFloorSummary()
+end
+
+function GetTimeBonus()
+
+
+--print(widgetInfo.widgetID)
+		local name, score, tooltip
+		 local Info = UIWidgetManager:GetWidgetTypeInfo(21).visInfoDataFunction(3411);
+		 if Info and Info.entries then 
+		  name = Info.entries[1].text
+		  score = Info.entries[3].text
+		  tooltip = Info.tooltip
+
+
+
+
+		TTG_ScoreFrame.timeBonus = score
+		TTG_ScoreFrame.timePar = tooltip
+
+		end
+
+	
+
+
+end

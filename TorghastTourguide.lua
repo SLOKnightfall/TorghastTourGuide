@@ -369,6 +369,12 @@ local function ResetCounts()
 			scoreTimer = 0,
 			currentPhantasma = 0,
 			timeBonus = 30,
+
+			FloorPar = {},
+			FloorTime =  {},
+			TotalPar = 0,
+			FloorCompletion = {},
+			TotalPar = 0,
 		}
 
 	return defaults
@@ -423,6 +429,7 @@ local function Enable()
 		addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
 
 	end
+	addon:ResetBonuses()
 	addon.InitScoreFrame()
 end
 
@@ -551,6 +558,7 @@ function addon:EventHandler(event, arg1, ...)
 			addon.Stats:InitRun()
 		else
 			addon.Stats.IncreaseCounter("FloorsCompleted")
+			addon.GetFloorSummary()
 		end
 
 	elseif event == "ADDON_LOADED" and arg1 == "Blizzard_PlayerChoiceUI" and isEnabled then 
@@ -617,6 +625,8 @@ function addon:EventHandler(event, arg1, ...)
 				if (currentFloor == 5 and runType ~= 0) or
 				  (currentFloor == 18 and runType == 0) then 
 					addon.Stats.IncreaseCounter("Bosses")
+					TTG_ScoreFrame.Timer:Stop()
+
 				end
 			end
 		elseif (subevent == "SPELL_AURA_APPLIED")  and destGUID == playerGUID and JAILERS_CHAINS_DEBUFF == spellID then 
@@ -666,7 +676,6 @@ function addon:EventHandler(event, arg1, ...)
 		addon.Tracker:CheckBouns()
 
 	elseif(event == "SCENARIO_COMPLETED") then 
-		TTG_ScoreFrame.Timer:Stop()
 	end		
 end
 

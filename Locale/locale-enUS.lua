@@ -108,7 +108,7 @@ L["Point Value"] = true
 
 L["Number of Torments Per Layer"] = true
 L["Torment_Count"] = "Layers 1-5:   0\nLayers 6-7:   1\nLayers 8-9:   2\nLayer 10:       3\nLayer 11:       4\nLayer 12:       5"
-
+L["Floor"] = true
 
 
 
@@ -445,10 +445,11 @@ L["Hoarder_Desc"] = "Defeat the floor 5 boss with at least %s Phantasma remainin
 --(Note: Phantasma required will scale up per member of your party!)	10
 L["Hunter_Desc"] = "No elite enemies reached 4 stacks of Unnatural Power"
 L["Pauper_Desc"] = "No epic Anima Powers"
-L["Pillager_Desc"] = "90% of Ashen Phylacteries destroyed. Not currently tracked."
+L["Pillager_Desc"] = "90% of Ashen Phylacteries destroyed"
 L["Plunderer_Desc"] = "Opened treasure chests"
 L["Reinforced_Desc"] = "Collect at least 5 Obleron Armaments of the same type"
 L["Rescuer_Desc"] = "Assisted a denizen of Torghast"
 L["Robber_Desc"] = "Robbed a Broker (Requires Shoplifter blessing active OR usage of a Ravenous Anima Cell)"
-L["Savior_Desc"] = "All Soul Remnants freed. Not currently tracked." 
+L["Savior_Desc"] = "All Soul Remnants freed" 
 L["Trapmaster_Desc"] = "No trap damage taken"
+L["Empowered"] = "Bonus points gained from actions while Empowered"
