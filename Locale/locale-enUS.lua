@@ -118,8 +118,8 @@ L["Gained Bouns: %s"] = true
 L["Bonuses: %s"] = true
 L["Score:"] = true
 L["Completion: %s"] = true
-
-
+L["Pauper  +10pts"] = true
+L["Highlander + 15pts"] = true
 
 
 

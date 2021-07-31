@@ -82,7 +82,7 @@
 		</Layers>
 		<Scripts>
 			<OnEnter>
-								if self.tooltipText then
+				if self.tooltipText then
 					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
 					GameTooltip:SetText(self.tooltipTitle,1,1,1);
 					GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);

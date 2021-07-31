@@ -84,9 +84,6 @@ local floor = _G.floor;
 local mod = _G.mod;
 local tonumber = _G.tonumber;
 local gsub = _G.gsub;
-local GetCVar = _G.GetCVar;
-local SetCVar = _G.SetCVar;
-local GetGameTime = _G.GetGameTime;
 
 -- private data
 local SEC_TO_MINUTE_FACTOR = 1/60;
@@ -268,41 +265,28 @@ local bonusList = {
 }
 
 
---TODO make persistent on reload
+function addon.GetAnimaPowerCount(spellID)
+	for i=1, MAW_BUFF_MAX_DISPLAY do
+		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", i, "MAW");
+		if icon and spellID == maw_spellID then
+			return count
+		end
+	end
+	return 0
+end
 
---[[
-statsDefaults.profile. bounses = {
-	["Annihilator"] = {nil,20},
-	["Collector"] = {nil,10},
-	["Daredevil"] = {nil,10},
-	["Executioner"] = {nil,10},
-	["Highlander"] = {nil,15},
-	["Hoarder"] = {nil,10},
-	["Hunter"] = {nil,15},
-	["Pauper"] = {nil,10},
-	["Pillager"] = {nil,5}, --cant track
-	["Plunderer"] = {nil,5},  --Use stats tracker
-	["Reinforced"] = {nil,10},
-	["Rescuer"] = {nil,10},  --check for quest compl;ete
-	["Robber"] = {nil,5},  --check for killing mob or for drop
-	["Savior"] = {nil,10}, --Cant Track
-	["Trapmaster"] = {nil,10},--Use trap damage tracker 
-}]]
 
 function addon.CheckAnimaPowers(spellID)
 	if bounses.Highlander then 
-		for i=1, MAW_BUFF_MAX_DISPLAY do
-			local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", i, "MAW");
-			if icon and spellID == maw_spellID then
-				if count == 1 then
-					return true
-				else
-					return false 
-				end
-			end
+		local count = addon.GetAnimaPowerCount(spellID)
+		if count == 1 then
+			return true
+		else
+			return false 
 		end
 	end
 end
+
 local GREEN_FONT_COLOR = GREEN_FONT_COLOR:GenerateHexColorMarkup()
 local RED_FONT_COLOR = RED_FONT_COLOR:GenerateHexColorMarkup()
 local ORANGE_FONT_COLOR = ORANGE_FONT_COLOR:GenerateHexColorMarkup()
@@ -361,7 +345,6 @@ function addon.Tracker:CombatBonusChecks()
 		addon.Tracker:FlagFail("Annihilator")
 	end
 
---TODO:  Figure group scaleing
 	if addon:CurrentFloor() == 5 and addon:CurrentPhantasma() > GetHoarderTotal() then 
 		addon.Tracker:FlagBonus("Hoarder")
 	end
@@ -656,58 +639,48 @@ function addon:ResetBonusLocation()
 	end
 end
 
-
-
 --{3366, 3392} 
-	function addon.GetWidgetBonuses()
+function addon.GetWidgetBonuses()
 	local widgetTypeInfo = UIWidgetManager:GetWidgetTypeInfo(21);
 	local current = addon.Statsdb.profile.current  
 	current.FloorCompletion = current.FloorCompletion or {}
 	local FloorCompletion = current.FloorCompletion
+	for name, data in pairs(bounses) do
+		local ids = data[1]
+		local Info = widgetTypeInfo.visInfoDataFunction(ids);
 
-	--print(widgetInfo.widgetID)
-		for name, data in pairs(bounses) do
-			local ids = data[1]
-			local Info = widgetTypeInfo.visInfoDataFunction(ids);
+		if Info and Info.entries then 
+			--[[if name == "Completion" then
+												local totals = 0
+												local counter = 1
+												for i, data in pairs(FloorCompletion) do
+													local comp = string.gsub(data, "%%", "")
+													--print(comp)
+													totals = totals + comp
+													counter = counter + 1
+												end
+												--print(totals)
+												totals = (counter* 100)/ totals
+												data[3] = floor(totals)
+							
+											else]]
+				--name = Info.entries[1].text
+				local score = Info.entries[3].text
+				local tooltip = Info.tooltip
+				L[name.."_Desc"] = tooltip
 
-			if Info and Info.entries then 
-				--[[if name == "Completion" then
-													local totals = 0
-													local counter = 1
-													for i, data in pairs(FloorCompletion) do
-														local comp = string.gsub(data, "%%", "")
-														--print(comp)
-														totals = totals + comp
-														counter = counter + 1
-													end
-													--print(totals)
-													totals = (counter* 100)/ totals
-													data[3] = floor(totals)
-								
-												else]]
-					--name = Info.entries[1].text
-					local score = Info.entries[3].text
-					local tooltip = Info.tooltip
-					L[name.."_Desc"] = tooltip
+				score = string.gsub(score, "+", "")
+				score = tonumber(score)
 
-					score = string.gsub(score, "+", "")
-					score = tonumber(score)
-
-					data[3] = score
-					data[2] = score > 0
-				--end
-				--return 	score
-			end
+				data[3] = score
+				data[2] = score > 0
+			--end
+			--return 	score
 		end
 	end
-function a()
-addon.GetWidgetBonuses()
 end
---addon:ResetScoreLocation()
+
 --ScenarioStageBlock
-
---EventToastManagerFrame.currentDisplayingToast.WidgetContainer:GetChildren()
-
 --function EventToastManagerFrame::DisplayToast(true) 
 --EventToastManagerFrame.currentDisplayingToast.SubTitle
 --/run for i,d in ipairs(EventToastManagerFrame.currentDisplayingToast.SubTitle) do print(i) end
@@ -719,36 +692,34 @@ end
 		--set 518 - floor 2 summary
 			--set 509  - floor 1 summary
 function z()
-local widgetSetID=521
+	local widgetSetID=521
 	local widgetType = 21
 	local widgetID = 3392
 
 	local setWidgets = C_UIWidgetManager.GetAllWidgetsBySetID(509);
 	for _, widgetInfo in ipairs(setWidgets) do
 		if widgetInfo.widgetType == 21 then 
+			local widgetTypeInfo = UIWidgetManager:GetWidgetTypeInfo(widgetInfo.widgetType);
 
-		local widgetTypeInfo = UIWidgetManager:GetWidgetTypeInfo(widgetInfo.widgetType);
+	--print(widgetInfo.widgetID)
+			local name, score, tooltip
+			Info = widgetTypeInfo.visInfoDataFunction(widgetInfo.widgetID);
+			if Info and Info.entries then 
+			  name = Info.entries[1].text
+			  score = Info.entries[3].text
+			  tooltip = Info.tooltip
 
---print(widgetInfo.widgetID)
-local name, score, tooltip
-		 Info = widgetTypeInfo.visInfoDataFunction(widgetInfo.widgetID);
-		 if Info and Info.entries then 
-		  name = Info.entries[1].text
-		  score = Info.entries[3].text
-		  tooltip = Info.tooltip
+			elseif Info then
+			 name = Info.text
+			  score = ""
+			  tooltip = Info.widgetTag
 
-		elseif Info then
-		 name = Info.text
-		  score = ""
-		  tooltip = Info.widgetTag
-
+			end
+			print(widgetInfo.widgetID)
+			print(name)
+			 print(score)
+			 print(tooltip)
 		end
-		print(widgetInfo.widgetID)
-		print(name)
-		 print(score)
-		 print(tooltip)
-		
-	end
 	end
 end
 
@@ -762,15 +733,13 @@ function addon.GetFloorSummary()
 --3396 Floor Completion
 -- 3404 floor time
 	local current = addon.Statsdb.profile.current
-
 	current.FloorPar =  {}
 	current.FloorTime =  {}
 	current.TotalPar =  0
-
 	current.FloorCompletion =  {}
-
 	local cur_floor = 1--addon:CurrentFloor() - 1
 	local CombinedTime = 0 
+
 	--FloorTime
 	for i, id in ipairs(TimeID) do
 		cur_floor = i
@@ -786,8 +755,6 @@ function addon.GetFloorSummary()
 			--current.TotalPar = 0
 
 			CombinedTime = CombinedTime + totalTime
-
-
 
 			local _,par_time = strsplit(":", floor_par, 2)
 			current.FloorPar[cur_floor] = par_time
@@ -816,32 +783,4 @@ function addon.GetFloorSummary()
 			end
 		end
 	end
-end
-
-function ss()
-addon.GetFloorSummary()
-end
-
-function GetTimeBonus()
-
-
---print(widgetInfo.widgetID)
-		local name, score, tooltip
-		 local Info = UIWidgetManager:GetWidgetTypeInfo(21).visInfoDataFunction(3411);
-		 if Info and Info.entries then 
-		  name = Info.entries[1].text
-		  score = Info.entries[3].text
-		  tooltip = Info.tooltip
-
-
-
-
-		TTG_ScoreFrame.timeBonus = score
-		TTG_ScoreFrame.timePar = tooltip
-
-		end
-
-	
-
-
 end

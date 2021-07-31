@@ -529,6 +529,7 @@ function addon:CurrentPhantasma()
 end
 
 function addon:EventHandler(event, arg1, ...)
+	if finished then return end
 	if event == "PLAYER_ENTERING_WORLD" then
 		if IsInJailersTower() then 
 			Enable()
@@ -550,11 +551,10 @@ function addon:EventHandler(event, arg1, ...)
 		end
 
 	elseif event == "JAILERS_TOWER_LEVEL_UPDATE" then
-		local level = arg1
 		currentFloor = arg1
 		runType = ...
 		--Enum.JailersTowerType
-		if level == 1 then 
+		if currentFloor == 1 then 
 			addon.Stats:InitRun()
 		else
 			addon.Stats.IncreaseCounter("FloorsCompleted")
@@ -568,8 +568,8 @@ function addon:EventHandler(event, arg1, ...)
 					
 	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
 		C_Timer.After(0.1, addon.PowerTooltips)
-	elseif event == "BAG_UPDATE" then
 
+	elseif event == "BAG_UPDATE" then
 		addon.UpdateItemCount()
 
 	elseif event == "PLAYER_SPECIALIZATION_CHANGED" then
@@ -626,7 +626,7 @@ function addon:EventHandler(event, arg1, ...)
 				  (currentFloor == 18 and runType == 0) then 
 					addon.Stats.IncreaseCounter("Bosses")
 					TTG_ScoreFrame.Timer:Stop()
-
+					isEnabled = false
 				end
 			end
 		elseif (subevent == "SPELL_AURA_APPLIED")  and destGUID == playerGUID and JAILERS_CHAINS_DEBUFF == spellID then 
@@ -772,7 +772,7 @@ end
 
 function addon.InitFrames()
 
-local f = CreateFrame("Frame", nil, ScenarioStageBlock)
+local f = CreateFrame("Frame", nil, UIParent)
 local width = ScenarioStageBlock:GetWidth()
 local height = ScenarioStageBlock:GetHeight()
 f:SetSize(width, height)
@@ -957,24 +957,4 @@ function addon.UpdateItemCount()
 	f.ravCount:SetText(ravCount)
 	f.cellCount:SetText(cellCount + reqCount)
 	f.potionCount:SetText(potionCount)
-end
-
-
-function x()
-local textureKitRegionFormatStrings = {
-	["BorderLeft"] = "%s-BorderLeft",
-	["BorderRight"] = "%s-BorderRight",
-	["BorderCenter"] = "%s-BorderCenter",
-	["BGLeft"] = "%s-BGLeft",
-	["BGRight"] = "%s-BGRight",
-	["BGCenter"] = "%s-BGCenter",
-	["Spark"] = "%s-Spark",
-	["BackgroundGlow"] = "%s-BackgroundGlow",
-	["GlowLeft"] = "%s-Glow-BorderLeft",
-	["GlowRight"] = "%s-Glow-BorderRight",
-	["GlowCenter"] = "%s-Glow-BorderCenter",
-}
-
-				SetupTextureKitOnRegions("jailerstower-scenario", TTG_ScenarioObjectiveBlock, textureKitRegionFormatStrings, TextureKitConstants.DoNotSetVisibility, TextureKitConstants.UseAtlasSize);
-
 end
