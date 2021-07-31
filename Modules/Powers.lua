@@ -82,7 +82,7 @@ end
 
 
 local LISTWINDOW
-function addon.EditWeight(self, frame)
+function addon.EditWeight(self, frame, powerID)
 	if LISTWINDOW then LISTWINDOW:Hide() end
 	local Weights_Notesdb = addon.Weights_Notesdb.profile
 
@@ -94,9 +94,15 @@ function addon.EditWeight(self, frame)
 	f:SetHeight(235)
 	f:SetWidth(350)
 	LISTWINDOW = f
-
+	local spellID
 --:GetLayoutChildren()[1].optionInfo.spellID
-	local spellID = frame.optionInfo.spellID
+ if frame.spellID then 
+	spellID = frame.spellID
+ elseif frame.optionInfo and frame.optionInfo.spellID then 
+	spellID = frame.optionInfo.spellID
+else 
+	return
+ end
 	Weights_Notesdb[spellID] = Weights_Notesdb[spellID] or {}
 
 	_G["TTG_NoteWindow"] = f.frame
@@ -142,7 +148,6 @@ end
 
 local framePool = {}
 function addon.PowerShow()
-	print("show")
 	local Weights_Notesdb = addon.Weights_Notesdb.profile
 
 	local frames = PlayerChoiceFrame:GetChildren()[1]
@@ -183,7 +188,6 @@ function addon.PowerShow()
 		local spellRarity = frame.optionInfo.rarity
 		if spellID  then 
 			local count = addon.GetAnimaPowerCount(spellID)
-			print(count)
 			if count > 0 then
 				f.count:SetText("x"..count)
 

@@ -10,7 +10,6 @@
 --  ///////////////////////////////////////////////////////////////////////////////////////////
 
 if not IsAddOnLoaded("!KalielsTracker") then return end
-print(322)
 
 local addonName, addon = ...
 addon = LibStub("AceAddon-3.0"):GetAddon(addonName)

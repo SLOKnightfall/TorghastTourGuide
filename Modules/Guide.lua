@@ -54,7 +54,7 @@ local function CreatePowerFrame(powerID, parent, name, index)
 	end
 	if not infoHeader.weight then 
 		infoHeader.weight = CreateFrame("FRAME", nil, infoHeader, "TorghastTourGuidePowerTemplate")
-		infoHeader.weight:SetPoint("TOPRIGHT", infoHeader.button , "TOPLEFT", 25, 10)
+		infoHeader.weight:SetPoint("TOPRIGHT", infoHeader.button , "TOPLEFT", 10, 10)
 		infoHeader.weight:SetScale(.75, .75)
 		infoHeader.button.abilityIcon:SetPoint("LEFT", 5, 0)
 		
@@ -1263,7 +1263,6 @@ local ScoreTable = {
 
 
 function addon.SetUpScoreFrame()
-	print("S")
 	local f = frames.tg.info.scoringScroll.child
 	if not f.banner then 
 		f.banner = f:CreateTexture(nil, "OVERLAY")
