@@ -165,6 +165,21 @@ local options = {
 							type = "description",
 							width = 1.6,
 						},
+					},
+				},
+				score_settings={
+					name = " ",
+					type = "group",
+					inline = true,
+					order = 1,
+					
+					args={
+						Options_Header = {
+							order = 1.1,
+							name = L["Score Tracker Options"],
+							type = "header",
+							width = "full",
+						},
 						ShowScore = {
 							order = 3,
 							name = L["Show Score Frame"],
@@ -216,6 +231,20 @@ local options = {
 							values = {["LEFT"] = L["Left"], ["RIGHT" ] = L["Right"], ["BOTTOM" ] = L["Bottom"] }, -- pull in your font list from LSM
 							arg = "resetBonus",
 							width = .8,
+							--func = function() addon:ResetBonusLocation() end,
+						},
+					ShowCombatTimer = {
+							order = 4.3,
+							name = L["Show Combat Timer"],
+							type = "toggle",
+							width = 1.3,
+							--func = function() addon:ResetBonusLocation() end,
+						},
+					ShowBonusMessages = {
+							order = 4.4,
+							name = L["Show Bonus Status Messages"],
+							type = "toggle",
+							width = 1.3,
 							--func = function() addon:ResetBonusLocation() end,
 						},
 					},
@@ -533,6 +562,7 @@ function addon:EventHandler(event, arg1, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		if IsInJailersTower() then 
 			Enable()
+			TTG_ScoreFrame.Timer:ScorePause()
 		else
 			Disable()
 		end
@@ -543,9 +573,13 @@ function addon:EventHandler(event, arg1, ...)
 		C_Timer.After(10, function() TTG_CombatTimer:Hide() end)
 
 	elseif event == "PLAYER_REGEN_DISABLED" then
-		TTG_CombatTimer:Show()
-		TTG_CombatTimer:Reset()
-		TTG_CombatTimer:Start()
+		if addon.db.profile.ShowCombatTimer then 
+			TTG_CombatTimer:Show()
+			TTG_CombatTimer:Reset()
+			TTG_CombatTimer:Start()
+		else
+			TTG_CombatTimer:Hide()
+		end
 		if addon.db.profile.BonusAutoHideCombat then
 			 TTG_BonusList:Hide()
 		end
@@ -559,7 +593,17 @@ function addon:EventHandler(event, arg1, ...)
 		else
 			addon.Stats.IncreaseCounter("FloorsCompleted")
 			addon.GetFloorSummary()
+		
+
 		end
+
+		if currentFloor == 3 then
+			--Floor 3 not timed
+			TTG_ScoreFrame.Timer:Stop()
+		else
+			TTG_ScoreFrame.Timer:ScorePause()
+		end
+
 
 	elseif event == "ADDON_LOADED" and arg1 == "Blizzard_PlayerChoiceUI" and isEnabled then 
 		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
@@ -630,10 +674,10 @@ function addon:EventHandler(event, arg1, ...)
 				end
 			end
 		elseif (subevent == "SPELL_AURA_APPLIED")  and destGUID == playerGUID and JAILERS_CHAINS_DEBUFF == spellID then 
-			TTG_ScoreFrame.Timer:ScoreStart()
+			--TTG_ScoreFrame.Timer:ScoreStart()
 
 		elseif (subevent == "SPELL_AURA_REMOVED")  and destGUID == playerGUID and JAILERS_CHAINS_DEBUFF == spellID then
-			TTG_ScoreFrame.Timer:Stop()
+			--TTG_ScoreFrame.Timer:Stop()
 
 		elseif (subevent == "SPELL_DAMAGE")  and destGUID == playerGUID and traps[spellID] then 
 			addon.Stats.IncreaseCounter("TrapSprung")
@@ -668,7 +712,10 @@ function addon:EventHandler(event, arg1, ...)
 			local guid = UnitGUID("target")
 			mobList[guid] = "boss"
 		elseif unitClass == "elite" then
-			
+			local count = addon.GetAnimaPowerCount(299150, "target")
+			if not checkBonusStatus("Hunter") and count > 4 then 
+				addon.Tracker:FlagFail("Hunter")
+			end
 		end
 
 	elseif event ==  "QUEST_TURNED_IN" then

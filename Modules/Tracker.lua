@@ -138,7 +138,49 @@ end
 
 function TTG_TimerMixin:Start()
 	self.playing = true;
+	self.paused = false
 	self:SetScript("OnUpdate", 	self.OnUpdate  );
+end
+
+
+function TTG_TimerMixin:ScorePause()
+	self.paused = true
+	self.playing = false;
+	self:SetScript("OnUpdate", 	self.OnPause  );
+end
+
+
+function TTG_TimerMixin:OnUpdate(elapsed)
+	self.timer = self.timer + elapsed;
+	self:Update();
+end
+
+ function BuffCheck(spellID)
+
+local buffs, i = { }, 1;
+	local buffSpellId = select(10, UnitBuff("player", i))
+	if buffSpellId and spellID == buffSpellId then return true end
+	while buffSpellId do
+	  i = i + 1;
+	  buffSpellId = select(10, UnitBuff("player", i))
+	 -- print(buffSpellId)
+		if buffSpellId and spellID == buffSpellId then return true end
+	end
+	return false
+end
+
+
+function TTG_TimerMixin:OnPause(elapsed)
+	local refuge = BuffCheck(338907)
+	if refuge and not self.paused then 
+		TTG_TimerMixin:ScorePause()
+--print("safe")
+	elseif not refuge then 
+--print("start")
+		TTG_TimerMixin:ScoreStart()
+	end
+	--self.timer = self.timer + elapsed;
+	--self:Update();
 end
 
 
@@ -146,6 +188,11 @@ function TTG_TimerMixin:ScoreStart()
 	TTG_ScoreFrame.Timer.playing = true;
 	TTG_ScoreFrame.Timer:SetScript("OnUpdate", function(self, elapsed) 
 			--print(elapsed)
+		local refuge = BuffCheck(338907)
+		if refuge then 
+			self:ScorePause()
+			return
+		end
 		TTG_ScoreFrame.Timer.timer = TTG_ScoreFrame.Timer.timer + elapsed;
 		addon.Statsdb.profile.current.scoreTimer = TTG_ScoreFrame.Timer.timer
 		TTG_ScoreFrame.Timer:Update(elapsed);
@@ -170,6 +217,7 @@ function TTG_TimerMixin:Update()
 end
 
 function TTG_TimerMixin:OnUpdate(elapsed)
+
 	self.timer = self.timer + elapsed;
 	self:Update();
 end
@@ -265,9 +313,12 @@ local bonusList = {
 }
 
 
-function addon.GetAnimaPowerCount(spellID)
+function addon.GetAnimaPowerCount(spellID, targetID)
+	local target = targetID
+	local filter = ""
+	if not target then target = "player"; filter = "MAW" end
 	for i=1, MAW_BUFF_MAX_DISPLAY do
-		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", i, "MAW");
+		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura(target, i, filter);
 		if icon and spellID == maw_spellID then
 			return count
 		end
@@ -290,18 +341,12 @@ end
 local GREEN_FONT_COLOR = GREEN_FONT_COLOR:GenerateHexColorMarkup()
 local RED_FONT_COLOR = RED_FONT_COLOR:GenerateHexColorMarkup()
 local ORANGE_FONT_COLOR = ORANGE_FONT_COLOR:GenerateHexColorMarkup()
-
 local YELLOW_FONT_COLOR = YELLOW_FONT_COLOR:GenerateHexColorMarkup()
-
-
 
 local function updateAll()
 	addon.UpdateBonusList()
 	addon.UpdataeScoreFrame()
 end
-
-
-
 
 function addon.CheckAnimaRarity(spellRarity)
 	return bounses.Pauper and spellRarity >= Enum.PlayerChoiceRarity.Epic
@@ -309,7 +354,7 @@ end
 
 
 function addon.Tracker:FlagFail(bonusName, silent)
-	if bounses[bonusName] and not silent then 
+	if bounses[bonusName] and not silent and addon.db.profile.ShowBonusMessages then 
 		print(RED_FONT_COLOR..(L["Failed Bouns: %s"]):format(bonusName))
 	end
 
@@ -318,10 +363,8 @@ function addon.Tracker:FlagFail(bonusName, silent)
 	--updateAll()
 end
 
-
-
 function addon.Tracker:FlagBonus(bonusName)
-	if bounses[bonusName] then 
+	if bounses[bonusName] and addon.db.profile.ShowBonusMessages then 
 		print(GREEN_FONT_COLOR..(L["Gained Bouns: %s"]):format(bonusName))
 	end
 
@@ -334,9 +377,6 @@ local function checkBonusStatus(bonusName)
 	return bounses[bonusName][2]-- ~= false
 end
 addon.checkBonusStatus = checkBonusStatus
-
-
-
 
 function addon.Tracker:CombatBonusChecks()
 	if combatTimer > 40 then
@@ -353,23 +393,8 @@ function addon.Tracker:CombatBonusChecks()
 end
 
 
-
 local BuffName
 local RefugeOfTheDammedBuffID = 338907
-function v()
-	if not BuffName then
-		local spell = Spell:CreateFromSpellID(RefugeOfTheDammedBuffID)
-		spell:ContinueOnSpellLoad(function()
-			BuffName = spell:GetSpellName()
-		end)
-	end
-		
-		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", BuffName);
-		--print(maw_spellID)
-
-
-end
-
 
 local armaments = {[294592] = true, [294609]= true, [294597]= true, [294578]= true, [294602]= true, [293025]= true}
 function addon.Tracker:CheckBouns()
@@ -431,7 +456,7 @@ function addon.Tracker:CheckBouns()
 	local current_Time = TTG_ScoreFrame.Timer.timer
 	local current_Par = current.TotalPar
 	if tonumber(current_Par) ~= 0 then
-		local bonus = max(floor((current_Par/current_Time)*30), 50)
+		local bonus = min(floor((current_Par/current_Time)*30), 50)
 		currentStats.timeBonus = bonus
 	else
 		currentStats.timeBonus = 30
@@ -441,12 +466,9 @@ function addon.Tracker:CheckBouns()
 end
 
 
-
 --[[
 Daredevil	Defeat 2 Elites within 10 seconds of each other	10
 Hunter	No elite enemies reached 4 stacks of Unnatural Power	15
-Reinforced	Collect at least 5 Obleron Armaments of the same type	10
-Robber	Robbed a Broker (Requires Shoplifter blessing active OR usage of a Ravenous Anima Cell)	5  --check for killing mob or for drop
 ]]--
 
 local function getDeaths()
@@ -691,39 +713,6 @@ end
 	--set 519 - floor 3 summary
 		--set 518 - floor 2 summary
 			--set 509  - floor 1 summary
-function z()
-	local widgetSetID=521
-	local widgetType = 21
-	local widgetID = 3392
-
-	local setWidgets = C_UIWidgetManager.GetAllWidgetsBySetID(509);
-	for _, widgetInfo in ipairs(setWidgets) do
-		if widgetInfo.widgetType == 21 then 
-			local widgetTypeInfo = UIWidgetManager:GetWidgetTypeInfo(widgetInfo.widgetType);
-
-	--print(widgetInfo.widgetID)
-			local name, score, tooltip
-			Info = widgetTypeInfo.visInfoDataFunction(widgetInfo.widgetID);
-			if Info and Info.entries then 
-			  name = Info.entries[1].text
-			  score = Info.entries[3].text
-			  tooltip = Info.tooltip
-
-			elseif Info then
-			 name = Info.text
-			  score = ""
-			  tooltip = Info.widgetTag
-
-			end
-			print(widgetInfo.widgetID)
-			print(name)
-			 print(score)
-			 print(tooltip)
-		end
-	end
-end
-
-
 --Deaths 3373
 
 local TimeID = {3394,3404,3405,3406}
@@ -755,6 +744,9 @@ function addon.GetFloorSummary()
 			--current.TotalPar = 0
 
 			CombinedTime = CombinedTime + totalTime
+
+			--fixes timer to match blizz's time
+			TTG_ScoreFrame.Timer.timer = CombinedTime
 
 			local _,par_time = strsplit(":", floor_par, 2)
 			current.FloorPar[cur_floor] = par_time

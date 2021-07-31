@@ -183,13 +183,15 @@ function addon.PowerShow()
 		local spellRarity = frame.optionInfo.rarity
 		if spellID  then 
 			local count = addon.GetAnimaPowerCount(spellID)
-			if count < 0 then
-				f.count:SetText(count)
+			print(count)
+			if count > 0 then
+				f.count:SetText("x"..count)
+
 			else
 				f.count:SetText("")
 
 			end
-
+			f.count:Show()
 			f.weight.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].weight or "")
 			f.notes.Text:SetText(Weights_Notesdb[spellID] and Weights_Notesdb[spellID].note or "")
 
@@ -199,7 +201,7 @@ function addon.PowerShow()
 
 				f.helper.icon:Show()
 				f.helper.tooltipTitle = "Selecting Voids:"
-				f.helper.tooltipText = ("%s%s"):format((isEpic and "Pauper  +10pts\n") or "", (isDupe and "Highlander + 15pts") or"")
+				f.helper.tooltipText = ("%s%s"):format((isEpic and L["Pauper  +10pts"].."\n") or "", (isDupe and L["Highlander + 15pts"]) or"")
 			else
 				f.helper.icon:Hide()
 				f.helper.tooltipText = nil

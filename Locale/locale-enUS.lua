@@ -109,7 +109,7 @@ L["Point Value"] = true
 L["Number of Torments Per Layer"] = true
 L["Torment_Count"] = "Layers 1-5:   0\nLayers 6-7:   1\nLayers 8-9:   2\nLayer 10:       3\nLayer 11:       4\nLayer 12:       5"
 L["Floor"] = true
-
+L["Show Bonus Status Messages"] = true
 
 
 
@@ -121,7 +121,8 @@ L["Completion: %s"] = true
 L["Pauper  +10pts"] = true
 L["Highlander + 15pts"] = true
 
-
+L["Score Tracker Options"] = true
+L["Show Combat Timer"] = true
 
 L["95004"] = "Venari"
 L["152253"] = "The Tarragrue"
