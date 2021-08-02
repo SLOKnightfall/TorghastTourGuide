@@ -713,7 +713,7 @@ function addon:EventHandler(event, arg1, ...)
 			mobList[guid] = "boss"
 		elseif unitClass == "elite" then
 			local count = addon.GetAnimaPowerCount(299150, "target")
-			if not checkBonusStatus("Hunter") and count > 4 then 
+			if not addon.checkBonusStatus("Hunter") and count > 4 then 
 				addon.Tracker:FlagFail("Hunter")
 			end
 		end

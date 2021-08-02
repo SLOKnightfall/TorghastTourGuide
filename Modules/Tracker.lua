@@ -484,10 +484,6 @@ local function getDeaths()
 end
 
 
-local function checkBonusStatus(bonusName)
-	return bounses[bonusName][2] --~= false
-end
-
 function addon.Tracker:GetBounsScore()
 	local bonus = 0
 	addon.GetWidgetBonuses()
