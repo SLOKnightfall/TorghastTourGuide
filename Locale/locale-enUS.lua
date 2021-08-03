@@ -113,8 +113,8 @@ L["Show Bonus Status Messages"] = true
 
 
 
-L["Failed Bouns: %s"] = true
-L["Gained Bouns: %s"] = true
+L["Failed Bonus: %s"] = true
+L["Gained Bonus: %s"] = true
 L["Bonuses: %s"] = true
 L["Score:"] = true
 L["Completion: %s"] = true

@@ -569,7 +569,7 @@ function addon:EventHandler(event, arg1, ...)
 
 	elseif event == "PLAYER_REGEN_ENABLED" then
 		TTG_CombatTimer:Stop()
-		TTG_CombatTimer:CheckBouns()
+		TTG_CombatTimer:CheckBonus()
 		C_Timer.After(10, function() TTG_CombatTimer:Hide() end)
 
 	elseif event == "PLAYER_REGEN_DISABLED" then
@@ -623,7 +623,7 @@ function addon:EventHandler(event, arg1, ...)
 
 	elseif event == "PLAYER_DEAD" then
 			addon.Stats.IncreaseCounter("Deaths")
-			addon.Tracker:CheckBouns()
+			addon.Tracker:CheckBonus()
 	elseif event == "CURRENCY_DISPLAY_UPDATE" and arg1 == PHANTASMA_ID_NUMBER then 
 			local  quantity, quantityChange, quantityGainSource, quantityLostSource = ...
 			addon.Stats:SetPhantasma(quantityChange)
@@ -631,7 +631,7 @@ function addon:EventHandler(event, arg1, ...)
 
 	elseif event == "PLAYER_CHOICE_UPDATE" then
 			addon.Stats:AnimaGain()
-			addon.Tracker:CheckBouns()
+			addon.Tracker:CheckBonus()
 	elseif event == "NAME_PLATE_UNIT_ADDED" or event == "FORBIDDEN_NAME_PLATE_UNIT_ADDED"  then
 		--[[if arg1 then
 							local guid = UnitGUID(arg1)
@@ -692,15 +692,15 @@ function addon:EventHandler(event, arg1, ...)
 		local arg2, arg3 = ...
 		if arg1 == "player" and arg3 == FREEING_SPELLID then 
 			addon.Stats.IncreaseCounter("SoulsSaved")
-			addon.Tracker:CheckBouns()
+			addon.Tracker:CheckBonus()
 		elseif arg3 == OPEN_CHEST_SPELLID then 
 			addon.Stats.IncreaseCounter("Chests")
-			addon.Tracker:CheckBouns()
+			addon.Tracker:CheckBonus()
 		end
 
 	elseif event == "UNIT_AURA" then
 		addon.Stats:AnimaGain()
-		addon.Tracker:CheckBouns()
+		addon.Tracker:CheckBonus()
 
 	elseif event ==  "UNIT_TARGET" then
 		local unitClass = UnitClassification("target")
@@ -720,7 +720,7 @@ function addon:EventHandler(event, arg1, ...)
 
 	elseif event ==  "QUEST_TURNED_IN" then
 		addon.Stats.IncreaseCounter("QuestsCompleted")
-		addon.Tracker:CheckBouns()
+		addon.Tracker:CheckBonus()
 
 	elseif(event == "SCENARIO_COMPLETED") then 
 	end		
