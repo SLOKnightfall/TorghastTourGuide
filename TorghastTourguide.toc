@@ -3,6 +3,7 @@
 ## Version: @project-version@
 ## Author: SLOKnightfall
 ## Notes: Handy Info About Torghast
+## Notes-zhCN: 托加斯特爬塔记分指南
 ## SavedVariables: TorghastTourgiudeDB
 ## OptionalDeps:!KalielsTracker
 
@@ -23,6 +24,7 @@ Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 
 #Localization
 Locale\locale-enUS.lua
+Locale\locale-zhCN.lua
 
 TorghastTourguide.xml
 Modules\Tracker.xml
