@@ -400,30 +400,30 @@ L["Shoplifter4"] = "Calculated Assault from Coalesced Power is less impressive, 
 L["Surging Power_Tip"] = "This is a pretty great Blessing for speeding up your Torghast run. You will receive a 75% movement speed buff as long as you remain out of combat. Once you're in combat, the speed buff will go away, and orbs of energy will swirl around you that deal nature damage to all nearby enemies.\n\nFor melee classes, this blessing will not only give some good DPS throughput, but will allow you to quickly engage your next target, greatly improving the completion speed of your Torghast run.\n\nCasters gain the most benefit of this Blessing by standing pretty close to your targets, but even just the movement speed can be a great benefit to engaging your next group of enemies more quickly."
 
 
-L["Tier1_Tips1"] = "Blessing of the Ancients is honestly one of the most powerful perks in any row of The Box of Many Things. Cap this out ASAP, as the buffs it can give can be truly game-changing."
-L["Tier1_Tips2"] = "Empowered Swiftness is not a bad little benefit for classes that value haste, however the increase is fairly minimal and only is active while you're Empowered. I generally consider a somewhat low priority in your Box of Many Things progression."
-L["Tier1_Tips3"] = "Efficient Looter is also very helpful since it allows you to save the time of clicking on every corpse for your Phantasma, which is a pretty big time saver. Definitely a nice quality-of-life pick and something I'd recommend picking up early on."
+L["Tier1_Tips1"] = "远古祝福；老实说，是<万物之盒>任何一排中最强大的力量之一。尽快加满点数，因为它可以提供的增益可以真正改变游戏规则。"
+L["Tier1_Tips2"] = "强化迅捷；对于重视急速的职业来说是一个不错的小好处，但是增加的幅度相当小，并且只有在你被强化时才有效。 通常认为在你的<万物之盒>进程中优先级较低。"
+L["Tier1_Tips3"] = "高效掠夺者；也非常有用，因为它可以让您节省点击拾取每个尸体的时间，这是一个非常大的节省时间。 绝对是一个不错的选择，我建议您尽早选择。"
 
-L["Tier2_Tips1"] = " Freed from Torment is another massive perk for players who are contending with the higher layers of Torghast, since Torments do not activate until Layers 6 and above. Removing up to 2 of these nuisances is an exceptionally good usage of your Tower Knowledge, so I recommend picking both ranks of this trait ASAP."
-L["Tier2_Tips2"] = "Empowered Perseverance is useful when trying to push for Flawless clears, as the more time you are empowered, the more time you can earn 100% points for your score."
-L["Tier2_Tips3"] = "Discovered Cache can potentially offer some strong Anima Powers, but they're often quite expensive and won't do you much good if you don't have enough Phantasma to purchase them."
+L["Tier2_Tips1"] = "摆脱折磨；对于正在与更高难度的托加斯特战斗的玩家来说是另一个巨大的好处，因为折磨直到第6难度及更高难度才会被激活。减少最多2个折磨是对你的塔楼学识的一个非常好的利用，所以建议尽快选择这个。"
+L["Tier2_Tips2"] = "坚毅强化：在尝试完美无瑕通关时，坚毅强化很有用，因为您获得强化效果的时间越长，您获得100%分数的时间就越多。"
+L["Tier2_Tips3"] = "被发现的宝箱：可能会提供一些强大的心能之力，但它们通常非常昂贵，如果您没有足够的心能来购买它们，那么它们对您没有多大用处。"
 
-L["Tier3_Tips1"] = "Both Undeterred and Inexplicable Power offer benefits to your Torghast progression, since one allows you to take less damage from bosses, and the other lets you burst them down faster. The choice between these two will depend on how strong your classes defensives are, as you might want to go a 'glass cannon' route first so you can beat bosses faster for extra score, or if you're a class that could use the extra defensive buff then that is a viable choice as well."
-L["Tier3_Tips2"] = " The Adamant Vaults perk is mandatory if you are interested in venturing into the extra floors of Torghast. There are some unique cosmetic rewards and bonus Tower Knowledge waiting for you if you can ascend past Floor 5."
+L["Tier3_Tips1"] = "《无畏》和《莫名的力量》：都为你的托加斯特战斗提供了好处，因为《无畏》可以让你从首领那里受到更少的伤害，而《莫名的力量》可以让你更快地击败它们。 这两者之间的选择将取决于你的职业防御能力有多强，因为你可能想先走“玻璃大炮”路线，这样你就可以更快地击败老板以获得额外的分数，或者如果你是一个可以有防御 buff 的职业，那么这也是一个可行的选择。"
+L["Tier3_Tips2"] = "坚钢宝库：如果您有兴趣冒险进入托加斯特的额外难度，坚钢宝库力量是强制性的。 如果你能在难度9或以上打到5颗钻石，那么有一些独特的外观奖励和额外的塔楼学识等着你。"
 
-L["Tier4_Tips1"] = "Enduring Souls is a nice little stamina gain in your Torghast runs, and requires no extra effort since you'll want to free all the Soul Remnants you're able to for the score bonuses and Completion percentage either way."	
-L["Tier4_Tips2"] = "Good Reflexes can be a literal life-saver if you have difficulty with any of the tricks and traps scattered throughout Torghast."
-L["Tier4_Tips3"] = "Death Denied is a confusing perk, because although the death counter has been removed, there is still a negative aspect to dying in Torghast. Your end-of-run score is lowered by 20 points per death, and this doesn't seem to have a cap. This perk will give you a chance to prevent the point loss, however it maxes out at a mere 15%. I would not recommend focusing on this trait until you've got most of the Box of Many Things completed as there is too high of a chance of it not benefitting you.\n\nAs an added note, the Vessel of Unfortunate Spirits Torghast Upgrade sold by Ve'nari WILL prevent your first death from causing a point loss, so make sure you pick this up from her!."
+L["Tier4_Tips1"] = "坚韧灵魂：在你的托加斯特战斗中是一个不错的小耐力增益，并且不需要额外的战斗，因为你会想要释放所有你能够看见的灵魂残迹以获取分数奖励和提高完成百分比。"	
+L["Tier4_Tips2"] = "反应敏锐：如果您对分散在托加斯特各处的任何机关和陷阱有困难，满级的《反应敏锐》可以成为你真正的救星。 "
+L["Tier4_Tips3"] = "绝境重生：是一个令人困惑的力量，因为尽管死亡计数器已被移除，但在托加斯特死亡仍然存在负面影响。每次死亡，你的结束得分会降低20分，而且这似乎没有上限。这个力量会让你有机会防止损失，但它最多只能达到 15%。 我不建议在你完成大部分<万物之盒>之前专注于这个特性，因为它对你没有好处的可能性太高了。\n\n作为补充说明，成就-探索-暗影国度-托加五福里面的<不幸之魂容器>由威·娜莉出售是防止你的第一次死亡造成分数的损失，所以一定要从她那里购买到这个！"
 
-L["Tier5_Tips1"] = "Unflinching is HIGHLY RECOMMENDED, given how strong and how many elite enemies there are in higher layers, plus all the torments that can buff their damage."
-L["Tier5_Tips2"] = "Elite Slayer can be very helpful in improving your overall score in Torghast, as the more Empowered uptime you have, the more extra points you can earn, especially if you're pushing for Flawless clears."
-L["Tier5_Tips3"] = "Anima Plunderer can be a nice way to get a few extra powers early in your run. However, it only gives up to 3 extra Anima Powers, so I would not recommend pushing for this perk immediately."
+L["Tier5_Tips1"] = "不屈不挠：考虑到更高难度中有更多的精英怪物，以及可以增强其伤害的所有折磨，强烈推荐《不屈不挠》。"
+L["Tier5_Tips2"] = "精锐杀手：可以非常有助于提高您在托加斯特战斗中的整体得分，因为您拥有的强化运行时间越长，您可以获得的额外分数就越多，尤其是在您争取完美无瑕通关的情况下。"
+L["Tier5_Tips3"] = "心能掠夺者：是在你战斗初期获得一些额外能力的好方法。但是，它最多只能提供 3 个额外的心能之力，因此不建议在前期获得力量。"
 
-L["Tier6_Tips1"] = "Empowered Nova is a fantastically potent perk, as it should be for being one of the very last choices you can unlock. The amount of damage the Empowered Nova can do is very impressive, which makes it much easier to take advantage of your Empowered buff's 100% point bonus, as well as the haste, leech, and movement speed buffs. Definitely pick this perk up as soon as you have Row 6 unlocked."
-L["Tier6_Tips2"] = "Meddle with Fate, while kind of a nifty concept, can be a bit underwhelming. There is a high likelihood of receiving unimpressive Anima Powers, though it can offer you epic powers if you are lucky. Not a perk I would consider a high priority."
+L["Tier6_Tips1"] = "强化新星：是一个非常强大的力量，因为它应该是你可以解锁的最后选择之一。 强化新星可以造成的伤害非常可观，这让您可以更轻松地利用强化增益的 100% 点数加成，以及急速、吸血和移动速度增益。 解锁第 6 行后，一定要立即获得此力量。"
+L["Tier6_Tips2"] = "掌握命运：虽然是一个漂亮的名字，但可能有点平淡无奇。 获得不起眼的心能之力的可能性很高，但如果幸运的话，它可以为您提供史诗般的心能之力。 不过不是我认为优先获得的力量。"
 
 
-L["Scoring_1"] = "The Scoring System is what will determine your progression in Torghast, as you will need to reach a minimum score to unlock the next higher layer. Upon defeating the Floor 5 boss in your Torghast run, the Score UI will appear to show how well you performed. \n\nYour scores now determine whether you can graduate to the next higher Layer in Torghast. Simply defeating the end boss is no longer enough to advance.\n\nAt the top of this UI is a series of five Gems. To illuminate each Gem, you must achieve minimum scores. You must earn a minimum of 160 points (4 gems) to advance to the next highest layer in Torghast.\n\n# of Gems	Minimum Score\n1	40\n2	80\n3	120\n4	160\n5 ('Flawless')	200"
+L["Scoring_1"] = "评分系统将决定您在托加斯特的进度，因为您需要达到最低分数才能解锁下一个更高难度。 在您的托加斯特战斗中击败第 5 层首领后，积分榜将显示您的分数。 \n\n你的分数现在决定了你是否可以在托加斯特升级到下一个更高的难度。 仅仅击败最终 首领 已不足以晋级。\n\n此 UI 的顶部有一排 5 颗钻石。 要点亮每颗钻石，您必须达到最低分数。 您必须至少获得 160 分（4 颗钻石）才能进入托加斯特的下一个最高难度。\n\n# 钻石最低分数\n1 40\n2 80\n3 120\n4 160\n5 ('完美无瑕') 200 "
 
 
 L["Annihilator_Desc"] = "20秒内击杀第5层的首领"
