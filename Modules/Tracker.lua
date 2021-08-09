@@ -46,6 +46,8 @@ function TTG_BonusListMixin:OnShow()
 end
 
 
+
+
 TTG_GemMixin = {}
 function TTG_GemMixin:OnEnter()
 	local id = self:GetID()
@@ -73,6 +75,18 @@ function TTG_ScoreMixin:OnClick()
 	end
 end
 
+function TTG_ScoreMixin:OnLoad()
+	self:RegisterForDrag("LeftButton");
+end
+
+function TTG_ScoreMixin:OnDragStart()
+	self:StartMoving();
+	addon.db.profile.customScorePosition = true
+end
+
+function TTG_ScoreMixin:OnDragStop()
+	self:StopMovingOrSizing()
+end
 
 -- speed optimizations (mostly so update functions are faster)
 local _G = getfenv(0);
@@ -354,21 +368,25 @@ end
 
 
 function addon.Tracker:FlagFail(bonusName, silent)
+	if addon.db.profile.TrackerMessages[bonusName] then return end
 	if Bonuses[bonusName] and not silent and addon.db.profile.ShowBonusMessages then 
 		print(RED_FONT_COLOR..(L["Failed Bonus: %s"]):format(bonusName))
 	end
 
 	Bonuses[bonusName][2] = false
 	Bonuses[bonusName][3] = 0
+	TrackerMessages[bonusName] = true
 	--updateAll()
 end
 
 function addon.Tracker:FlagBonus(bonusName)
+	if addon.db.profile.TrackerMessages[bonusName] then return end
 	if Bonuses[bonusName] and addon.db.profile.ShowBonusMessages then 
 		print(GREEN_FONT_COLOR..(L["Gained Bonus: %s"]):format(bonusName))
 	end
 
 	Bonuses[bonusName][2] = true
+	TrackerMessages[bonusName] = true
 	--updateAll()
 end
 
@@ -633,17 +651,26 @@ function addon.UpdateBonusList()
 end
 
 function addon:ResetScoreLocation()
+	addon.db.profile.customScorePosition = false
+	addon:SetScoreLocation()
+
+end
+
+function addon:SetScoreLocation()
+	if addon.db.profile.customScorePosition then return end
+
 	local position = addon.db.profile.ScorePosition
+print("set")
 	TTG_ScoreFrame:ClearAllPoints()
 	if position == "LEFT" then
 
 		TTG_ScoreFrame:SetPoint("TOPRIGHT" , ScenarioStageBlock, "TOPLEFT", 10, 0 )
 	else
 		TTG_ScoreFrame:SetPoint("TOPLEFT" , ScenarioStageBlock, "TOPRIGHT", 40, 0 )
-
-
 	end
 end
+
+
 
 function addon:ResetBonusLocation()
 	local position = addon.db.profile.BonusPosition

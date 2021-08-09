@@ -365,6 +365,7 @@ local defaults = {
 				--minimap = {},
 			},
 		ShowBonusMessages = false,
+		customScorePosition = false
 
 	}
 }
@@ -405,6 +406,7 @@ local function ResetCounts()
 			TotalPar = 0,
 			FloorCompletion = {},
 			TotalPar = 0,
+			TrackerMessages = {}
 		}
 
 	return defaults
@@ -461,11 +463,11 @@ local function Enable()
 	end
 	addon:ResetBonuses()
 	addon.InitScoreFrame()
+	addon:SetScoreLocation()
 end
 
 
 local function Disable()
-	addon:UnregisterEvent("PLAYER_ENTERING_WORLD")
 	addon:UnregisterEvent("JAILERS_TOWER_LEVEL_UPDATE")
 	addon:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 
@@ -563,7 +565,7 @@ function addon:CurrentPhantasma()
 end
 
 function addon:EventHandler(event, arg1, ...)
-	if finished  or not IsInJailersTower() then return end
+
 	if event == "PLAYER_ENTERING_WORLD" then
 		if IsInJailersTower() then 
 			Enable()
@@ -571,8 +573,9 @@ function addon:EventHandler(event, arg1, ...)
 		else
 			Disable()
 		end
-
-	elseif event == "PLAYER_REGEN_ENABLED" then
+	end
+	if finished  or not IsInJailersTower() then return end
+	if event == "PLAYER_REGEN_ENABLED" then
 		TTG_CombatTimer:Stop()
 		TTG_CombatTimer:CheckBonus()
 		C_Timer.After(10, function() TTG_CombatTimer:Hide() end)
@@ -904,7 +907,7 @@ f:SetPoint("TOPLEFT",ScenarioStageBlock, "TOPLEFT" )
 	f.cellCount:SetPoint("LEFT",f.cellIcon, "RIGHT", 5, 0)
 
 	f.potionFrame = CreateFrame("Frame", nil, f)
-	f.potionFrame:SetFrameStrata("HIGH")
+	--f.potionFrame:SetFrameStrata("HIGH")
 	f.potionFrame:SetFrameLevel(50)
 	f.potionFrame:SetSize(30, 15)
 	f.potionFrame:SetPoint("BOTTOM", 45, 22)
@@ -923,7 +926,7 @@ f:SetPoint("TOPLEFT",ScenarioStageBlock, "TOPLEFT" )
 
 
 	f.infuserFrame = CreateFrame("Frame", nil, f)
-	f.infuserFrame:SetFrameStrata("HIGH")
+	--f.infuserFrame:SetFrameStrata("HIGH")
 	f.infuserFrame:SetSize(30, 15)
 	f.infuserFrame:SetPoint("BOTTOMRIGHT", 40, 22)
 	f.infuserButton = CreateFrame("Button", nil, f.infuserFrame, "SecureActionButtonTemplate")

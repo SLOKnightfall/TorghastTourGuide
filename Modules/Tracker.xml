@@ -28,7 +28,7 @@
 		<Size x="192" y="10"/>
 	</Frame>
 
-	<Frame name="TTG_ScoreFrame" hidden="false" parent="UIParent" enableMouse="true" movable="true" mixin="TTG_ScoreMixin" frameStrata = "HIGH">
+	<Frame name="TTG_ScoreFrame" hidden="false" parent="UIParent" enableMouse="true" movable="true" mixin="TTG_ScoreMixin" >
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo="ScenarioStageBlock" relativePoint="TOPRIGHT" x="-10" y="0"/>
 		</Anchors>
@@ -266,9 +266,9 @@
 			</Button>
 		</Frames>
 		<Scripts>
-		  <OnLoad>self:RegisterForDrag("LeftButton");</OnLoad>
-		  <OnDragStart>self:StartMoving();</OnDragStart>
-		  <OnDragStop>self:StopMovingOrSizing();</OnDragStop>
+			<OnLoad method="OnLoad"/>
+			<OnDragStart method="OnDragStart"/>
+			<OnDragStop method="OnDragStop"/>
 		</Scripts>
 	</Frame>
 

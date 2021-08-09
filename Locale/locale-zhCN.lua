@@ -4,6 +4,8 @@
 local addonName, addon = ...
 local L = LibStub("AceLocale-3.0"):NewLocale(addonName,"zhCN")
 
+if not L then return end
+
 _G["BINDING_NAME_TOGGLE_TORGHASTTOURGUIDE"] = "切换指南"
 _G["BINDING_HEADER_TORGHASTTOURGUIDE"] = addonName
 
