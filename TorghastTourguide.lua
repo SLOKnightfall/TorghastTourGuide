@@ -354,16 +354,17 @@ local defaults = {
 	profile = {
 		['*'] = true,
 		Font_Color = {["r"] = 0, ["g"]  =0, ["b"] = 0},
-	Font_Size = 12,
-	Font_Type ="FRITZQT",
-	ScorePosition = "LEFT",
-	BonusPosition = "BOTTOM",
-	BonusAutoHideTime = false,
-	BonusAutoHideTimeValue = 15,
-	BonusAutoHideCombat = false,
-			MMDB = { hide = false,
+		Font_Size = 12,
+		Font_Type ="FRITZQT",
+		ScorePosition = "LEFT",
+		BonusPosition = "BOTTOM",
+		BonusAutoHideTime = false,
+		BonusAutoHideTimeValue = 15,
+		BonusAutoHideCombat = false,
+				MMDB = { hide = false,
 				--minimap = {},
 			},
+		ShowBonusMessages = false,
 
 	}
 }
@@ -464,21 +465,25 @@ end
 
 
 local function Disable()
-	addon:UnregisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
-	addon:UnregisterEvent("CURSOR_UPDATE", "EventHandler")
-	addon:UnregisterEvent("BAG_UPDATE", "EventHandler")
-	addon:UnregisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
+	addon:UnregisterEvent("PLAYER_ENTERING_WORLD")
+	addon:UnregisterEvent("JAILERS_TOWER_LEVEL_UPDATE")
+	addon:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 
-	addon:UnregisterEvent("PLAYER_DEAD", "EventHandler")
-	addon:UnregisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
-	addon:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED", "EventHandler")
+	addon:UnregisterEvent("UPDATE_MOUSEOVER_UNIT")
+	addon:UnregisterEvent("CURSOR_UPDATE")
+	addon:UnregisterEvent("BAG_UPDATE")
+	addon:UnregisterEvent("CURRENCY_DISPLAY_UPDATE")
+	addon:UnregisterEvent("PLAYER_DEAD")
+	addon:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	addon:UnregisterEvent("COMBAT_LOG_EVENT_UNFILTERED")
+	addon:UnregisterEvent("NAME_PLATE_UNIT_ADDED")
+	addon:UnregisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED")
+	addon:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+	addon:UnregisterEvent("QUEST_TURNED_IN")
+	addon:UnregisterEvent("PLAYER_REGEN_ENABLED")
+	addon:UnregisterEvent("PLAYER_REGEN_DISABLED")
 
-	addon:UnregisterEvent("NAME_PLATE_UNIT_ADDED", "EventHandler")
-	addon:UnregisterEvent("FORBIDDEN_NAME_PLATE_UNIT_ADDED", "EventHandler")
-	addon:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED", "EventHandler")
-	addon:UnregisterEvent("QUEST_TURNED_IN", "EventHandler")
-	addon:UnregisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
-	addon:UnregisterEvent("PLAYER_REGEN_DISABLED", "EventHandler")
+
 
 	addon.Statsdb.profile.total.Time = addon.Statsdb.profile.total.CurrentTime
 	if frames.f then
@@ -558,7 +563,7 @@ function addon:CurrentPhantasma()
 end
 
 function addon:EventHandler(event, arg1, ...)
-	if finished then return end
+	if finished  or not IsInJailersTower() then return end
 	if event == "PLAYER_ENTERING_WORLD" then
 		if IsInJailersTower() then 
 			Enable()
@@ -609,7 +614,7 @@ function addon:EventHandler(event, arg1, ...)
 		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
 									addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
 						end) 
-					
+		addon:UnregisterEvent("ADDON_LOADED")				
 	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
 		C_Timer.After(0.1, addon.PowerTooltips)
 
