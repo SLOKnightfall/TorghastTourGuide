@@ -365,8 +365,7 @@ local defaults = {
 				--minimap = {},
 			},
 		ShowBonusMessages = false,
-		customScorePosition = false
-		TrackerMessages = {}
+		customScorePosition = false,
 	}
 }
 
@@ -406,7 +405,7 @@ local function ResetCounts()
 			TotalPar = 0,
 			FloorCompletion = {},
 			TotalPar = 0,
-			
+			TrackerMessages = {},
 		}
 
 	return defaults

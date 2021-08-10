@@ -368,25 +368,25 @@ end
 
 
 function addon.Tracker:FlagFail(bonusName, silent)
-	if addon.db.profile.TrackerMessages[bonusName] then return end
+	if addon.Statsdb.profile.current.TrackerMessages[bonusName] then return end
 	if Bonuses[bonusName] and not silent and addon.db.profile.ShowBonusMessages then 
 		print(RED_FONT_COLOR..(L["Failed Bonus: %s"]):format(bonusName))
 	end
 
 	Bonuses[bonusName][2] = false
 	Bonuses[bonusName][3] = 0
-	TrackerMessages[bonusName] = true
+	addon.Statsdb.profile.current.TrackerMessages[bonusName] = true
 	--updateAll()
 end
 
 function addon.Tracker:FlagBonus(bonusName)
-	if addon.db.profile.TrackerMessages[bonusName] then return end
+	if addon.Statsdb.profile.current.TrackerMessages[bonusName] then return end
 	if Bonuses[bonusName] and addon.db.profile.ShowBonusMessages then 
 		print(GREEN_FONT_COLOR..(L["Gained Bonus: %s"]):format(bonusName))
 	end
 
 	Bonuses[bonusName][2] = true
-	TrackerMessages[bonusName] = true
+	addon.Statsdb.profile.current.TrackerMessages[bonusName] = true
 	--updateAll()
 end
 
