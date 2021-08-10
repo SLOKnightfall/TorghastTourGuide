@@ -366,7 +366,7 @@ local defaults = {
 			},
 		ShowBonusMessages = false,
 		customScorePosition = false
-
+		TrackerMessages = {}
 	}
 }
 
@@ -406,7 +406,7 @@ local function ResetCounts()
 			TotalPar = 0,
 			FloorCompletion = {},
 			TotalPar = 0,
-			TrackerMessages = {}
+			
 		}
 
 	return defaults
