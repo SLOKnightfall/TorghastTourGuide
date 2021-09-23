@@ -660,7 +660,6 @@ function addon:SetScoreLocation()
 	if addon.db.profile.customScorePosition then return end
 
 	local position = addon.db.profile.ScorePosition
-print("set")
 	TTG_ScoreFrame:ClearAllPoints()
 	if position == "LEFT" then
 

@@ -407,7 +407,6 @@ local function ResetCounts()
 			TotalPar = 0,
 			TrackerMessages = {},
 		}
-
 	return defaults
 end
 addon.Stats.ResetCounts = ResetCounts
@@ -463,11 +462,12 @@ local function Enable()
 	addon:ResetBonuses()
 	addon.InitScoreFrame()
 	addon:SetScoreLocation()
+
 end
 
 
 local function Disable()
-	addon:UnregisterEvent("JAILERS_TOWER_LEVEL_UPDATE")
+	--addon:UnregisterEvent("JAILERS_TOWER_LEVEL_UPDATE")
 	addon:UnregisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 
 	addon:UnregisterEvent("UPDATE_MOUSEOVER_UNIT")
@@ -564,7 +564,6 @@ function addon:CurrentPhantasma()
 end
 
 function addon:EventHandler(event, arg1, ...)
-
 	if event == "PLAYER_ENTERING_WORLD" then
 		if IsInJailersTower() then 
 			Enable()
@@ -592,10 +591,12 @@ function addon:EventHandler(event, arg1, ...)
 		end
 
 	elseif event == "JAILERS_TOWER_LEVEL_UPDATE" then
+
 		currentFloor = arg1
 		runType = ...
 		--Enum.JailersTowerType
 		if currentFloor == 1 then 
+
 			addon.Stats:InitRun()
 		else
 			addon.Stats.IncreaseCounter("FloorsCompleted")
