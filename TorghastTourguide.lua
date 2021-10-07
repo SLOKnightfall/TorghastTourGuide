@@ -406,6 +406,8 @@ local function ResetCounts()
 			FloorCompletion = {},
 			TotalPar = 0,
 			TrackerMessages = {},
+
+
 		}
 	return defaults
 end
@@ -444,6 +446,9 @@ local function Enable()
 	addon:RegisterEvent("QUEST_TURNED_IN", "EventHandler")
 	addon:RegisterEvent("PLAYER_REGEN_ENABLED", "EventHandler")
 	addon:RegisterEvent("PLAYER_REGEN_DISABLED", "EventHandler")
+	addon:RegisterEvent("SCENARIO_BONUS_OBJECTIVE_COMPLETE", "EventHandler")
+
+
 
 
 	if not addon.Statsdb.profile.current.CurentTime then 
@@ -459,7 +464,6 @@ local function Enable()
 		addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
 
 	end
-	addon:ResetBonuses()
 	addon.InitScoreFrame()
 	addon:SetScoreLocation()
 
@@ -563,6 +567,24 @@ function addon:CurrentPhantasma()
 	return 	addon.Statsdb.profile.current.currentPhantasma
 end
 
+local function CheckPartyGUID(GUID)
+	local playerGUID = UnitGUID("player") --"partyN" 
+	local petGUID = UnitGUID("pet")
+	local party1GUID = UnitGUID("party1")
+	local party2GUID = UnitGUID("party2")
+	local party3GUID = UnitGUID("party3")
+	local party4GUID = UnitGUID("party4")
+
+
+	if GUID == playerGUID or GUID == party1GUID or GUID == party2GUID or GUID == party3GUID or GUID == party4GUID then
+		return true
+	else
+		return false
+	end
+
+end
+
+local last_rare_kill
 function addon:EventHandler(event, arg1, ...)
 	if event == "PLAYER_ENTERING_WORLD" then
 		if IsInJailersTower() then 
@@ -574,6 +596,7 @@ function addon:EventHandler(event, arg1, ...)
 	end
 	if finished  or not IsInJailersTower() then return end
 	if event == "PLAYER_REGEN_ENABLED" then
+		last_rare_kill = nil
 		TTG_CombatTimer:Stop()
 		TTG_CombatTimer:CheckBonus()
 		C_Timer.After(10, function() TTG_CombatTimer:Hide() end)
@@ -595,9 +618,11 @@ function addon:EventHandler(event, arg1, ...)
 		currentFloor = arg1
 		runType = ...
 		--Enum.JailersTowerType
+		--addon:SetParTime(currentFloor)
 		if currentFloor == 1 then 
-
+print("start")
 			addon.Stats:InitRun()
+			addon.Tracker:Init()
 		else
 			addon.Stats.IncreaseCounter("FloorsCompleted")
 			addon.GetFloorSummary()
@@ -611,6 +636,10 @@ function addon:EventHandler(event, arg1, ...)
 		else
 			TTG_ScoreFrame.Timer:ScorePause()
 		end
+
+	elseif event == "SCENARIO_BONUS_OBJECTIVE_COMPLETE" then
+		print(arg1)
+	
 
 
 	elseif event == "ADDON_LOADED" and arg1 == "Blizzard_PlayerChoiceUI" and isEnabled then 
@@ -658,11 +687,15 @@ function addon:EventHandler(event, arg1, ...)
 		--print(CombatLogGetCurrentEventInfo())	
 		--if not destGUID then return end
 		local cid = self:GetCIDFromGUID(destGUID)
-		local playerGUID = UnitGUID("player")
+		local playerGUID = UnitGUID("player") --"partyN" 
 		local petGUID = UnitGUID("pet")
-
+		local party1GUID = UnitGUID("party1")
+		local party2GUID = UnitGUID("party2")
+		local party3GUID = UnitGUID("party3")
+		local party4GUID = UnitGUID("party4")
+--print("log")
 			--Revisit to count only player & pet kills?
-		if (subevent == "UNIT_DIED") and destGUID ~= playerGUID then
+		if (subevent == "UNIT_DIED") and not CheckPartyGUID(destGUID)  then
 			addon.Stats.IncreaseCounter("MobsKilled")
 			if (cid == 151353) then 
 				addon.Stats.IncreaseCounter("Mawrats")
@@ -671,6 +704,17 @@ function addon:EventHandler(event, arg1, ...)
 			elseif 	mobList[destGUID]  and mobList[destGUID] == "rare" then
 				mobList[destGUID] = nil
 				addon.Stats.IncreaseCounter("Rares")
+				--Check to see if a rare was previously killed and if DareDevil was completed
+				if last_rare_kill then
+					local current_time = time()
+					local diff = current_time - last_rare_kill
+					if diff < 10 then
+						addon.Tracker:FlagBonus("Daredevil")
+					end
+				end
+
+				last_rare_kill = time()
+
 			elseif 	mobList[destGUID]  and mobList[destGUID] == "boss" then
 				mobList[destGUID] = nil
 				addon.Stats.IncreaseCounter("Bosses")
@@ -687,9 +731,13 @@ function addon:EventHandler(event, arg1, ...)
 		elseif (subevent == "SPELL_AURA_REMOVED")  and destGUID == playerGUID and JAILERS_CHAINS_DEBUFF == spellID then
 			--TTG_ScoreFrame.Timer:Stop()
 
-		elseif (subevent == "SPELL_DAMAGE")  and destGUID == playerGUID and traps[spellID] then 
-			addon.Stats.IncreaseCounter("TrapSprung")
+		--elseif (subevent == "SPELL_DAMAGE")  and destGUID == playerGUID and traps[spellID] then 
+		elseif (subevent == "SPELL_DAMAGE")  and CheckPartyGUID(destGUID) then --not sourceGUID then --and traps[spellID] then 
+		--Source Guid has no value so probably environmental/trap	
+		if not string.find(sourceGUID, "-")  then
+			--addon.Stats.IncreaseCounter("TrapSprung")
 			addon.Tracker:FlagFail("Trapmaster")
+		end 
 
 		elseif (cid and ashen[cid])  and (sourceGUID == playerGUID or sourceGUID == petGUID) and not ashenCache[destGUID] then
 			ashenCache[destGUID] = true
@@ -698,7 +746,7 @@ function addon:EventHandler(event, arg1, ...)
 
 	elseif event == "UNIT_SPELLCAST_SUCCEEDED" then 
 		local arg2, arg3 = ...
-		if arg1 == "player" and arg3 == FREEING_SPELLID then 
+		if (arg1 == "player" or arg1 == "party1" or arg1 == "party2" or arg1 == "party3" or arg1 == "party4") and arg3 == FREEING_SPELLID then 
 			addon.Stats.IncreaseCounter("SoulsSaved")
 			addon.Tracker:CheckBonus()
 		elseif arg3 == OPEN_CHEST_SPELLID then 
@@ -749,6 +797,8 @@ function addon:OnInitialize()
 	TorghastTourgiudeDB.Options = TorghastTourgiudeDB.Options or {}
 	TorghastTourgiudeDB.Stats = TorghastTourgiudeDB.Stats or {}
 	TorghastTourgiudeDB.Weights_Notes = TorghastTourgiudeDB.Weights_Notes or {}
+	TorghastTourgiudeDB.Floor_Par_Estimate = TorghastTourgiudeDB.Floor_Par_Estimate or {}
+	TorghastTourgiudeDB.Tracker = TorghastTourgiudeDB.Tracker or {}
 
 	self.db = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Options, defaults, true)
 	self.Statsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Stats, statsDefaults, false)

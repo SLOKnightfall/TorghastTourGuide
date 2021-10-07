@@ -105,6 +105,10 @@ local SEC_TO_HOUR_FACTOR = SEC_TO_MINUTE_FACTOR*SEC_TO_MINUTE_FACTOR;
 
 
 
+
+
+
+
 --338907/refuge-of-the-damned
 
 TTG_TimerMixin = {}
@@ -293,14 +297,14 @@ local function getBonusDefault()
 		["Rescuer"] = {3379, nil, 10},  --check for quest compl;ete
 		["Robber"] = {3378, nil, 5},  --check for killing mob or for drop
 		["Savior"] = {3374, nil, 10,},--true}, --Cant Track
-		["Trapmaster"] = {3377, true, 10}, --Use trap damage tracker 
+		["Trapmaster"] = {3377, nil, 10}, --Use trap damage tracker 
 	}
 	 
 	 return list
 end
 
 local Bonuses = getBonusDefault()
-function addon:ResetBonuses()
+local function ResetBonuses()
 	Bonuses =  getBonusDefault()
 	local current = addon.Statsdb.profile.current
 
@@ -308,23 +312,25 @@ end
 
 
 local bonusList = {
-"Empowered",
-"Annihilator",
-"Collector",
-"Daredevil",
-"Executioner",
-"Highlander",
-"Hoarder",
-"Hunter",
-"Pauper",
-"Pillager",
-"Plunderer",
-"Reinforced",
-"Rescuer",
-"Robber",
-"Savior",
-"Trapmaster",
+	"Empowered",
+	"Annihilator",
+	"Collector",
+	"Daredevil",
+	"Executioner",
+	"Highlander",
+	"Hoarder",
+	"Hunter",
+	"Pauper",
+	"Pillager",
+	"Plunderer",
+	"Reinforced",
+	"Rescuer",
+	"Robber",
+	"Savior",
+	"Trapmaster",
 }
+
+
 
 
 function addon.GetAnimaPowerCount(spellID, targetID)
@@ -367,26 +373,77 @@ function addon.CheckAnimaRarity(spellRarity)
 end
 
 
+
+
+local function ResetCounts()
+	TorghastTourgiudeDB.Tracker = {
+			Phantasma = 0,
+			AnimaPowers = 0,
+			JarsBroken = 0,
+			FloorsCompleted = 0,
+			Deaths = 0,
+			Grue = 0,
+			MobsKilled = 0,
+			Mawrats = 0,
+			Rares = 0,
+			Bosses = 0,
+			Time = 0,
+			CurrentTime = 0,
+			TrapSprung = 0,
+			Bosses = 0,
+			Rares = 0,
+			SoulsSaved = 0,
+			Chests = 0,
+			QuestsCompleted = 0,
+			RunsCompleted = 0,
+			vendorsKilled = 0,
+			scoreTimer = 0,
+			currentPhantasma = 0,
+			timeBonus = 30,
+
+			FloorPar = {},
+			FloorTime =  {},
+			TotalPar = 0,
+			FloorCompletion = {},
+			TotalPar = 0,
+			TrackerMessages = {},
+		}
+end
+
+
+
+
+
+
+
+function addon.Tracker:Init()
+	ResetCounts()
+	ResetBonuses()
+
+end
+
+
+
 function addon.Tracker:FlagFail(bonusName, silent)
-	if addon.Statsdb.profile.current.TrackerMessages[bonusName] then return end
+	if TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] then return end
 	if Bonuses[bonusName] and not silent and addon.db.profile.ShowBonusMessages then 
 		print(RED_FONT_COLOR..(L["Failed Bonus: %s"]):format(bonusName))
 	end
 
 	Bonuses[bonusName][2] = false
 	Bonuses[bonusName][3] = 0
-	addon.Statsdb.profile.current.TrackerMessages[bonusName] = true
+	TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] = true
 	--updateAll()
 end
 
 function addon.Tracker:FlagBonus(bonusName)
-	if addon.Statsdb.profile.current.TrackerMessages[bonusName] then return end
+	if TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] then return end
 	if Bonuses[bonusName] and addon.db.profile.ShowBonusMessages then 
 		print(GREEN_FONT_COLOR..(L["Gained Bonus: %s"]):format(bonusName))
 	end
 
 	Bonuses[bonusName][2] = true
-	addon.Statsdb.profile.current.TrackerMessages[bonusName] = true
+	TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] = true
 	--updateAll()
 end
 
@@ -423,6 +480,7 @@ function addon.Tracker:CheckBonus()
 			BuffName = spell:GetSpellName()
 		end)
 	end
+
 	for i=1, MAW_BUFF_MAX_DISPLAY do
 		local _, icon, count, _, _, _, _, _, _, maw_spellID = UnitAura("player", i, "MAW");
 		totalPowers = totalPowers + (count or 0)
@@ -740,6 +798,35 @@ end
 local TimeID = {3394,3404,3405,3406}
 local CompletionID = {3393, 3396,3397,3398}
 
+local function GetLayer(current_floor)
+	return ceil(current_floor/7)								
+end
+
+function addon.SetParTime()
+			local use_estimate = true
+			local current = addon.Statsdb.profile.current
+
+			local mapID = C_Map.GetBestMapForUnit("player")
+			local par_data = TorghastTourgiudeDB.Floor_Par_Estimate[mapID]
+			local current_floor = GetJailersTowerLevel()
+			local current_layer = GetLayer(current_floor)
+			local party_size = 1
+
+			if par_data then 
+				local floor_data = par_data[current_layer]
+				floor_data = floor_data and floor_data[party_size]
+
+				if floor_data and use_estimate then
+					local par_hour = min(floor(floor_data*SEC_TO_HOUR_FACTOR), 99) ;
+					local par_minute = floor(mod(floor_data*SEC_TO_MINUTE_FACTOR, 60));
+					local par_second = floor(mod(floor_data, 60));	
+					TTG_ScoreFrame.Timer.par:SetText(("Est Par: %s:%s:%s"):format(par_hour, par_minute, par_second))
+				end
+			else
+				print("No par")
+			end
+end
+
 function addon.GetFloorSummary()
 --3396 Floor Completion
 -- 3404 floor time
@@ -762,6 +849,7 @@ function addon.GetFloorSummary()
 			local floor_par = TimeInfo.tooltip
 			local time_hr, time_min, time_sec = strsplit(":", floor_time)
 			local totalTime = (time_hr *360 ) + (time_min *60) + time_sec
+			local use_estimate = true
 
 			--current.TotalPar = 0
 
@@ -784,11 +872,9 @@ function addon.GetFloorSummary()
 			--local bonus = 
 
 			--print(current.TotalPar)
-			local hour = min(floor(current.TotalPar*SEC_TO_HOUR_FACTOR), 99);
-			local minute = floor(mod(current.TotalPar*SEC_TO_MINUTE_FACTOR, 60));
-			local second = floor(mod(current.TotalPar, 60));
 
-			TTG_ScoreFrame.Timer.par:SetText(("Par: %s:%s:%s"):format(hour,minute, second))
+
+			
 
 			local CompletionInfo = UIWidgetManager:GetWidgetTypeInfo(21).visInfoDataFunction(CompletionID[i]);
 			if CompletionInfo and CompletionInfo.entries then 
@@ -797,4 +883,45 @@ function addon.GetFloorSummary()
 			end
 		end
 	end
+
+	local hour = min(floor(current.TotalPar*SEC_TO_HOUR_FACTOR), 99);
+	local minute = floor(mod(current.TotalPar*SEC_TO_MINUTE_FACTOR, 60));
+	local second = floor(mod(current.TotalPar, 60));
+
+	TTG_ScoreFrame.Timer.par:SetText(("Par: %s:%s:%s"):format(hour,minute, second))
+
+	--[[local mapID = C_Map.GetBestMapForUnit("player")
+			local par_data = TorghastTourgiudeDB.Floor_Par_Estimate[mapID]
+			local current_floor = GetJailersTowerLevel()
+			local current_layer = GetLayer(current_floor)
+			local party_size = 1
+		
+			if par_data then 
+				local floor_data = par_data[current_layer]
+				floor_data = floor_data and floor_data[party_size]
+		
+				if floor_data and use_estimate then
+					local par_hour = min(floor(floor_data*SEC_TO_HOUR_FACTOR), 99) + hour;
+					local par_minute = floor(mod(floor_data*SEC_TO_MINUTE_FACTOR, 60)) + minute;
+					local par_second = floor(mod(floor_data, 60)) + second;	
+					hour = hour + par_hour
+					minute = minute + par_minute
+					second = second + par_second
+					TTG_ScoreFrame.Timer.par:SetText(("Est Par: %s:%s:%s (Est Floor: %s:%s:%s)"):format(hour, minute, second,par_hour, par_minute, par_second))
+				end
+			end]]
+
+
+	TorghastTourgiudeDB.Floor_Par_Estimate[mapID] = TorghastTourgiudeDB.Floor_Par_Estimate[mapID] or {}
+	TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer] = TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer] or {}
+	--current.Floor_Par_Estimate[mapID][current_layer][party_size] = current.Floor_Par_Estimate[mapID][current_layer][party_size] = {}
+
+	local saved_par = TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] 
+	if saved_par then
+		TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] = (tonumber(saved_par) + tonumber(totalPar))/2
+		print(("Diff: %s"):format(saved_par-totalTime))
+	else
+		TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] = tonumber(totalPar)
+	end
+
 end
