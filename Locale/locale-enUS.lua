@@ -53,6 +53,8 @@ L["|c%s[%s] auto-selected"] = true
 L["Click |c%s[%s]"] = true
 L["Show On Screen Selection Message"] = true
 L["Show Weight Windows"] = true
+L["Favorite Priority"] = true
+L["Favorite Priority Order"] = true
 
 
 

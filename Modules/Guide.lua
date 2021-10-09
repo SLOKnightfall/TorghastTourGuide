@@ -56,24 +56,10 @@ local function CreatePowerFrame(powerID, parent, name, index, icons)
 	infoHeader:SetPoint("TOPLEFT", 25, -50)
 	infoHeader:SetPoint("TOPRIGHT", 25, -50)
 
-
-
-
-
-
-	if icons then
-		infoHeader.button.icon1:Show()
-		infoHeader.button.icon1.icon:SetAtlas("collections-icon-favorites")
-		infoHeader.button.icon1.icon:SetDesaturated(true)
-		infoHeader.button.icon2:Hide()
-		infoHeader.button.icon3:Hide()
-		infoHeader.button.icon4:Hide()
-	else
-		infoHeader.button.icon1:Hide()
-		infoHeader.button.icon2:Hide()
-		infoHeader.button.icon3:Hide()
-		infoHeader.button.icon4:Hide()
-	end
+	infoHeader.button.icon1:Hide()
+	infoHeader.button.icon2:Hide()
+	infoHeader.button.icon3:Hide()
+	infoHeader.button.icon4:Hide()
 	infoHeader.overviewIndex = index
 	
 	local textRightAnchor = infoHeader.button.icon1
@@ -127,25 +113,7 @@ local function CreatePowerFrame(powerID, parent, name, index, icons)
 		infoHeader:SetHeight(infoHeader.description:GetHeight() + 55)
 	end)
 
-	if isFavorite(powerID) then
-		infoHeader.button.icon1.icon:SetDesaturated(false)
- 
-	end
 
-	infoHeader.button.icon1:SetScript("OnMouseDown", function()
-	if isFavorite(powerID) then 
-		removeFavorite(powerID)
-		infoHeader.button.icon1.icon:SetDesaturated(true)
-
-	else
-		addFavorite(powerID)
-		infoHeader.button.icon1.icon:SetDesaturated(false)
-	end
-
-
-
-
-	end)
 
 	if addon.FavoritePowerdb.profile.favorites then
 	end
@@ -608,6 +576,8 @@ function addon.CreateAnimaPowerListFrame()
 
 	local lastIndex
 
+
+
 	for i, id in ipairs(addon.sortpowers) do
 	--for powerID, data in pairs(addon.AnimaPowers) do
 		local powerID = id
@@ -615,6 +585,26 @@ function addon.CreateAnimaPowerListFrame()
 		f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPower", index, true)
 		local rarityColor = ITEM_QUALITY_COLORS[data[2]]
 		f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
+				f[index].button.icon1:Show()
+		f[index].button.icon1.icon:SetAtlas("collections-icon-favorites")
+		if isFavorite(powerID) then 
+
+			f[index].button.icon1.icon:SetDesaturated(false)
+		else
+			f[index].button.icon1.icon:SetDesaturated(true)
+
+		end
+		f[index].button.icon1:SetScript("OnMouseDown", function(self)
+		if isFavorite(powerID) then 
+			removeFavorite(powerID)
+			self.icon:SetDesaturated(true)
+
+		else
+			addFavorite(powerID)
+			self.icon:SetDesaturated(false)
+		end
+		end)
+
 		f[index]:ClearAllPoints()
 		if index == 1 then 
 			f[index]:SetPoint("TOPLEFT", 35, -55)
@@ -627,6 +617,98 @@ function addon.CreateAnimaPowerListFrame()
 	end
 end
 
+
+local function changePrioirty(spellID, direction)
+	for i, id in ipairs(addon.FavoritePowerdb.profile.favorites) do
+
+		if spellID == id then
+			local index = i
+			 if direction == "up" then
+			 	if index > 1 then 
+			 		index = index - 1
+			 	end
+			 elseif direction == "down" then
+			 	index = index + 1
+			end
+			table.insert(addon.FavoritePowerdb.profile.favorites, index, table.remove(addon.FavoritePowerdb.profile.favorites,i))
+			addon.CreateAnimaPriorityListFrame()
+			return true
+		end
+
+	end
+end
+function addon.CreateAnimaPriorityListFrame()
+	local f = frames.tg.info.animaPriorityScroll.child
+	local index = 1
+
+	if not f.banner then 
+		f.banner = f:CreateTexture(nil, "OVERLAY")
+		f.banner:SetAtlas("bonusobjectives-title-bg")
+		f.banner:SetPoint("TOPLEFT", 25, -3)
+		f.banner:SetPoint("TOPRIGHT", 25, 3)
+		f.banner:SetHeight(30)
+
+		f.desc = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
+		f.desc:SetText(L["Favorite Priority"])
+		f.desc:SetPoint("CENTER", f.banner, 0, 3)
+		f.desc:SetJustifyH("CENTER")
+	end
+
+	local lastIndex
+
+	for i, id in ipairs(addon.FavoritePowerdb.profile.favorites) do
+	--for powerID, data in pairs(addon.AnimaPowers) do
+		local powerID = id
+		local data = addon.AnimaPowers[id]
+		f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPriority", index, true)
+		local rarityColor = ITEM_QUALITY_COLORS[data[2]]
+		f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
+
+
+		f[index].button.icon1:Show()
+		f[index].button.icon1.icon:SetAtlas("collections-icon-favorites")
+		if isFavorite(powerID) then 
+
+			f[index].button.icon1.icon:SetDesaturated(false)
+		else
+			f[index].button.icon1.icon:SetDesaturated(true)
+
+		end
+		f[index].button.icon1:SetScript("OnMouseDown", function(self)
+		if isFavorite(powerID) then 
+			removeFavorite(powerID)
+			self.icon:SetDesaturated(true)
+
+		else
+			addFavorite(powerID)
+			self.icon:SetDesaturated(false)
+		end
+
+		addon.CreateAnimaPriorityListFrame()
+		end)
+		f[index].button.icon2:Show()
+		f[index].button.icon2.icon:SetTexture("Interface\\CHATFRAME\\UI-ChatIcon-ScrollDown-Up")
+		f[index].button.icon2:SetScript("OnMouseDown", function() changePrioirty(id, "down") end)
+		f[index].button.icon3:Show()
+		f[index].button.icon3.icon:SetTexture("Interface\\CHATFRAME\\UI-ChatIcon-ScrollUp-Up")
+		f[index].button.icon3:SetScript("OnMouseDown", function() changePrioirty(id, "up") end)
+
+
+		f[index]:ClearAllPoints()
+		if index == 1 then 
+			f[index]:SetPoint("TOPLEFT", 35, -55)
+			f[index]:SetPoint("TOPRIGHT", 35, -55)
+		else
+			f[index]:SetPoint("TOPLEFT", f[index - 1], "BOTTOMLEFT")
+			f[index]:SetPoint("TOPRIGHT", f[index - 1], "BOTTOMRIGHT")
+		end
+		index = index + 1
+	end
+
+	for i = index, #f do
+		f[i]:Hide()
+	end
+end
 
 local function addBullets(parent, tipdata)
 	parent.bullets = parent.bullets or {}
@@ -857,9 +939,31 @@ function addon.initTourGuide()
 
 	addon.SetTab(1)
 
-	f.info.LinkButton:SetScript("OnEnter", function(self) addon.ShowTooltip(self, L["WoWHead Links"]) end)
+	f.info.LinkButton:SetScript("OnEnter", function(self) 
+
+		if frames.tg.info.animaPowerScroll:IsShown() or frames.tg.info.animaPriorityScroll:IsShown()then
+			addon.ShowTooltip(self, L["Favorite Priority Order"])
+		else
+			addon.ShowTooltip(self, L["WoWHead Links"])
+		end
+
+
+		 end)
 	f.info.LinkButton:SetScript("OnLeave", function(self) GameTooltip:Hide() end)
-	f.info.LinkButton:SetScript("OnClick", function(self) addon.ToggleLinkWindow() end)
+	f.info.LinkButton:SetScript("OnClick", function(self) 
+		if frames.tg.info.animaPowerScroll:IsShown() then
+ 			frames.tg.info.animaPowerScroll:Hide()
+ 			frames.tg.info.animaPriorityScroll:Show()
+ 			addon.CreateAnimaPriorityListFrame()
+		elseif frames.tg.info.animaPriorityScroll:IsShown() then
+ 			frames.tg.info.animaPowerScroll:Show()
+ 			frames.tg.info.animaPriorityScroll:Hide()
+ 			addon.CreateAnimaPowerListFrame()
+		else
+			addon.ToggleLinkWindow()
+		end
+	 end)
+
 	f:SetScript("OnShow", function()
 		addon.SortPowersList()
 		addon.RefreshConfig()
@@ -922,7 +1026,7 @@ function addon.SetTab(tabType)
 	elseif tabType == 3 then
 		info.ravMobScroll:Show()
 		info.model:Hide()
-	elseif tabType == 8  or tabType ==9 or tabType == 10 or tabType== 11 then
+	elseif tabType == 8  or tabType == 9 or tabType == 10 or tabType == 11 then
 		info.ravMobScroll:Hide()
 		info.model:Hide()
 	else
@@ -930,7 +1034,7 @@ function addon.SetTab(tabType)
 		info.model:Show()
 	end
 
-	if tabType == 6 then
+	if tabType == 6 or tabType == 7  then
 		info.LinkButton:Show()
 	else
 		info.LinkButton:Hide()
@@ -941,6 +1045,8 @@ function addon.SetTab(tabType)
 	else
 		TTG_OrderHallTalentFrame:Hide()
 	end
+
+	frames.tg.info.animaPriorityScroll:Hide()
 
 	SetDefaultModel(tabType)
 end

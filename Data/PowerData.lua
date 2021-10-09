@@ -48,7 +48,7 @@ local function GeneratePowerList()
 	local coventant = C_Covenants.GetActiveCovenantID()
 	for i, data in pairs(addon.AnimaPowers)do 
 		--if ((data[3] == 0) and (data[4] == 0))  then
-		if ((data[3] == classmask or data[3] == 0) and (data[4] == coventant or data[4] == 0))  then
+		if ((data[3] == classmask or data[3] == 0) ) then --and (data[4] == coventant or data[4] == 0))  then
 			local spell = Spell:CreateFromSpellID(i)
 			--pending[i] = true
 			spell:ContinueOnSpellLoad(function()

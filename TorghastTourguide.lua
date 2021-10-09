@@ -860,6 +860,8 @@ function addon.RefreshConfig()
 		addon.CreateAnimaPowerListFrame()
 		addon.CreateBlessingListFrame()
 		addon.CreateTormentListFrame()
+		addon.SetUpBoxFrame()
+
 	end)
 
 end
