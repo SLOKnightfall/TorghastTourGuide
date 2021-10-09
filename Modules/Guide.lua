@@ -15,11 +15,39 @@ local AceGUI = LibStub("AceGUI-3.0")
 local L = LibStub("AceLocale-3.0"):GetLocale(addonName)
 local frames = {} 
 
+local function isFavorite(spellID)
+	for i, id in ipairs(addon.FavoritePowerdb.profile.favorites) do
+		if id == spellID then 
+			return true
+		end
+	end
+
+	return false
+end
+addon.isFavorite = isFavorite
+
+local function removeFavorite(spellID)
+	for i, id in ipairs(addon.FavoritePowerdb.profile.favorites) do
+		if id == spellID then 
+			table.remove(addon.FavoritePowerdb.profile.favorites, i)
+			return
+		end
+	end
+end
+
+
+local function addFavorite(spellID)
+	for i, id in ipairs(addon.FavoritePowerdb.profile.favorites) do
+		if id == spellID then 
+			return
+		end
+	end
+	table.insert(addon.FavoritePowerdb.profile.favorites, spellID)
+end
 
 
 
-
-local function CreatePowerFrame(powerID, parent, name, index)
+local function CreatePowerFrame(powerID, parent, name, index, icons)
 	local spell = Spell:CreateFromSpellID(powerID)
 	local  infoHeader = parent[index]
 
@@ -27,10 +55,25 @@ local function CreatePowerFrame(powerID, parent, name, index)
 
 	infoHeader:SetPoint("TOPLEFT", 25, -50)
 	infoHeader:SetPoint("TOPRIGHT", 25, -50)
-	infoHeader.button.icon1:Hide()
-	infoHeader.button.icon2:Hide()
-	infoHeader.button.icon3:Hide()
-	infoHeader.button.icon4:Hide()
+
+
+
+
+
+
+	if icons then
+		infoHeader.button.icon1:Show()
+		infoHeader.button.icon1.icon:SetAtlas("collections-icon-favorites")
+		infoHeader.button.icon1.icon:SetDesaturated(true)
+		infoHeader.button.icon2:Hide()
+		infoHeader.button.icon3:Hide()
+		infoHeader.button.icon4:Hide()
+	else
+		infoHeader.button.icon1:Hide()
+		infoHeader.button.icon2:Hide()
+		infoHeader.button.icon3:Hide()
+		infoHeader.button.icon4:Hide()
+	end
 	infoHeader.overviewIndex = index
 	
 	local textRightAnchor = infoHeader.button.icon1
@@ -83,6 +126,30 @@ local function CreatePowerFrame(powerID, parent, name, index)
 		infoHeader.description:SetWidth(infoHeader:GetWidth() - 30)
 		infoHeader:SetHeight(infoHeader.description:GetHeight() + 55)
 	end)
+
+	if isFavorite(powerID) then
+		infoHeader.button.icon1.icon:SetDesaturated(false)
+ 
+	end
+
+	infoHeader.button.icon1:SetScript("OnMouseDown", function()
+	if isFavorite(powerID) then 
+		removeFavorite(powerID)
+		infoHeader.button.icon1.icon:SetDesaturated(true)
+
+	else
+		addFavorite(powerID)
+		infoHeader.button.icon1.icon:SetDesaturated(false)
+	end
+
+
+
+
+	end)
+
+	if addon.FavoritePowerdb.profile.favorites then
+	end
+
 end
 
 	infoHeader:Show()
@@ -545,7 +612,7 @@ function addon.CreateAnimaPowerListFrame()
 	--for powerID, data in pairs(addon.AnimaPowers) do
 		local powerID = id
 		local data = addon.AnimaPowers[id]
-		f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPower", index)
+		f[index] = CreatePowerFrame(powerID, f, "TTG_AnimaPower", index, true)
 		local rarityColor = ITEM_QUALITY_COLORS[data[2]]
 		f[index].button.title:SetTextColor(rarityColor.r,rarityColor.g, rarityColor.b )
 		f[index]:ClearAllPoints()

@@ -150,9 +150,15 @@ local framePool = {}
 function addon.PowerShow()
 	local Weights_Notesdb = addon.Weights_Notesdb.profile
 
+	--FadeOut
+--PlayerChoiceFrame:GetLayoutChildren()[1]["choiceInfo"]["buttons"][1]["disabled"] = true
 	local frames = PlayerChoiceFrame:GetChildren()[1]
 	for i, frame in ipairs(PlayerChoiceFrame:GetLayoutChildren()) do
 		local weight, notes, f
+
+
+		--addon:SecureHook(frame, "OnButtonClick", function()print("clicky")end)
+
 		if not framePool[i] then 
 			f = CreateFrame("Frame", nil, UIParent)
 			f.notes = CreateFrame("Frame", nil, f, "TorghastTourGuideNoteTemplate")
@@ -164,6 +170,9 @@ function addon.PowerShow()
 
 			f.helper = CreateFrame("Frame", nil, f, "TorghastTourAnimaSelectionTemplate")
 			f.helper.icon:SetVertexColor(1,0,0);
+
+			f.fav = CreateFrame("Frame", nil, f, "TorghastTourFavoriteSelectionTemplate")
+
 
 			f.weight:SetScript("OnMouseDown", function(self) addon.EditWeight(self, frame) end)
 			f.weight:SetFrameLevel(15)
@@ -184,7 +193,19 @@ function addon.PowerShow()
 		f:SetPoint("TOPLEFT", frame, "TOPLEFT")
 		f:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT")
 
+		if addon.db.profile.ShowWeight then 
+			f.weight:Show()
+		else
+			f.weight:Hide()
+		end
+
 		local spellID = frame.optionInfo.spellID
+
+		if addon.isFavorite(tonumber(spellID)) then
+			f.fav:Show()
+		else
+			f.fav:Hide()
+		end
 		local spellRarity = frame.optionInfo.rarity
 		if spellID  then 
 			local count = addon.GetAnimaPowerCount(spellID)
@@ -201,7 +222,7 @@ function addon.PowerShow()
 
 			local isEpic = addon.CheckAnimaRarity(spellRarity)
 			local isDupe = addon.CheckAnimaPowers(spellID)
-			if (addon.checkBonusStatus("Pauper") and isEpic) or (addon.checkBonusStatus("Highlander") and  isDupe) then
+			if (addon.checkBonusStatus("Pauper") and isEpic) or (addon.checkBonusStatus("Highlander") and isDupe) then
 
 				f.helper.icon:Show()
 				f.helper.tooltipTitle = "Selecting Voids:"

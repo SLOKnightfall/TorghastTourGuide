@@ -249,6 +249,50 @@ local options = {
 						},
 					},
 				},
+				anima_settings={
+					name = " ",
+					type = "group",
+					inline = true,
+					order = 3,
+					args={
+						Tooltip_Header = {
+							order = 1,
+							name = L["Anima Power Options"],
+							type = "header",
+							width = "full",
+						},
+						ImmediatePowerHide = {
+							order = 2,
+							name = L["Hide Power Window Immediately After Selection"],
+							type = "toggle",
+							width = 1.5,
+						},
+						ShowWeight = {
+							order = 2,
+							name = L["Show Weight Windows"],
+							type = "toggle",
+							width = 1.5,
+						},
+						FlashPower = {
+							order = 3,
+							name = L["Flash Flagged Powers"],
+							type = "toggle",
+							width = 1.5,
+						},
+						AutoSelect = {
+							order = 4,
+							name = L["Auto Select Flagged Powers"],
+							type = "toggle",
+							width = 1.5,
+						},
+						ShowSelectMessage = {
+							order = 5,
+							name = L["Show On Screen Selection Message"],
+							type = "toggle",
+							width = 1.5,
+						},			
+					},
+				},
 				tooltip_settings={
 					name = " ",
 					type = "group",
@@ -366,6 +410,7 @@ local defaults = {
 			},
 		ShowBonusMessages = false,
 		customScorePosition = false,
+		ImmediatePowerHide = false,
 	}
 }
 
@@ -373,6 +418,13 @@ local noteDefaults = {
 	profile = {
 	}
 }
+
+local favDefaults = {
+	profile = {
+		favorites = {}
+	}
+}
+
 
 local function ResetCounts()
 	local defaults = {
@@ -448,6 +500,10 @@ local function Enable()
 	addon:RegisterEvent("PLAYER_REGEN_DISABLED", "EventHandler")
 	addon:RegisterEvent("SCENARIO_BONUS_OBJECTIVE_COMPLETE", "EventHandler")
 
+	addon:RegisterEvent("PLAYER_CHOICE_UPDATE", "EventHandler")
+
+
+
 
 
 
@@ -460,10 +516,26 @@ local function Enable()
 	frames.f:SetScript("OnEvent", function(...) addon.EventHandler(...) end)
 
 	if PlayerChoiceFrame and not addon:IsHooked(PlayerChoiceFrame, "OnShow") then
-		addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
+		addon:HookScript(PlayerChoiceFrame, "OnShow", function() 
+			if addon.db.profile.AutoSelect or  addon.db.profile.FlashPower  then
+				addon:AutoSelect()
+			end
+				C_Timer.After(0.1, addon.PowerShow)
+			
+		end)
 		addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
-
 	end
+	if PlayerChoiceFrame and not addon:IsHooked(PlayerChoiceFrame, "FadeOutAllOptions") then
+
+		addon:SecureHook(PlayerChoiceFrame, "FadeOutAllOptions", function() 
+			if addon.db.profile.ImmediatePowerHide then 
+				for optionFrame in PlayerChoiceFrame.optionPools:EnumerateActiveByTemplate(PlayerChoiceFrame.optionFrameTemplate) do
+					optionFrame:Hide();
+				end
+			end 
+		end)
+	end
+
 	addon.InitScoreFrame()
 	addon:SetScoreLocation()
 
@@ -620,7 +692,6 @@ function addon:EventHandler(event, arg1, ...)
 		--Enum.JailersTowerType
 		--addon:SetParTime(currentFloor)
 		if currentFloor == 1 then 
-print("start")
 			addon.Stats:InitRun()
 			addon.Tracker:Init()
 		else
@@ -638,13 +709,12 @@ print("start")
 		end
 
 	elseif event == "SCENARIO_BONUS_OBJECTIVE_COMPLETE" then
-		print(arg1)
 	
 
 
 	elseif event == "ADDON_LOADED" and arg1 == "Blizzard_PlayerChoiceUI" and isEnabled then 
-		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.2, addon.PowerShow) end)
-									addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
+		C_Timer.After(0, function() addon:HookScript(PlayerChoiceFrame, "OnShow", function() C_Timer.After(0.1, addon.PowerShow) end)
+									addon:HookScript(PlayerChoiceFrame, "OnHide", function() addon.PowerHide() end)
 						end) 
 		addon:UnregisterEvent("ADDON_LOADED")				
 	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
@@ -667,8 +737,9 @@ print("start")
 			addon.Statsdb.profile.current.currentPhantasma = quantity
 
 	elseif event == "PLAYER_CHOICE_UPDATE" then
-			addon.Stats:AnimaGain()
+			--addon.Stats:AnimaGain()
 			addon.Tracker:CheckBonus()
+
 	elseif event == "NAME_PLATE_UNIT_ADDED" or event == "FORBIDDEN_NAME_PLATE_UNIT_ADDED"  then
 		--[[if arg1 then
 							local guid = UnitGUID(arg1)
@@ -787,6 +858,8 @@ function addon.RefreshConfig()
 	C_Timer.After(0.1,function()
 		addon.CreateRavinousPowerListFrame()
 		addon.CreateAnimaPowerListFrame()
+		addon.CreateBlessingListFrame()
+		addon.CreateTormentListFrame()
 	end)
 
 end
@@ -797,6 +870,7 @@ function addon:OnInitialize()
 	TorghastTourgiudeDB.Options = TorghastTourgiudeDB.Options or {}
 	TorghastTourgiudeDB.Stats = TorghastTourgiudeDB.Stats or {}
 	TorghastTourgiudeDB.Weights_Notes = TorghastTourgiudeDB.Weights_Notes or {}
+	TorghastTourgiudeDB.Favorite_Powers = TorghastTourgiudeDB.Favorite_Powers or {}
 	TorghastTourgiudeDB.Floor_Par_Estimate = TorghastTourgiudeDB.Floor_Par_Estimate or {}
 	TorghastTourgiudeDB.Tracker = TorghastTourgiudeDB.Tracker or {}
 
@@ -807,6 +881,12 @@ function addon:OnInitialize()
 	self.Weights_Notesdb.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
 	self.Weights_Notesdb.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
 
+
+	self.FavoritePowerdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Favorite_Powers, favDefaults, false)
+	self.FavoritePowerdb.RegisterCallback(self, "OnProfileChanged", "RefreshConfig")
+	self.FavoritePowerdb.RegisterCallback(self, "OnProfileCopied", "RefreshConfig")
+	self.FavoritePowerdb.RegisterCallback(self, "OnProfileReset", "RefreshConfig")
+
 	Profile = self.db.profile
 	LibStub("AceConfigRegistry-3.0"):ValidateOptionsTable(options, addonName)
 	LibStub("AceConfig-3.0"):RegisterOptionsTable(addonName, options)
@@ -815,6 +895,11 @@ function addon:OnInitialize()
 
 	options.args.profile.args.profiles = LibStub('AceDBOptions-3.0'):GetOptionsTable(self.Weights_Notesdb)
 	options.args.profile.args.profiles.name = "Weights & Notes"
+
+
+	options.args.profile.args.profiles2 = LibStub('AceDBOptions-3.0'):GetOptionsTable(self.FavoritePowerdb)
+	options.args.profile.args.profiles2.name = "Favorite Powers"
+
 
 	  -- Add dual-spec support
 	local LibDualSpec = LibStub('LibDualSpec-1.0')

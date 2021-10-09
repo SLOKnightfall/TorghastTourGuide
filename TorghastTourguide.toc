@@ -29,6 +29,7 @@ Locale\locale-zhCN.lua
 TorghastTourguide.xml
 Modules\Tracker.xml
 Modules\Box.xml
+Modules\AutoSelect.lua
 Data\MobData.lua
 Data\PowerData.lua
 Data\BossData.lua

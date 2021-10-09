@@ -42,6 +42,20 @@ L["Font Size"] = true
 L["Font Color"] = true
 L["- Requires UI Reload"] = true
 
+
+--Anima Power Options
+L["Anima Power Options"] = true
+L["Hide Power Window Immediately After Selection"] = true
+L["Auto Select Flagged Powers"] = true
+L["Flash Flagged Powers"] = true
+L["No priority Powers Available"] = true
+L["|c%s[%s] auto-selected"] = true
+L["Click |c%s[%s]"] = true
+L["Show On Screen Selection Message"] = true
+L["Show Weight Windows"] = true
+
+
+
 L["Show Score Frame"] = true
 L["Reset Score Location"] = true
 L["Left"] = true

@@ -95,6 +95,38 @@
 			</Scripts>
 	</Frame>
 
+	<Frame name="TorghastTourFavoriteSelectionTemplate" virtual="true" hidden="false">
+		<KeyValues>
+			<KeyValue key="ignoreInLayout" value="true" type="boolean"/>
+		</KeyValues>
+		<Size x="40" y="40"/>
+		<Anchors>
+			<Anchor point="BOTTOMLEFT" x="40" y="-14" />
+		</Anchors>
+		<Layers>
+			<Layer level="OVERLAY">
+				<Texture parentKey="icon" atlas="collections-icon-favorites">
+					<Size x="35" y="35"/>
+					<Anchors>
+						<Anchor point="CENTER" />
+					</Anchors>
+				</Texture>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnEnter>
+				if self.tooltipText then
+					GameTooltip:SetOwner(self, "ANCHOR_RIGHT");
+					GameTooltip:SetText(self.tooltipTitle,1,1,1);
+					GameTooltip:AddLine(self.tooltipText, nil, nil, nil, true);
+					GameTooltip:Show();
+				end
+			</OnEnter>
+			<OnLeave>
+				GameTooltip:Hide();
+			</OnLeave>
+			</Scripts>
+	</Frame>
 	<Button name="TorghastTourGuideBossButtonTemplate" virtual="true" hidden="true">
 		<Size x="300" y="50"/>
 		<Frames>
@@ -308,10 +340,13 @@
 					</Layer>
 				</Layers>
 				<Frames>
+
+
 					<Frame name="$parentIcon1" inherits="TorghastTourGuideSectionIconTemplate" parentKey="icon1" parentArray="icons">
 						<Anchors>
 							<Anchor point="RIGHT" x="5" y="0"/>
 						</Anchors>
+
 					</Frame>
 					<Frame name="$parentIcon2" inherits="TorghastTourGuideSectionIconTemplate" parentKey="icon2" parentArray="icons">
 						<Anchors>
