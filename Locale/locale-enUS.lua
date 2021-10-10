@@ -41,7 +41,7 @@ L["Select Font"] = true
 L["Font Size"] = true
 L["Font Color"] = true
 L["- Requires UI Reload"] = true
-
+L["Quick Hide Floor Toasts"] = true
 
 --Anima Power Options
 L["Anima Power Options"] = true
@@ -55,9 +55,9 @@ L["Show On Screen Selection Message"] = true
 L["Show Weight Windows"] = true
 L["Favorite Priority"] = true
 L["Favorite Priority Order"] = true
-
-
-
+L["Hide Power Selection Window in Combat"] = true
+L["Hide Power Selection Toggle in Combat"] = true
+L["Show Power Selection Window after Combat"] = true
 L["Show Score Frame"] = true
 L["Reset Score Location"] = true
 L["Left"] = true

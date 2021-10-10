@@ -134,13 +134,11 @@ local options = {
 							width = "full",
 						},
 
-						IgnoreClassRestrictions = {
+						QuickHideFloorToasts = {
 							order = 1.2,
-							name = "ff",--L["Ignore Class Restriction Filter"],
+							name = L["Quick Hide Floor Toasts"],
 							type = "toggle",
 							width = 1.3,
-							arg = "IgnoreClassRestrictions",
-							hidden = true,
 						},
 						showMiniMapIcon = {
 							order = 1.4,
@@ -265,28 +263,47 @@ local options = {
 							order = 2,
 							name = L["Hide Power Window Immediately After Selection"],
 							type = "toggle",
-							width = 1.5,
+							width = 3,
 						},
+						HideOverlayInCombat = {
+							order = 3,
+							name = L["Hide Power Selection Window in Combat"],
+							type = "toggle",
+							width = 2.5,
+						},	
+						ShowOverlayAfterCombat = {
+							order = 4,
+							name = L["Show Power Selection Window after Combat"],
+							type = "toggle",
+							width = 2.5,
+						},	
+						HideToggleInCombat = {
+							order = 5,
+							name = L["Hide Power Selection Toggle in Combat"],
+							type = "toggle",
+							width = 3,
+						},	
+
 						ShowWeight = {
-							order = 2,
+							order = 6,
 							name = L["Show Weight Windows"],
 							type = "toggle",
-							width = 1.5,
+							width = 2.5,
 						},
 						FlashPower = {
-							order = 3,
+							order = 7,
 							name = L["Flash Flagged Powers"],
 							type = "toggle",
 							width = 1.5,
 						},
 						AutoSelect = {
-							order = 4,
+							order = 8,
 							name = L["Auto Select Flagged Powers"],
 							type = "toggle",
 							width = 1.5,
 						},
 						ShowSelectMessage = {
-							order = 5,
+							order = 9,
 							name = L["Show On Screen Selection Message"],
 							type = "toggle",
 							width = 1.5,
@@ -411,6 +428,10 @@ local defaults = {
 		ShowBonusMessages = false,
 		customScorePosition = false,
 		ImmediatePowerHide = false,
+		HideOverlayInCombat = false,
+		HideToggleInCombat = false,
+		ShowOverlayAfterCombat = false,
+		QuickHideFloorToasts= false,
 	}
 }
 
@@ -502,6 +523,7 @@ local function Enable()
 
 	addon:RegisterEvent("PLAYER_CHOICE_UPDATE", "EventHandler")
 
+	addon:RegisterEvent("DISPLAY_EVENT_TOASTS", "EventHandler")
 
 
 
@@ -520,7 +542,18 @@ local function Enable()
 			if addon.db.profile.AutoSelect or  addon.db.profile.FlashPower  then
 				addon:AutoSelect()
 			end
-				C_Timer.After(0.1, addon.PowerShow)
+			C_Timer.After(0.1, addon.PowerShow)
+
+			if InCombatLockdown() and addon.db.profile.HideOverlayInCombat then
+				local onChoice = C_PlayerChoice.IsWaitingForPlayerChoiceResponse()
+				if onChoice then
+					--PlayerChoiceFrame:Hide()
+					--PlayerChoiceFrame:TryHide()
+					--HideUIPanel(PlayerChoiceFrame)      
+				end
+			end
+
+			
 			
 		end)
 		addon:HookScript(PlayerChoiceFrame, "OnHide", function() C_Timer.After(0, addon.PowerHide) end)
@@ -582,7 +615,7 @@ local function Disable()
 		TTG_ScoreFrame:Hide()
 		TTG_BonusList:Hide()
 		TTG_CombatTimer:Hide()
- 	end)
+	end)
 
 end
 	
@@ -666,14 +699,38 @@ function addon:EventHandler(event, arg1, ...)
 			Disable()
 		end
 	end
-	if finished  or not IsInJailersTower() then return end
+
+	if finished or not IsInJailersTower() then return end
+
 	if event == "PLAYER_REGEN_ENABLED" then
 		last_rare_kill = nil
 		TTG_CombatTimer:Stop()
 		TTG_CombatTimer:CheckBonus()
 		C_Timer.After(10, function() TTG_CombatTimer:Hide() end)
 
+		if addon.db.profile.ShowOverlayAfterCombat then
+			C_Timer.After(2, function() PlayerChoiceFrame:TryShow() end)
+		end
+
+		local onChoice = C_PlayerChoice.IsWaitingForPlayerChoiceResponse()
+		if onChoice then
+			PlayerChoiceToggleButton:Show()     
+		end
+
+
+
 	elseif event == "PLAYER_REGEN_DISABLED" then
+		if addon.db.profile.HideOverlayInCombat then
+			local onChoice = C_PlayerChoice.IsWaitingForPlayerChoiceResponse()
+			if onChoice and PlayerChoiceFrame:IsShown() then
+				PlayerChoiceFrame:OnSelectionMade()    
+			end
+		end
+
+		if addon.db.profile.HideToggleInCombat and not PlayerChoiceFrame:IsShown() then
+			PlayerChoiceToggleButton:Hide()
+		end
+
 		if addon.db.profile.ShowCombatTimer then 
 			TTG_CombatTimer:Show()
 			TTG_CombatTimer:Reset()
@@ -707,6 +764,9 @@ function addon:EventHandler(event, arg1, ...)
 		else
 			TTG_ScoreFrame.Timer:ScorePause()
 		end
+
+	elseif addon.db.profile.QuickHideFloorToasts and event == "DISPLAY_EVENT_TOASTS" then 
+		EventToastManagerFrame:CloseActiveToasts()
 
 	elseif event == "SCENARIO_BONUS_OBJECTIVE_COMPLETE" then
 	
@@ -907,6 +967,10 @@ function addon:OnInitialize()
 	local LibDualSpec = LibStub('LibDualSpec-1.0')
 	LibDualSpec:EnhanceDatabase(self.Weights_Notesdb, addonName)
 	LibDualSpec:EnhanceOptions(options.args.profile.args.profiles, self.Weights_Notesdb)
+
+
+	LibDualSpec:EnhanceDatabase(self.FavoritePowerdb, addonName)
+	LibDualSpec:EnhanceOptions(options.args.profile.args.profiles2, self.FavoritePowerdb)
 
 	TTG_MiniMap:Register("TTGMapMini", TTGLDB, Profile.MMDB)
 
