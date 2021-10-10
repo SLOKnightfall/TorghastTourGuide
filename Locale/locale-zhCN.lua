@@ -124,7 +124,9 @@ L["Score Tracker Options"] = "分数跟踪器选项"
 L["Show Combat Timer"] = "显示战斗计时"
 ]]
 
---@localization(locale="zhCN", format="lua_additive_table", handle-unlocalized="comment")@
+--@localization(locale="ruRU", format="lua_additive_table", handle-unlocalized="comment", namespace="")@
+
+
 
 L["95004"] = "威·娜莉"
 L["152253"] = "塔拉格鲁" 
