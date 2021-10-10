@@ -10,7 +10,7 @@ _G["BINDING_NAME_TOGGLE_TORGHASTTOURGUIDE"] = "切换指南"
 _G["BINDING_HEADER_TORGHASTTOURGUIDE"] = addonName
 
 
-L["Ravenous Anima Cell"] = "贪婪的心能"
+--[[L["Ravenous Anima Cell"] = "贪婪的心能"
 L["Plundered Anima Cell"] = "掠夺的心能"
 L["Requisitioned Anima Cell"] = "征用的心能"
 L["Obscuring Essence Potion"] = "遮蔽精华药水"
@@ -122,6 +122,9 @@ L["Highlander + 15pts"] = "Highlander + 15pts"
 
 L["Score Tracker Options"] = "分数跟踪器选项"
 L["Show Combat Timer"] = "显示战斗计时"
+]]
+
+--@localization(locale="zhCN", format="lua_additive_table", handle-unlocalized="comment")@
 
 L["95004"] = "威·娜莉"
 L["152253"] = "塔拉格鲁" 
