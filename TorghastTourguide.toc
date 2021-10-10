@@ -25,6 +25,16 @@ Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 #Localization
 Locale\locale-enUS.lua
 Locale\locale-zhCN.lua
+Locale\locale-deDE.lua
+Locale\locale-esES.lua
+Locale\locale-esMX.lua
+Locale\locale-frFR.lua
+Locale\locale-itIT.lua
+Locale\locale-koKR.lua
+Locale\locale-ptBR.lua
+Locale\locale-ruRU.lua
+Locale\locale-zhTW.lua
+
 
 TorghastTourguide.xml
 Modules\Tracker.xml

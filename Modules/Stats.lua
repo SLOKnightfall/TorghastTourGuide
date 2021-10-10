@@ -100,7 +100,7 @@ function Stats:InitRun()
 	Stats:ResetCurrent()
 	addon.Statsdb.profile.current.CurentTime = GetTime()
 	Stats:UpdateStats()
-	addon.SetParTime()
+	----addon.SetParTime()
 end
 
 
