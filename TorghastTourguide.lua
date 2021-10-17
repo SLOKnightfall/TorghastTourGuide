@@ -713,7 +713,7 @@ function addon:EventHandler(event, arg1, ...)
 		end
 
 		local onChoice = C_PlayerChoice.IsWaitingForPlayerChoiceResponse()
-		if onChoice then
+		if onChoice and PlayerChoiceToggleButton then
 			PlayerChoiceToggleButton:Show()     
 		end
 
@@ -743,27 +743,37 @@ function addon:EventHandler(event, arg1, ...)
 		end
 
 	elseif event == "JAILERS_TOWER_LEVEL_UPDATE" then
+		
 
 		currentFloor = arg1
 		runType = ...
 		--Enum.JailersTowerType
 		--addon:SetParTime(currentFloor)
-		if currentFloor == 1 then 
-			addon.Stats:InitRun()
-			addon.Tracker:Init()
+		if (runType > 0 and runType < 8 ) or runType == 12 then 
+			TorghastTourgiudeDB.ForceScoreDisable = true
+			TTG_ScoreFrame:Show()
 		else
-			addon.Stats.IncreaseCounter("FloorsCompleted")
-			addon.GetFloorSummary()
-		
-
+			TorghastTourgiudeDB.ForceScoreDisable = false
+			TTG_ScoreFrame:Hide()
 		end
+			if currentFloor == 1 then 
+				addon.Stats:InitRun()
+				addon.Tracker:Init()
+			else
+				addon.Stats.IncreaseCounter("FloorsCompleted")
+				addon.GetFloorSummary()
+			
 
-		if currentFloor == 3 then
-			--Floor 3 not timed
-			TTG_ScoreFrame.Timer:Stop()
-		else
-			TTG_ScoreFrame.Timer:ScorePause()
-		end
+			end
+
+			if currentFloor == 3 then
+				--Floor 3 not timed
+				TTG_ScoreFrame.Timer:Stop()
+			else
+				TTG_ScoreFrame.Timer:ScorePause()
+			end
+
+
 
 	elseif addon.db.profile.QuickHideFloorToasts and event == "DISPLAY_EVENT_TOASTS" then 
 		EventToastManagerFrame:CloseActiveToasts()
@@ -935,6 +945,7 @@ function addon:OnInitialize()
 	TorghastTourgiudeDB.Favorite_Powers = TorghastTourgiudeDB.Favorite_Powers or {}
 	TorghastTourgiudeDB.Floor_Par_Estimate = TorghastTourgiudeDB.Floor_Par_Estimate or {}
 	TorghastTourgiudeDB.Tracker = TorghastTourgiudeDB.Tracker or {}
+	TorghastTourgiudeDB.CurrentRunType = TorghastTourgiudeDB.ForceScoreDisable or false
 
 	self.db = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Options, defaults, true)
 	self.Statsdb = LibStub("AceDB-3.0"):New(TorghastTourgiudeDB.Stats, statsDefaults, false)
