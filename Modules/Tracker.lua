@@ -425,7 +425,8 @@ end
 
 
 function addon.Tracker:FlagFail(bonusName, silent)
-	if TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] then return end
+	if addon.Statsdb.profile.current.TrackerMessages[bonusName] then return end
+
 	if Bonuses[bonusName] and not silent and addon.db.profile.ShowBonusMessages then 
 		print(RED_FONT_COLOR..(L["Failed Bonus: %s"]):format(bonusName))
 	end
@@ -437,6 +438,7 @@ function addon.Tracker:FlagFail(bonusName, silent)
 end
 
 function addon.Tracker:FlagBonus(bonusName)
+	
 	if TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] then return end
 	if Bonuses[bonusName] and addon.db.profile.ShowBonusMessages then 
 		print(GREEN_FONT_COLOR..(L["Gained Bonus: %s"]):format(bonusName))
@@ -444,6 +446,19 @@ function addon.Tracker:FlagBonus(bonusName)
 
 	Bonuses[bonusName][2] = true
 	TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] = true
+	--updateAll()
+
+
+
+
+
+		if addon.Statsdb.profile.current.TrackerMessages[bonusName] then return end
+	if Bonuses[bonusName] and addon.db.profile.ShowBonusMessages then 
+		print(GREEN_FONT_COLOR..(L["Gained Bonus: %s"]):format(bonusName))
+	end
+
+	Bonuses[bonusName][2] = true
+	addon.Statsdb.profile.current.TrackerMessages[bonusName] = true
 	--updateAll()
 end
 
@@ -803,6 +818,7 @@ local function GetLayer(current_floor)
 end
 
 function addon.SetParTime()
+	if true then return end
 			local use_estimate = true
 			local current = addon.Statsdb.profile.current
 
@@ -823,7 +839,7 @@ function addon.SetParTime()
 					TTG_ScoreFrame.Timer.par:SetText(("Est Par: %s:%s:%s"):format(par_hour, par_minute, par_second))
 				end
 			else
-				print("No par")
+				----print("No par")
 			end
 end
 
@@ -872,10 +888,6 @@ function addon.GetFloorSummary()
 			--local bonus = 
 
 			--print(current.TotalPar)
-
-
-			
-
 			local CompletionInfo = UIWidgetManager:GetWidgetTypeInfo(21).visInfoDataFunction(CompletionID[i]);
 			if CompletionInfo and CompletionInfo.entries then 
 				local floor_completion = CompletionInfo.entries[3].text
@@ -912,16 +924,16 @@ function addon.GetFloorSummary()
 			end]]
 
 
-	TorghastTourgiudeDB.Floor_Par_Estimate[mapID] = TorghastTourgiudeDB.Floor_Par_Estimate[mapID] or {}
-	TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer] = TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer] or {}
-	--current.Floor_Par_Estimate[mapID][current_layer][party_size] = current.Floor_Par_Estimate[mapID][current_layer][party_size] = {}
-
-	local saved_par = TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] 
-	if saved_par then
-		TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] = (tonumber(saved_par) + tonumber(totalPar))/2
-		print(("Diff: %s"):format(saved_par-totalTime))
-	else
-		TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] = tonumber(totalPar)
-	end
+	--[[TorghastTourgiudeDB.Floor_Par_Estimate[mapID] = TorghastTourgiudeDB.Floor_Par_Estimate[mapID] or {}
+			TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer] = TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer] or {}
+			--current.Floor_Par_Estimate[mapID][current_layer][party_size] = current.Floor_Par_Estimate[mapID][current_layer][party_size] = {}
+		
+			local saved_par = TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] 
+			if saved_par then
+				TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] = (tonumber(saved_par) + tonumber(totalPar))/2
+				print(("Diff: %s"):format(saved_par-totalTime))
+			else
+				TorghastTourgiudeDB.Floor_Par_Estimate[mapID][current_layer][party_size] = tonumber(totalPar)
+			end]]
 
 end
