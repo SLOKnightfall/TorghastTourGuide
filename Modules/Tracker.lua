@@ -441,8 +441,9 @@ function addon.Tracker:FlagFail(bonusName, silent)
 end
 
 function addon.Tracker:FlagBonus(bonusName)
-	
+
 	if TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] or not TorghastTourgiudeDB.ForceScoreDisable then return end
+
 	if Bonuses[bonusName] and addon.db.profile.ShowBonusMessages then 
 		print(GREEN_FONT_COLOR..(L["Gained Bonus: %s"]):format(bonusName))
 	end
@@ -451,8 +452,8 @@ function addon.Tracker:FlagBonus(bonusName)
 	TorghastTourgiudeDB.Tracker.TrackerMessages[bonusName] = true
 	--updateAll()
 
-
-		if addon.Statsdb.profile.current.TrackerMessages[bonusName] then return end
+a
+	if addon.Statsdb.profile.current.TrackerMessages[bonusName] then return end
 	if Bonuses[bonusName] and addon.db.profile.ShowBonusMessages then 
 		print(GREEN_FONT_COLOR..(L["Gained Bonus: %s"]):format(bonusName))
 	end
