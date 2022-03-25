@@ -5,7 +5,6 @@
 
 --  
 
---
 
 --  ///////////////////////////////////////////////////////////////////////////////////////////
 
@@ -21,7 +20,6 @@ local Profile
 local isEnabled = false
 local LSM = LibStub("LibSharedMedia-3.0")
 addon.fontStrings = {}
-
 addon.Stats = {}
 
 
