@@ -169,13 +169,10 @@
 			<Anchors>
 				<Anchor point="TOPLEFT" x="75" y="-20"/>
 			</Anchors>
-			<Color r="0.827" g="0.659" b="0.463"/>
 		</ButtonText>
 		<NormalFont style="GameFontNormalMed3">
-			<Color r="0.827" g="0.659" b="0.463"/>
 		</NormalFont>
 		<HighlightFont style="GameFontNormalMed3">
-			<Color r="0.973" g="0.902" b="0.581"/>
 		</HighlightFont>
 		<DisabledFont style="GameFontHighlightMedium"/>
 		<Scripts>

@@ -272,7 +272,7 @@
 		</Scripts>
 	</Frame>
 
-	<Frame name="TTG_BonusList" hidden="true" parent="UIParent" moveable="true" mixin = "TTG_BonusListMixin">
+	<Frame name="TTG_BonusList" hidden="true" parent="UIParent"  mixin = "TTG_BonusListMixin">
 		<Anchors>
 			<Anchor point="TOPLEFT" relativeTo= "TTG_ScoreFrame" relativePoint="TOPRIGHT" x="0" y="0"/>
 		</Anchors>

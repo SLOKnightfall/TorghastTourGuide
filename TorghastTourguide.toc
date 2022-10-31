@@ -1,4 +1,4 @@
-## Interface: 90200
+## Interface: 100000
 ## Title: TorghastTourgide
 ## Version: @project-version@
 ## Author: SLOKnightfall
@@ -38,7 +38,7 @@ Locale\locale-zhTW.lua
 
 TorghastTourguide.xml
 Modules\Tracker.xml
-Modules\Box.xml
+
 Modules\AutoSelect.lua
 Data\MobData.lua
 Data\PowerData.lua

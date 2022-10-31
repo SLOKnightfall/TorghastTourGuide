@@ -504,7 +504,7 @@ local function Enable()
 	end
 
 	addon:RegisterEvent("UPDATE_MOUSEOVER_UNIT", "EventHandler")
-	addon:RegisterEvent("CURSOR_UPDATE", "EventHandler")
+----	addon:RegisterEvent("CURSOR_UPDATE", "EventHandler")
 	addon:RegisterEvent("BAG_UPDATE", "EventHandler")
 
 	addon:RegisterEvent("CURRENCY_DISPLAY_UPDATE", "EventHandler")
@@ -785,7 +785,7 @@ function addon:EventHandler(event, arg1, ...)
 									addon:HookScript(PlayerChoiceFrame, "OnHide", function() addon.PowerHide() end)
 						end) 
 		addon:UnregisterEvent("ADDON_LOADED")				
-	elseif event == "UPDATE_MOUSEOVER_UNIT" or event == "CURSOR_UPDATE"  then
+	elseif event == "UPDATE_MOUSEOVER_UNIT" then ---- or event == "CURSOR_UPDATE"  then
 		C_Timer.After(0.1, addon.PowerTooltips)
 
 	elseif event == "BAG_UPDATE" then

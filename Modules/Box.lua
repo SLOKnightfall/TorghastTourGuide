@@ -23,6 +23,16 @@ TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughGol
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableTierUnavailable] = ORDER_HALL_TALENT_UNAVAILABLE_TIER_UNAVAILABLE;
 TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableRequiresPrerequisiteTalent] = ORDER_HALL_TALENT_UNAVAILABLE_REQUIRES_PREREQUISITE_TALENT;
 
+-- This is handled by changing the color of the currency now.
+-- TalentUnavailableReasons[Enum.GarrisonTalentAvailability.UnavailableNotEnoughResources] = ORDER_HALL_TALENT_UNAVAILABLE_NOT_ENOUGH_RESOURCES;
+
+function TTG_OrderHallTalentFrame_ToggleFrame()
+	if (not TTG_OrderHallTalentFrame:IsShown()) then
+		ShowUIPanel(TTG_OrderHallTalentFrame);
+	else
+		HideUIPanel(TTG_OrderHallTalentFrame);
+	end
+end
 local CHOICE_BACKGROUND_OFFSET_Y = 10;
 local BACKGROUND_WITH_INSET_OFFSET_Y = 0;
 local BACKGROUND_NO_INSET_OFFSET_Y = 44;
@@ -267,9 +277,9 @@ function TTG_OrderHallTalentFrameMixin:RefreshAllData()
 	self.Background:SetAtlas(textureKit.."-background");
 	local atlas = textureKit.."-logo";
 
-	if NPCFriendshipStatusBar:GetParent() == self then
-		NPCFriendshipStatusBar:Hide();
-	end
+	--if NPCFriendshipStatusBar:GetParent() == self then
+		--NPCFriendshipStatusBar:Hide();
+	--end
 	self.Currency:Show();
 	self.CurrencyHitTest:Show();
 

@@ -1041,9 +1041,9 @@ function addon.SetTab(tabType)
 	end
 
 		if tabType == 10 then
-		TTG_OrderHallTalentFrame:Show()
+		--TTG_OrderHallTalentFrame:Show()
 	else
-		TTG_OrderHallTalentFrame:Hide()
+		--TTG_OrderHallTalentFrame:Hide()
 	end
 
 	frames.tg.info.animaPriorityScroll:Hide()
