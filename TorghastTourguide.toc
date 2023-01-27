@@ -1,4 +1,4 @@
-## Interface: 100000
+## Interface: 100005
 ## Title: TorghastTourgide
 ## Version: @project-version@
 ## Author: SLOKnightfall
@@ -21,6 +21,7 @@ Libs\AceHook-3.0\AceHook-3.0.xml
 Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibDualSpec-1.0\LibDualSpec-1.0.lua
 Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
+Libs\LibSharedMedia-3.0\lib.xml
 
 #Localization
 Locale\locale-enUS.lua
