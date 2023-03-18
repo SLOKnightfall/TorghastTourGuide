@@ -14,6 +14,7 @@ externals:
     Libs/LibDBIcon-1.0: https://repos.wowace.com/wow/libdbicon-1-0/trunk/LibDBIcon-1.0
     Libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
     Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk
+    Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk
 
 enable-nolib-creation: no
 
