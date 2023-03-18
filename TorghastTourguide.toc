@@ -22,6 +22,8 @@ Libs\AceLocale-3.0\AceLocale-3.0.xml
 Libs\LibDualSpec-1.0\LibDualSpec-1.0.lua
 Libs\AceGUI-3.0-SharedMediaWidgets\widget.xml
 Libs\LibSharedMedia-3.0\lib.xml
+Libs\Poncho-2.0\Poncho-2.0.xml
+Libs\Sushi-3.1\Sushi-3.1.xml
 
 #Localization
 Locale\locale-enUS.lua
@@ -46,3 +48,4 @@ Data\PowerData.lua
 Data\BossData.lua
 Data\TormentData.lua
 Plugins\Kaliels.lua
+Patrons.lua

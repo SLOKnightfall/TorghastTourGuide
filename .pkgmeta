@@ -15,7 +15,9 @@ externals:
     Libs/LibDualSpec-1.0: https://repos.wowace.com/wow/libdualspec-1-0
     Libs/AceGUI-3.0-SharedMediaWidgets: https://repos.wowace.com/wow/ace-gui-3-0-shared-media-widgets/trunk
     Libs/LibSharedMedia-3.0: https://repos.curseforge.com/wow/libsharedmedia-3-0/trunk
-
+    Libs/Sushi-3.1: https://github.com/Jaliborc/Sushi-3.1.git
+    Libs/Poncho-2.0: https://github.com/Jaliborc/Poncho-2.0.git
+    
 enable-nolib-creation: no
 
 ignore:
