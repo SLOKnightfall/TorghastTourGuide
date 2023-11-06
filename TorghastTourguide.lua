@@ -30,7 +30,7 @@ local HotSpotState = false
 --Registers for LDB addons
 local TTGLDB = LibStub("LibDataBroker-1.1"):NewDataObject("TTGMapMini", {
 	type = "data source",
-	text = "TorghastTourguide",
+	text = "TorghastTG",
 	icon = "Interface\\Addons\\TorghastTourguide\\Icons\\icon",
 	OnClick = function(self, button, down) 
 		if (button == "RightButton") then
